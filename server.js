@@ -1,9 +1,20 @@
-const express = require('express');
-
+const express = require("express");
+// const bodyParser = require("body-parser");
 const app = express();
+const fs = require("fs");
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 8000;
+const https = require('https');
 
-const server = app.listen(PORT, () => {
-  console.log('server is running on port', server.address().port);
+// http://expressjs.com/en/starter/static-files.html
+app.use(express.static("public"));
+
+app.get("/hi", (request, response) => {
+  response.send('hi');
+});
+
+// listen for requests :)
+var listener = app.listen(process.env.PORT, () => {
+  console.log(`Your app is listening on port ${listener.address().port}`);
 });
