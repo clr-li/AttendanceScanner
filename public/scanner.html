@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Home</title>
+    <title>Attendance Scanner</title>
     <meta name="description" content="A program to automate SYSO attendance">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,10 +10,19 @@
     <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    
+    <!--   Import QR scanning capabilities   -->
+    <script src="html5-qrcode.min.js"></script>
   </head>
   <body>
-    <h1>
-      Landing Page for the Attendance Scanner Company
-    </h1>
+    <div id="container">
+      <div id="reader"></div>
+      <p>
+        what does sans serif look like
+      </p>
+    </div>
+    
+    <!-- import the webpage's client-side javascript file -->
+    <script src="/scanner.js" defer></script>
   </body>
 </html>
