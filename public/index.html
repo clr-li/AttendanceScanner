@@ -4,9 +4,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SYSO | Attendance</title>
+    <title>Attendance Scanner</title>
     <meta name="description" content="A program to automate SYSO attendance">
-    <link id="favicon" rel="icon" href="https://syso.org/wp-content/uploads/2016/06/syso_logo_web_markM_BLUE.png" type="image/png">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,35 +18,7 @@
   </head>
   <body>
     <div id="container">
-      <h1><img src="https://syso.org/wp-content/uploads/2016/06/syso_logo_web_markM_BLUE.png"> Attendance Scanner</h1>
       <div id="reader"></div>
-      <div id="welcome" style="display: none"></div>
-      <br>
-        <div class="back">
-          <div class="form__group field">
-            <input type="input" class="form__field" placeholder="Name" name="name" id="name" required />
-            <label for="name" class="form__label">Name</label>
-          </div>
-          <div class="btn-wrapper">
-            <button id="manual" class="btn">Next</button>
-          </div>
-        </div>
-        <br>
-        <select class="date" id="date">
-          <option>Options loading...</option>
-        </select>
-        <br><br>
-        <select id="status">
-          <option>P</option>
-          <option>ABS</option>
-          <option>ABS-L</option>
-          <option>.5 ABS</option>
-          <option>.5 ABS-L</option>
-          <option>TARDY</option>
-          <option>SICK</option>
-          <option>S&E</option>
-          <option>P-L</option>
-        </select>
     </div>
     
     <!-- import the webpage's client-side javascript file -->
