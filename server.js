@@ -8,7 +8,7 @@ const fs = require("fs");
 const https = require('https');
 
 // init sqlite db
-const dbFile = "./.data/businesses.db";
+const dbFile = "./.data/AttendanceSoftware.db";
 const exists = fs.existsSync(dbFile);
 let db = null;
 if (!exists) {
