@@ -19,6 +19,8 @@ else {
   db = new sqlite3.Database(dbFile);
 }
 
+// db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
+
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
