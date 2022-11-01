@@ -17,3 +17,20 @@
     </h1>
   </body>
 </html>
+
+<script>
+  const dbFile = "./.data/AttendanceSoftware.db";
+  const exists = fs.existsSync(dbFile);
+  let db = null;
+  if (!exists) {
+    console.log("no database file found :(");
+  }
+  else {
+    const sqlite3 = require("sqlite3").verbose();
+    db = new sqlite3.Database(dbFile);
+  }
+  
+  function getBusinessName() {
+    return SELECT Name FROM db WHERE id = 0;
+  }
+</script>
