@@ -26,11 +26,12 @@ app.use(express.static("public"));
 
 app.get("/businessRow", (request, response) => {
   
-  let sql = `SELECT *
-         FROM Businesses`;
+  let sql = `SELECT Name
+         FROM Businesses
+         WHERE id = ?`;
   let id = 0;
 
-  db.get(sql, (err, row) => {
+  db.get(sql, id, (err, row) => {
     if (err) {
       return console.error(err.message);
     }
