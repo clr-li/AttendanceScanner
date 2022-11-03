@@ -24,8 +24,19 @@ else {
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-app.get("/hi", (request, response) => {
-  response.send('hi');
+app.get("/businessRow", (request, response) => {
+  
+  let sql = `SELECT Name
+         FROM Businesses
+         WHERE id  = ?`;
+  let id = 0;
+
+  db.get(sql, [id], (err, row) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    response.send(row);
+  });
 });
 
 // listen for requests :)

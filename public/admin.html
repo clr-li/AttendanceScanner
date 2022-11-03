@@ -14,34 +14,7 @@
   <body>
     <h1>
       Admin Page <script>
-        function findBusinessName() {
-          const fs = require('fs');
-          const dbFile = "./.data/AttendanceSoftware.sqbpro";
-          const exists = fs.existsSync(dbFile);
-          let db = null;
-          if (!exists) {
-            console.log("no database file found :(");
-          } else {
-            const sqlite3 = require("sqlite3").verbose();
-            db = new sqlite3.Database(dbFile);
-          }
-          let sql = `SELECT Name
-                 FROM Businesses
-                 WHERE id  = ?`;
-          let id = 0;
-
-          db.get(sql, [id], (err, row) => {
-            if (err) {
-              return console.error(err.message);
-            }
-            return row
-              ? console.log(row.id, row.Name)
-              : console.log(`No playlist found with the id ${id}`);
-
-          });
-          db.close();
-        }
-        document.write(findBusinessName());
+        document.write("hello");
       </script>
     </h1>
     <label for="events">Event: </label>
