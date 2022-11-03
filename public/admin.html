@@ -19,7 +19,7 @@
     </h1>
     <label for="events">Event: </label>
     <select name="events">
-      <option value="event1">event1</option>
+      <option id="events" value="event1"><script>fetch('/eventsRow').then((res) => { res.json().then((o) => document.getElementById("events").innerHTML += o.Name) });</script></option>
     </select>
     <br>
     <button onclick="window.location = 'scanner.html'">

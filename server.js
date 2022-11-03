@@ -40,6 +40,22 @@ app.get("/businessRow", (request, response) => {
   });
 });
 
+app.get("/eventsRow", (request, response) => {
+  
+  let sql = `SELECT eventtable
+         FROM Businesses
+         WHERE id = ?`;
+  let id = 0;
+
+  db.get(sql, id, (err, row) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log(row);
+    response.send(row);
+  });
+});
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
