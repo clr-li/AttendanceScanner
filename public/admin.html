@@ -14,19 +14,34 @@
   <body>
     <h1>
       Admin Page <script>
-        const fs = require('fs');
-        const dbFile = "./.data/AttendanceSoftware.sqbpro";
-        const exists = fs.existsSync(dbFile);
-        let db = null;
-        if (!exists) {
-          console.log("no database file found :(");
-        } else {
-          const sqlite3 = require("sqlite3").verbose();
-          db = new sqlite3.Database(dbFile);
-          console.log("db success");
+        function findBusinessName() {
+          const fs = require('fs');
+          const dbFile = "./.data/AttendanceSoftware.sqbpro";
+          const exists = fs.existsSync(dbFile);
+          let db = null;
+          if (!exists) {
+            console.log("no database file found :(");
+          } else {
+            const sqlite3 = require("sqlite3").verbose();
+            db = new sqlite3.Database(dbFile);
+          }
+          let sql = `SELECT Name
+                 FROM Businesses
+                 WHERE id  = ?`;
+          let id = 0;
+
+          db.get(sql, [id], (err, row) => {
+            if (err) {
+              return console.error(err.message);
+            }
+            return row
+              ? console.log(row.id, row.Name)
+              : console.log(`No playlist found with the id ${id}`);
+
+          });
+          db.close();
         }
-        console.log("logged");
-        document.write(SELECT Name FROM db WHERE id = 0);
+        document.write(findBusinessName());
       </script>
     </h1>
     <label for="events">Event: </label>
@@ -49,6 +64,6 @@
   // } else {
   //   const sqlite3 = require("sqlite3").verbose();
   //   db = new sqlite3.Database(dbFile);
-  //   console.log("db success");
   // }
+
 </script>
