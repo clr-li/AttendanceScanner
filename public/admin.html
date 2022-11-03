@@ -12,9 +12,9 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   </head>
   <body>
-    <h1>
-      Admin Page <script>
-        fetch('/businessRow').then((res) => { res.json().then((o) => document.write(o.Name)) })
+    <h1 id="header">
+      Admin Page <script>document.getElementById("header").innerHTML += 
+        "fetch('/businessRow').then((res) => { res.json().then((o) => o.Name) })";
       </script>
     </h1>
     <label for="events">Event: </label>
@@ -27,16 +27,3 @@
     </button>
   </body>
 </html>
-
-<script>
-  // const dbFile = "./.data/AttendanceSoftware.sqbpro";
-  // const exists = fs.existsSync(dbFile);
-  // let db = null;
-  // if (!exists) {
-  //   console.log("no database file found :(");
-  // } else {
-  //   const sqlite3 = require("sqlite3").verbose();
-  //   db = new sqlite3.Database(dbFile);
-  // }
-
-</script>
