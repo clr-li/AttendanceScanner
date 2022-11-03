@@ -27,15 +27,15 @@
 </html>
 
 <script>
-  const dbFile = "./.data/AttendanceSoftware.db";
+  const dbFile = "./.data/AttendanceSoftware.sqbpro";
   const exists = fs.existsSync(dbFile);
   let db = null;
   if (!exists) {
     console.log("no database file found :(");
-  }
-  else {
+  } else {
     const sqlite3 = require("sqlite3").verbose();
     db = new sqlite3.Database(dbFile);
+    console.log("db success");ß
   }
   
   function getBusinessName() {
