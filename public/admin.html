@@ -13,7 +13,21 @@
   </head>
   <body>
     <h1>
-      Admin Page
+      Admin Page <script>
+        const fs = require('fs');
+        const dbFile = "./.data/AttendanceSoftware.sqbpro";
+        const exists = fs.existsSync(dbFile);
+        let db = null;
+        if (!exists) {
+          console.log("no database file found :(");
+        } else {
+          const sqlite3 = require("sqlite3").verbose();
+          db = new sqlite3.Database(dbFile);
+          console.log("db success");
+        }
+        console.log("logged");
+        document.write(SELECT Name FROM db WHERE id = 0);
+      </script>
     </h1>
     <label for="events">Event: </label>
     <select name="events">
@@ -27,18 +41,14 @@
 </html>
 
 <script>
-  const dbFile = "./.data/AttendanceSoftware.sqbpro";
-  const exists = fs.existsSync(dbFile);
-  let db = null;
-  if (!exists) {
-    console.log("no database file found :(");
-  } else {
-    const sqlite3 = require("sqlite3").verbose();
-    db = new sqlite3.Database(dbFile);
-    console.log("db success");ß
-  }
-  
-  function getBusinessName() {
-    return SELECT Name FROM db WHERE id = 0;
-  }
+  // const dbFile = "./.data/AttendanceSoftware.sqbpro";
+  // const exists = fs.existsSync(dbFile);
+  // let db = null;
+  // if (!exists) {
+  //   console.log("no database file found :(");
+  // } else {
+  //   const sqlite3 = require("sqlite3").verbose();
+  //   db = new sqlite3.Database(dbFile);
+  //   console.log("db success");
+  // }
 </script>
