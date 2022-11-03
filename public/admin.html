@@ -13,8 +13,9 @@
   </head>
   <body>
     <h1 id="header">
-      Admin Page <script>document.getElementById("header").innerHTML += 
-        "fetch('/businessRow').then((res) => { res.json().then((o) => o.Name) })";
+      Admin Page <script>
+      document.getElementById("header").innerHTML += 
+      fetch('/businessRow').then((res) => { res.json().then((o) => document.writeo.Name) });
       </script>
     </h1>
     <label for="events">Event: </label>
