@@ -33,7 +33,9 @@ app.get("/businessRow", (request, response) => {
 
   db.get(sql, id, (err, row) => {
     if (err) {
-      return console.error(err.message);
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
     }
     console.log(row);
     response.send(row);
@@ -49,13 +51,19 @@ app.get("/events", (request, response) => {
 
   db.get(sql, id, (err, table) => {
     if (err) {
-      return console.error(err.message);
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
     }
-    sql = `SELECT `
+    sql = `SELECT id, name FROM ${table.eventtable}`;
+    console.log(sql);
     db.get(sql, (err, events) => {
         if (err) {
-          return console.error(err.message);
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
         }
+        console.log(events)
         response.send(events);
     });
   });
