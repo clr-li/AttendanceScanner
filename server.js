@@ -40,19 +40,24 @@ app.get("/businessRow", (request, response) => {
   });
 });
 
-app.get("/eventsRow", (request, response) => {
+app.get("/events", (request, response) => {
   
   let sql = `SELECT eventtable
          FROM Businesses
          WHERE id = ?`;
   let id = 0;
 
-  db.get(sql, id, (err, row) => {
+  db.get(sql, id, (err, table) => {
     if (err) {
       return console.error(err.message);
     }
-    console.log(row);
-    response.send(row);
+    sql = `SELECT `
+    db.get(sql, (err, events) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        response.send(events);
+    });
   });
 });
 
