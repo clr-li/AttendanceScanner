@@ -13,17 +13,19 @@
   </head>
   <body>
     <h1 id="header">
-      Admin Page <br><script>
-      fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("header").innerHTML += o.Name) });
-      </script>
+      Admin Page 
     </h1>
+    <h2 id="businessname"></h2>
     <label for="events">Event: </label>
-    <select name="events">
-      <option id="events" value="event1"><script>fetch('/eventsRow').then((res) => { res.json().then((o) => document.getElementById("events").innerHTML += o.Name) });</script></option>
-    </select>
+    <select name="events"></select>
     <br>
     <button onclick="window.location = 'scanner.html'">
       Scanner
     </button>
+    
+    <script>
+      fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
+      fetch('/eventsRow').then((res) => { res.json().then((o) => document.getElementById("events").innerHTML = o.Name) });
+    </script>
   </body>
 </html>
