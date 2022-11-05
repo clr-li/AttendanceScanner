@@ -17,15 +17,21 @@
     </h1>
     <h2 id="businessname"></h2>
     <label for="events">Event: </label>
-    <select name="events"></select>
+    <select id="events" name="events"></select>
     <br>
-    <button onclick="window.location = 'scanner.html'">
+    <button onclick="window.open('scanner.html')">
       Scanner
     </button>
     
     <script>
       fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
-      fetch('/events').then((res) => { res.json().then((o) => document.getElementById("events").innerHTML = o.Name) });
+      fetch('/events').then((res) => res.json().then((o) => {
+        o.forEach(event => {
+          let option = document.createElement('option');
+          option.innerHTML = event.name;
+          document.getElementById('events').appendChild(option);
+        });
+      }));
     </script>
   </body>
 </html>

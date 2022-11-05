@@ -57,7 +57,7 @@ app.get("/events", (request, response) => {
     }
     sql = `SELECT id, name FROM ${table.eventtable}`;
     console.log(sql);
-    db.get(sql, (err, events) => {
+    db.all(sql, (err, events) => {
         if (err) {
           console.error(err.message);
           response.sendStatus(400);
