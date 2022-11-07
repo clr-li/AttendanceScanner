@@ -37,8 +37,8 @@
       document.getElementById('scan').onclick = () => {
         let id = -1;
         [...document.getElementsByClassName('event')].forEach((elem) => {
-          if (elem.checked) {
-            
+          if (elem.selected) {
+            id = elem.id;
           }
         });
         window.open(`scanner.html?eventid=${id}`)
