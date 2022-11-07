@@ -82,13 +82,13 @@ app.get("/makeRecord", (request, response) => {
       return;
     }
     let sql = `INSERT INTO ${table.eventtable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
-    db.run(sql, (err, events) => {
+    db.run(sql, (err) => {
         if (err) {
           console.error(err.message);
           response.sendStatus(400);
           return;
         }
-        response.send(events);
+        response.sendStatus(200);
     });
   });
 });
