@@ -28,7 +28,7 @@ app.get("/businessRow", (request, response) => {
   
   let sql = `SELECT Name
          FROM Businesses
-         WHERE id = ?`;
+         WHERE id = ?;`;
   let id = 0;
 
   db.get(sql, id, (err, row) => {
@@ -46,7 +46,7 @@ app.get("/events", (request, response) => {
   
   let sql = `SELECT eventtable
          FROM Businesses
-         WHERE id = ?`;
+         WHERE id = ?;`;
   let id = 0;
 
   db.get(sql, id, (err, table) => {
@@ -63,7 +63,31 @@ app.get("/events", (request, response) => {
           response.sendStatus(400);
           return;
         }
-        console.log(events)
+        response.send(events);
+    });
+  });
+});
+
+app.get("/makeRecord", (request, response) => {
+  let eventid = request.params.eventid;
+  let businessid = request.params.id;
+  let userid = request.params.userid;
+  let sql = `SELECT eventtable
+       FROM Businesses
+       WHERE id = ?;`;
+  db.get(sql, businessid, (err, table) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+    let sql = `INSERT INTO ${table.eventtable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
+    db.run(sql, (err, events) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
         response.send(events);
     });
   });
