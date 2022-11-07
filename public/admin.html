@@ -19,7 +19,7 @@
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
-    <button onclick="window.open('scanner.html')">
+    <button id="scan" onclick="window.open('scanner.html?=')">
       Scanner
     </button>
     
@@ -29,9 +29,20 @@
         o.forEach(event => {
           let option = document.createElement('option');
           option.innerHTML = event.name;
+          option.id = event.id;
+          option.classList.add('event')
           document.getElementById('events').appendChild(option);
         });
       }));
+      document.getElementById('scan').onclick = () => {
+        let id = -1;
+        [...document.getElementsByClassName('event')].forEach((elem) => {
+          if (elem.checked) {
+            
+          }
+        });
+        window.open(`scanner.html?eventid=${id}`)
+      };
     </script>
   </body>
 </html>
