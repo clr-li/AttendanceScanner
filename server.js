@@ -69,19 +69,20 @@ app.get("/events", (request, response) => {
 });
 
 app.get("/makeRecord", (request, response) => {
-  let eventid = request.params.eventid;
-  let businessid = request.params.id;
-  let userid = request.params.userid;
-  let sql = `SELECT eventtable
+  let eventid = request.query.eventid;
+  let businessid = request.query.id;
+  let userid = request.query.userid;
+  let sql = `SELECT AttendanceTable
        FROM Businesses
-       WHERE id = ?;`;
-  db.get(sql, businessid, (err, table) => {
+       WHERE id = ${businessid};`;
+  console.log(request.query)
+  db.get(sql, (err, table) => {
     if (err) {
       console.error(err.message);
       response.sendStatus(400);
       return;
     }
-    let sql = `INSERT INTO ${table.eventtable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
+    let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
     db.run(sql, (err) => {
         if (err) {
           console.error(err.message);
