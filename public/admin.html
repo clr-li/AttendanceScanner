@@ -21,7 +21,19 @@
     <br>
     <button id="scan" onclick="window.open('scanner.html?=')">
       Scanner
+    </button><br><br>
+<!--     after testing the form below I'll make it hidden unless you click this button  -->
+    <button> 
+      New Event
     </button>
+    <form action="admin.html" method="post">
+      <label for="name">Event Name: </label>
+      <input type="text" id="name" name="name">
+<!--       how are we gonna have businesses decide which users to allow? through checkboxes? that's a lot of checking if the event is really big -->
+      <label for="description">Description: </label>
+      <input type="text" id="description" name="description">
+      <input type="submit" value="Submit">
+    </form>
     
     <script>
       fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
