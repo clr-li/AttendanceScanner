@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Seattle Tutoring Partners</title>
+    <link rel="icon" type="image/png" href="/assets/logo.png"/>
+
+    <link rel = "stylesheet" type = "text/css" href = "/style.css">
+    <style>
+      button { font-size:1.4em; padding: 8px; min-width: 80%; border-radius: 10px; background-color: #c300ff; color: white; border-color: #5218bd; margin-top: 4px }
+    </style>
+    
+     <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.9.2/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/9.9.2/firebase-auth-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+  </head>
+  <body>
+    <main id="content">
+        <article id="article">
+          <h1 class="smaller"><img src="/assets/logo.png">eattle Tutoring Partners</h1>
+          <h2>Tutor Portal</h2>
+          <div style="text-align: center; width: 100%">
+            <form id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100%; width: 500px; display: inline-block;">
+              <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Email" name="email" id="email" required />
+                <label for="email" class="form__label">Email</label>
+              </div>
+              <div class="form__group field">
+                <input type="password" class="form__field" placeholder="Password" name="password" id="password" required />
+                <label for="password" class="form__label">Password</label>
+              </div>
+              <button type="submit" id="signIn">Sign In</button>
+              <button type="submit" id="resetPassword" style="background-color: crimson">Reset Password</button>
+              <button type="submit" id="signInWithGoogle" style="background-color: dodgerblue">Sign in with google</button>
+            </form><br><br>
+          </div>
+        </article>
+    </main>
+    
+    <script>
+      const form = document.getElementById("form"); function handleForm(event) { event.preventDefault(); }  form.addEventListener('submit', handleForm);
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+          ].filter(feature => typeof app[feature] === 'function');
+          console.log(`Firebase SDK loaded with ${features.join(', ')}`);
+          const auth = app.auth();
+          auth.useDeviceLanguage();
+          
+          const emailField = document.getElementById('email');
+          const passwordField = document.getElementById('password');
+          const signInWithMail = document.getElementById('signIn');
+
+          // Sign in with email and password ----------------------------------
+          const signInWithEmailFunction = () => {
+            const email = emailField.value;
+            const password = passwordField.value;
+
+            //Built in firebase function responsible for authentication
+            auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+              //Signed in successfully
+              console.log('You\'re successfully signed in !');
+              handleLogin(auth);
+            })
+            .catch(error => {
+              console.error(error);
+            })
+          }
+          signInWithMail.addEventListener('click', signInWithEmailFunction);
+          
+          // Reset password ----------------------------------------------------
+          const resetPassword = document.getElementById('resetPassword');
+          const resetPasswordFunction = () => {
+              const email = emailField.value;
+
+              //Built in Firebase function that sends password reset emails
+              auth.sendPasswordResetEmail(email)
+              .then(() => {
+                  console.log('Password Reset Email Sent Successfully!');
+              })
+              .catch(error => {
+                  console.error(error);
+              });
+          }
+          resetPassword.addEventListener('click', resetPasswordFunction);
+          
+          // Sign in with google ----------------------------------------------
+          const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
+          const signInWithGoogle = () => {
+            const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+            auth.signInWithPopup(googleProvider)
+            .then(() => {
+              console.log('You\'re now signed in !');
+              handleLogin(auth);
+            })
+            .catch(error => {
+              console.error(error);
+            });
+          }
+          signInWithGoogleBtn.addEventListener('click', signInWithGoogle);
+          
+        } catch (e) {
+          console.error(e);
+        }
+      });
+      
+      async function handleLogin(auth) {
+        console.log(auth.currentUser.uid);
+        fetch('https://b4xr04.deta.dev/tutor', {headers:{uid: auth.currentUser.uid, mode: "no-cors"}}).then(s => s.json().then(tutor => {
+          console.log(tutor);
+        }));
+      }
+    </script>
+  </body>
+</html>
