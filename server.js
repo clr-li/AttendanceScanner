@@ -94,6 +94,10 @@ app.get("/makeRecord", (request, response) => {
   });
 });
 
+app.get("/makeEvent", (request, response)) => {
+  let name
+}
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
