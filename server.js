@@ -95,7 +95,8 @@ app.get("/makeRecord", (request, response) => {
 });
 
 app.get("/makeEvent", (request, response)) => {
-  let name
+  let name = request.query.name;
+  let 
 }
 
 // listen for requests :)
