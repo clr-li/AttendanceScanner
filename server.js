@@ -94,10 +94,31 @@ app.get("/makeRecord", (request, response) => {
   });
 });
 
-app.get("/makeEvent", (request, response)) => {
+app.get("/makeEvent", (request, response) => {
   let name = request.query.name;
-  let 
-}
+  let description = request.query.description;
+  let startdate = request.query.startdate;
+  let starttime = request.query.starttime;
+  let enddate = request.query.enddate;
+  let endtime = request.query.endtime;
+  let sql=`SELECT eventtable FROM Businesses WHERE id = 0`;
+  db.get(sql, (err, table) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+    let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
+    db.run(sql, (err) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
+        response.sendStatus(200);
+    });
+  });
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, () => {
