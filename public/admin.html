@@ -26,16 +26,27 @@
     <button> 
       New Event
     </button>
-    <form action="admin.html" method="post">
+    <form action="admin.html" get="post">
       <label for="name">Event Name: </label>
-      <input type="text" id="name" name="name">
+      <input type="text" id="name" name="name"><br>
 <!--       how are we gonna have businesses decide which users to allow? through checkboxes? that's a lot of checking if the event is really big -->
       <label for="description">Description: </label>
-      <input type="text" id="description" name="description">
-      <input type="submit" value="Submit">
+      <input type="text" id="description" name="description"><br>
+      <label for="startdate">Start Date: </label>
+      <input type="date" id="startdate" name="startdate"><br>
+      <label for="starttime">Start Date: </label>
+      <input type="time" id="starttime" name="starttime"><br>
+      <label for="enddate">End Date: </label>
+      <input type="date" id="enddate" name="enddate"><br>
+      <label for="endtime">End Date: </label>
+      <input type="time" id="endtime" name="endtime"><br>
+      <input type="submit" value="Submit" id="submitevent">
     </form>
     
     <script>
+      document.getElementById('submitevent').onclick = () => {
+        
+      }
       fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
       fetch('/events').then((res) => res.json().then((o) => {
         o.forEach(event => {
