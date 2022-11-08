@@ -22,7 +22,20 @@ else {
 // db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
 
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static("public"));
+// app.use(express.static("public"));
+const { exec } = require("child_process"); // host static files in /public/ with firebase
+
+exec("firebase serve --token " + process.env.TOKEN, (error, stdout, stderr) => {
+    if (error) {
+        console.log(error.message);
+        return;
+    }
+    if (stderr) {
+        console.log(stderr);
+        return;
+    }
+    console.log(`Output: ${stdout}`);
+});
 
 app.get("/businessRow", (request, response) => {
   
