@@ -6,8 +6,7 @@ const fs = require("fs");
 // app.use(bodyParser.json());
 
 const https = require('https');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const { exec } = require("child_process"); 
+// const { exec } = require("child_process"); 
 
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";
@@ -24,126 +23,120 @@ else {
 // db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
 
 // http://expressjs.com/en/starter/static-files.html
-// app.use(express.static("public"));
+app.use(express.static("public"));
 
-// host static files in /public/ with firebase
-const firebaseport = parseInt(process.env.PORT);
-exec("firebase serve -o 0.0.0.0 --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
-    if (error) {
-        console.log(error.message);
-        return;
+// // host static files in /public/ with firebase
+// const firebaseport = parseInt(process.env.PORT) + 1;
+// exec("firebase serve -o 127.0.0.1 --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
+//     if (error) {
+//         console.log(error.message);
+//         return;
+//     }
+//     if (stderr) {
+//         console.log(stderr);
+//         return;
+//     }
+//     console.log(`Output: ${stdout}`);
+// });
+
+
+app.get("/businessRow", (request, response) => {
+  
+  let sql = `SELECT Name
+         FROM Businesses
+         WHERE id = ?;`;
+  let id = 0;
+
+  db.get(sql, id, (err, row) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
     }
-    if (stderr) {
-        console.log(stderr);
-        return;
-    }
-    console.log(`Output: ${stdout}`);
+    console.log(row);
+    response.send(row);
+  });
 });
 
-// var fireProxy = createProxyMiddleware('/', {
-//     target: `0.0.0.0:${firebaseport}`,
-// });
-
-// app.use('/', fireProxy);
-
-
-// app.get("/businessRow", (request, response) => {
+app.get("/events", (request, response) => {
   
-//   let sql = `SELECT Name
-//          FROM Businesses
-//          WHERE id = ?;`;
-//   let id = 0;
+  let sql = `SELECT eventtable
+         FROM Businesses
+         WHERE id = ?;`;
+  let id = 0;
 
-//   db.get(sql, id, (err, row) => {
-//     if (err) {
-//       console.error(err.message);
-//       response.sendStatus(400);
-//       return;
-//     }
-//     console.log(row);
-//     response.send(row);
-//   });
-// });
+  db.get(sql, id, (err, table) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+    sql = `SELECT id, name FROM ${table.eventtable}`;
+    console.log(sql);
+    db.all(sql, (err, events) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
+        response.send(events);
+    });
+  });
+});
 
-// app.get("/events", (request, response) => {
-  
-//   let sql = `SELECT eventtable
-//          FROM Businesses
-//          WHERE id = ?;`;
-//   let id = 0;
+app.get("/makeRecord", (request, response) => {
+  let eventid = request.query.eventid;
+  let businessid = request.query.id;
+  let userid = request.query.userid;
+  let sql = `SELECT AttendanceTable
+       FROM Businesses
+       WHERE id = ${businessid};`;
+  console.log(request.query)
+  db.get(sql, (err, table) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+    let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
+    db.run(sql, (err) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
+        response.sendStatus(200);
+    });
+  });
+});
 
-//   db.get(sql, id, (err, table) => {
-//     if (err) {
-//       console.error(err.message);
-//       response.sendStatus(400);
-//       return;
-//     }
-//     sql = `SELECT id, name FROM ${table.eventtable}`;
-//     console.log(sql);
-//     db.all(sql, (err, events) => {
-//         if (err) {
-//           console.error(err.message);
-//           response.sendStatus(400);
-//           return;
-//         }
-//         response.send(events);
-//     });
-//   });
-// });
-
-// app.get("/makeRecord", (request, response) => {
-//   let eventid = request.query.eventid;
-//   let businessid = request.query.id;
-//   let userid = request.query.userid;
-//   let sql = `SELECT AttendanceTable
-//        FROM Businesses
-//        WHERE id = ${businessid};`;
-//   console.log(request.query)
-//   db.get(sql, (err, table) => {
-//     if (err) {
-//       console.error(err.message);
-//       response.sendStatus(400);
-//       return;
-//     }
-//     let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
-//     db.run(sql, (err) => {
-//         if (err) {
-//           console.error(err.message);
-//           response.sendStatus(400);
-//           return;
-//         }
-//         response.sendStatus(200);
-//     });
-//   });
-// });
-
-// app.get("/makeEvent", (request, response) => {
-//   let name = request.query.name;
-//   let description = request.query.description;
-//   let startdate = request.query.startdate;
-//   let starttime = request.query.starttime;
-//   let enddate = request.query.enddate;
-//   let endtime = request.query.endtime;
-//   let sql=`SELECT eventtable FROM Businesses WHERE id = 0`;
-//   db.get(sql, (err, table) => {
-//     if (err) {
-//       console.error(err.message);
-//       response.sendStatus(400);
-//       return;
-//     }
-//     let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
-//     db.run(sql, (err) => {
-//         if (err) {
-//           console.error(err.message);
-//           response.sendStatus(400);
-//           return;
-//         }
-//         response.sendStatus(200);
-//     });
-//   });
-// });
+app.get("/makeEvent", (request, response) => {
+  let name = request.query.name;
+  let description = request.query.description;
+  let startdate = request.query.startdate;
+  let starttime = request.query.starttime;
+  let enddate = request.query.enddate;
+  let endtime = request.query.endtime;
+  let sql=`SELECT eventtable FROM Businesses WHERE id = 0`;
+  db.get(sql, (err, table) => {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+    let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
+    db.run(sql, (err) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
+        response.sendStatus(200);
+    });
+  });
+});
 
 // listen for requests :)
-// var listener = app.listen(process.env.PORT, () => {
-//   console.log(`Your app is listening on port ${listener.address().port}`);
-// });
+var listener = app.listen(process.env.PORT, () => {
+  console.log(`Your app is listening on port ${listener.address().port}`);
+});
