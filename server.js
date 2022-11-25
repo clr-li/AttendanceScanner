@@ -4,9 +4,10 @@ const app = express();
 const fs = require("fs");
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
-const proxy = require('express-http-proxy')
 
 const https = require('https');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const { exec } = require("child_process"); 
 
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";
@@ -25,8 +26,8 @@ else {
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-const { exec } = require("child_process"); // host static files in /public/ with firebase
-const firebaseport = 1988;
+// host static files in /public/ with firebase
+const firebaseport = parseInt(process.env.PORT) + 1;
 exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
     if (error) {
         console.log(error.message);
@@ -38,8 +39,25 @@ exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, 
     }
     console.log(`Output: ${stdout}`);
 });
+// restream parsed body before proxying
+var restream = function(proxyReq, req, res, options) {
+    if (req.body) {
+        let bodyData = JSON.stringify(req.body);
+        // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+        proxyReq.setHeader('Content-Type','application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        // stream the content
+        proxyReq.write(bodyData);
+    }
+}
 
-app.use('/firebase', proxy(process.env.DOMAIN_NAME))
+var fireProxy = createProxyMiddleware('/', {
+    target: `localhost:${firebaseport}`,
+    onProxyReq: restream
+});
+
+app.use('/fire', fireProxy);
+
 
 app.get("/businessRow", (request, response) => {
   
