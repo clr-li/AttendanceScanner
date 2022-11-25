@@ -23,9 +23,10 @@ else {
 
 // http://expressjs.com/en/starter/static-files.html
 // app.use(express.static("public"));
-const { exec } = require("child_process"); // host static files in /public/ with firebase
 
-exec("firebase serve --token " + process.env.TOKEN, (error, stdout, stderr) => {
+const { exec } = require("child_process"); // host static files in /public/ with firebase
+const firebaseport = process.env.PORT + 1;
+exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
     if (error) {
         console.log(error.message);
         return;
@@ -35,6 +36,11 @@ exec("firebase serve --token " + process.env.TOKEN, (error, stdout, stderr) => {
         return;
     }
     console.log(`Output: ${stdout}`);
+});
+
+app.get('*', function(req, res) { 
+  res.send(Object.keys(req))
+    // res.redirect('https:' + firebaseport + '//' + req.headers.host + req.url);
 });
 
 app.get("/businessRow", (request, response) => {
