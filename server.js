@@ -4,6 +4,7 @@ const app = express();
 const fs = require("fs");
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
+const proxy = require('express-http-proxy')
 
 const https = require('https');
 
@@ -37,6 +38,8 @@ exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, 
     }
     console.log(`Output: ${stdout}`);
 });
+
+app.use('/firebase', proxy(process.env.DOMAIN_NAME))
 
 app.get("/businessRow", (request, response) => {
   
