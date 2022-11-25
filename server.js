@@ -6,7 +6,8 @@ const fs = require("fs");
 // app.use(bodyParser.json());
 
 const https = require('https');
-// const { exec } = require("child_process"); 
+// const { createProxyMiddleware } = require('http-proxy-middleware');
+const { exec } = require("child_process"); 
 
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";
@@ -25,7 +26,7 @@ else {
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-// // host static files in /public/ with firebase
+// host static files in /public/ with firebase
 // const firebaseport = parseInt(process.env.PORT) + 1;
 // exec("firebase serve -o 127.0.0.1 --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
 //     if (error) {
@@ -38,6 +39,12 @@ app.use(express.static("public"));
 //     }
 //     console.log(`Output: ${stdout}`);
 // });
+
+// var fireProxy = createProxyMiddleware('/', {
+//     target: `127.0.0.1:${firebaseport}`,
+// });
+
+// app.use('/', fireProxy);
 
 
 app.get("/businessRow", (request, response) => {
