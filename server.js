@@ -25,7 +25,7 @@ else {
 // app.use(express.static("public"));
 
 const { exec } = require("child_process"); // host static files in /public/ with firebase
-const firebaseport = process.env.PORT + 1;
+const firebaseport = 1988;
 exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
     if (error) {
         console.log(error.message);
@@ -36,11 +36,6 @@ exec("firebase serve --token " + process.env.TOKEN + " --port=" + firebaseport, 
         return;
     }
     console.log(`Output: ${stdout}`);
-});
-
-app.get('*', function(req, res) { 
-  res.send(Object.keys(req))
-    // res.redirect('https:' + firebaseport + '//' + req.headers.host + req.url);
 });
 
 app.get("/businessRow", (request, response) => {
