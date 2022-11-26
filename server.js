@@ -1,8 +1,6 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
-// const cookieParser = require("cookie-parser")
-// app.use(cookieParser(process.env.SECRET))
 const cors = require('cors')
 let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
@@ -18,17 +16,16 @@ admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 
-async function getLoggedInUser(idToken) {
+async function getUID(idToken) {
   // idToken comes from the client app
-  let decodedToken = await admin.auth()
-    .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      const uid = decodedToken.uid;
-      return uid;
-    })
-    .catch((error) => {
-      return false;
-    });
+  try {
+    let decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+    return uid;    
+  } catch(error) {
+    console.error(error);
+    return false;
+  };
 }
 
 app.get("/isLoggedIn", (request, response) => {
@@ -36,9 +33,8 @@ app.get("/isLoggedIn", (request, response) => {
     response.sendStatus(400);
     return;
   }
-  getLoggedInUser(request.headers.idtoken).then(loggedInUser => {
-    response.status = loggedInUser ? 200 : 403;
-    response.send(loggedInUser);
+  getUID(request.headers.idtoken).then(uid => {
+    response.sendStatus = uid ? 200 : 403;
   });
 });
 

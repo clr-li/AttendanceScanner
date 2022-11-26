@@ -72,9 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function handleLogin(auth) {
-  console.log(auth.currentUser.uid);
+  // console.log(auth.currentUser.uid);
   auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-    console.log(idToken);
     setCookie("idtoken", idToken, 1);
     GET('/isLoggedIn').then(res => console.log(res));
   }).catch(function(error) {
