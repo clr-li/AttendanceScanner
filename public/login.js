@@ -75,8 +75,7 @@ async function handleLogin(auth) {
   console.log(auth.currentUser.uid);
   auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
     console.log(idToken);
-    setCookie("idToken", idToken, 1);
-    fetch('https://scanner2022.glitch.me/isLoggedIn', {headers:{mode: "no-cors"}}).then(res => console.log(res));
+    fetch('https://scanner2022.glitch.me/isLoggedIn', {headers:{idToken: idToken}}).then(res => console.log(res));
   }).catch(function(error) {
     console.error(error);
   });

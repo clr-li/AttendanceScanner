@@ -20,5 +20,3 @@ export function getCookie(cname) {
   }
   return "";
 }
-
-export async function GET(path, queryparams, options)

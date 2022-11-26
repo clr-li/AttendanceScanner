@@ -32,8 +32,20 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
-  console.log(request.cookies)
-  let loggedInUser = getLoggedInUser(request.cookies.idToken);
+  if (request.cookies.idToken) {
+    let idToken = request.cookies.idToken;
+  } else if (request.headers.idToken) {
+    response.cookie("secureCookie", request.headers.idToken, {
+      secure: true,
+      httpOnly: true,
+      expires: 3600000,
+    });
+    let idToken = request.headers.idToken;
+  } else {
+          response.sendStatus(400);
+      return
+  }
+  let loggedInUser = getLoggedInUser(idToken);
   response.status = loggedInUser ? 200 : 403;
   response.send(loggedInUser);
 });
