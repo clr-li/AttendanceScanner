@@ -75,7 +75,7 @@ async function handleLogin(auth) {
   // console.log(auth.currentUser.uid);
   auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
     setCookie("idtoken", idToken, 1);
-    GET('/isLoggedIn').then(res => console.log(res));
+    GET('/isLoggedIn').then(res => console.log(res.status == 200 ? "Server Approved" : "Server Did Not Approve"));
   }).catch(function(error) {
     console.error(error);
   });

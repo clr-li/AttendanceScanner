@@ -34,6 +34,7 @@ app.get("/isLoggedIn", (request, response) => {
     return;
   }
   getUID(request.headers.idtoken).then(uid => {
+    console.log('logged in: ' + uid);
     response.sendStatus = uid ? 200 : 403;
   });
 });
