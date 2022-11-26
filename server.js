@@ -1,9 +1,11 @@
 const express = require("express");
-// const bodyParser = require("body-parser");
 const app = express();
 const fs = require("fs");
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
+const cors = require('cors')
+let corsOptions = {
+   origin : ['https://attendancescannerqr.web.app/'],
+}
+app.use(cors())
 
 const https = require('https');
 // const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -20,7 +22,7 @@ admin.initializeApp({
 
 function getCookies(request) {
   let cookies = {};
-  const cookiesArray = request.headers.cookie.split(';');
+  const cookiesArray = (request.headers.cookie || "").split(';');
   cookiesArray.forEach((cookie) => {
       const [key, value] = cookie.trim().split('=');
       cookies[key] = value;
@@ -42,7 +44,9 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
-  response.send(getLoggedInUser(getCookies(request)['idToken']));
+  let loggedInUser = getLoggedInUser(getCookies(request)['idToken']);
+  response.status = loggedInUser ? 200 : 403;
+  response.send(loggedInUser);
 });
 
 // init sqlite db
