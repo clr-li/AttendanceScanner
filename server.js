@@ -12,11 +12,21 @@ const { exec } = require("child_process");
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require(process.env.ADMINKEY);
+var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+
+function getCookies(request) {
+  let cookies = {};
+  const cookiesArray = request.headers.cookie.split(';');
+  cookiesArray.forEach((cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      cookies[key] = value;
+  });
+  return cookies;
+}
 
 async function getLoggedInUser(idToken) {
   // idToken comes from the client app
@@ -32,7 +42,7 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
-  
+  response.send(getLoggedInUser(getCookies(request)['idToken']));
 });
 
 // init sqlite db
