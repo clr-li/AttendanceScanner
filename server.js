@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
+const cookieParser = require("cookie-parser")
+app.use(cookieParser())
 const cors = require('cors')
 let corsOptions = {
    origin : ['https://attendancescannerqr.web.app/'],
@@ -8,31 +10,18 @@ let corsOptions = {
 app.use(cors())
 
 const https = require('https');
-// const { createProxyMiddleware } = require('http-proxy-middleware');
 const { exec } = require("child_process"); 
 
 
 var admin = require("firebase-admin");
 
-// var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
 admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 
-function getCookies(request) {
-  let cookies = {};
-  const cookiesArray = (request.headers.cookie || "").split(';');
-  cookiesArray.forEach((cookie) => {
-      const [key, value] = cookie.trim().split('=');
-      cookies[key] = value;
-  });
-  return cookies;
-}
-
 async function getLoggedInUser(idToken) {
   // idToken comes from the client app
-  admin.getAuth()
+  admin.auth()
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken.uid;
@@ -44,7 +33,7 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
-  let loggedInUser = getLoggedInUser(getCookies(request)['idToken']);
+  let loggedInUser = getLoggedInUser(request.cookies.idToken);
   response.status = loggedInUser ? 200 : 403;
   response.send(loggedInUser);
 });
