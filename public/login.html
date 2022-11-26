@@ -110,10 +110,7 @@
       });
       
       async function handleLogin(auth) {
-        console.log(auth.currentUser.uid);
-        fetch('https://b4xr04.deta.dev/tutor', {headers:{uid: auth.currentUser.uid, mode: "no-cors"}}).then(s => s.json().then(tutor => {
-          console.log(tutor);
-        }));
+        console.log(auth, auth.currentUser.uid);
       }
     </script>
   </body>

@@ -9,6 +9,16 @@ const https = require('https');
 // const { createProxyMiddleware } = require('http-proxy-middleware');
 const { exec } = require("child_process"); 
 
+
+var admin = require("firebase-admin");
+
+var serviceAccount = require("path/to/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";
 const exists = fs.existsSync(dbFile);
