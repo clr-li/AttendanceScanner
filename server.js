@@ -12,10 +12,10 @@ const { exec } = require("child_process");
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+// var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 
 function getCookies(request) {
