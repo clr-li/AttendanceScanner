@@ -12,12 +12,28 @@ const { exec } = require("child_process");
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("path/to/serviceAccountKey.json");
+var serviceAccount = require(process.env.ADMINKEY);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
+async function getLoggedInUser(idToken) {
+  // idToken comes from the client app
+  admin.getAuth()
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+      const uid = decodedToken.uid;
+      return uid;
+    })
+    .catch((error) => {
+      return false;
+    });
+}
+
+app.get("/isLoggedIn", (request, response) => {
+  
+});
 
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";

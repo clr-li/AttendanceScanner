@@ -38,6 +38,8 @@
     </div>
     
     <script>
+      
+      
       const form = document.getElementById("form"); function handleForm(event) { event.preventDefault(); }  form.addEventListener('submit', handleForm);
       
       document.addEventListener('DOMContentLoaded', function() {
@@ -110,7 +112,13 @@
       });
       
       async function handleLogin(auth) {
-        console.log(auth, auth.currentUser.uid);
+        console.log(auth.currentUser.uid);
+        auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+          console.log(idToken);
+          
+        }).catch(function(error) {
+          console.error(error);
+        });
       }
     </script>
   </body>
