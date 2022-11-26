@@ -5,9 +5,10 @@ const cookieParser = require("cookie-parser")
 app.use(cookieParser())
 const cors = require('cors')
 let corsOptions = {
-   origin : ['https://attendancescannerqr.web.app/'],
+  credentials: true, 
+  origin: 'https://attendancescannerqr.web.app'
 }
-app.use(cors())
+app.use(cors(corsOptions))
 
 const https = require('https');
 const { exec } = require("child_process"); 
@@ -33,6 +34,7 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
+  console.log(request.cookies)
   let loggedInUser = getLoggedInUser(request.cookies.idToken);
   response.status = loggedInUser ? 200 : 403;
   response.send(loggedInUser);
@@ -54,27 +56,6 @@ else {
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
-
-// host static files in /public/ with firebase
-// const firebaseport = parseInt(process.env.PORT) + 1;
-// exec("firebase serve -o 127.0.0.1 --token " + process.env.TOKEN + " --port=" + firebaseport, (error, stdout, stderr) => {
-//     if (error) {
-//         console.log(error.message);
-//         return;
-//     }
-//     if (stderr) {
-//         console.log(stderr);
-//         return;
-//     }
-//     console.log(`Output: ${stdout}`);
-// });
-
-// var fireProxy = createProxyMiddleware('/', {
-//     target: `127.0.0.1:${firebaseport}`,
-// });
-
-// app.use('/', fireProxy);
-
 
 app.get("/businessRow", (request, response) => {
   
