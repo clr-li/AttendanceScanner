@@ -73,6 +73,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleLogin(auth) {
   // console.log(auth.currentUser.uid);
+  document.getElementById('loader').style.display = "none";
+  let isLoggedIn = await login(auth);
+  if (isLoggedIn) {
+    
+  } else {
+    
+  }
+}
+
+async function login(auth) {
   try {
     let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
     setCookie("idtoken", idToken, 1);
@@ -85,3 +95,16 @@ async function handleLogin(auth) {
     return false;
   }
 }
+
+function redirect() {
+  const urlParams = new URLSearchParams(location.search);
+  location.replace(urlParams.get('redirect'));
+}
+
+GET('/isLoggedIn').then(res => {
+  if (res.status == 200) {
+    redirect();
+  } else {
+    document.getElementById('loader').style.display = "none";
+  }
+});
