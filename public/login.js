@@ -81,6 +81,7 @@ async function handleLogin(auth) {
     return res.status;
   } catch (error) {
     console.error(error);
+    alert("Login failed. Try again later.");
     return false;
   }
 }

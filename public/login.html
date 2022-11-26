@@ -20,9 +20,9 @@
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
   </head>
-  <body>
+  <body style="background-color: rgba(0,0,0,0.3);">
     <div style="position: absolute; margin: auto; width: fit-content; height: fit-content; top: 0; bottom: 0; right: 0; left: 0">
-      <form id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100%; width: 500px; display: inline-block; text-align: center">
+      <form id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100vw; width: 500px; display: inline-block; text-align: center">
         <div class="form__group field">
           <input type="input" class="form__field" placeholder="Email" name="email" id="email" required />
           <label for="email" class="form__label">Email</label>
@@ -37,7 +37,7 @@
       </form><br><br>
     </div>
     
-    <div style="position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; ">
+    <div id="loader" style="position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">
         <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
   
