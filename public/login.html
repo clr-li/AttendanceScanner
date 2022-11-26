@@ -3,13 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Seattle Tutoring Partners</title>
-    <link rel="icon" type="image/png" href="/assets/logo.png"/>
+    <title>Login</title>
 
-    <link rel = "stylesheet" type = "text/css" href = "/style.css">
-    <style>
-      button { font-size:1.4em; padding: 8px; min-width: 80%; border-radius: 10px; background-color: #c300ff; color: white; border-color: #5218bd; margin-top: 4px }
-    </style>
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     
      <!-- update the version number as needed -->
     <script defer src="/__/firebase/9.9.2/firebase-app-compat.js"></script>
@@ -23,10 +21,6 @@
 
   </head>
   <body>
-    <main id="content">
-        <article id="article">
-          <h1 class="smaller"><img src="/assets/logo.png">eattle Tutoring Partners</h1>
-          <h2>Tutor Portal</h2>
           <div style="text-align: center; width: 100%">
             <form id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100%; width: 500px; display: inline-block;">
               <div class="form__group field">
@@ -42,8 +36,6 @@
               <button type="submit" id="signInWithGoogle" style="background-color: dodgerblue">Sign in with google</button>
             </form><br><br>
           </div>
-        </article>
-    </main>
     
     <script>
       const form = document.getElementById("form"); function handleForm(event) { event.preventDefault(); }  form.addEventListener('submit', handleForm);

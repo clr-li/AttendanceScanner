@@ -7,3 +7,14 @@
   box-sizing: border-box;
   font-family: var(--font-family);
 }
+
+button { 
+  font-size:1.4em; 
+  padding: 8px; 
+  min-width: 80%; 
+  border-radius: 10px; 
+  background-color: #c300ff; 
+  color: white; 
+  border-color: #5218bd; 
+  margin-top: 4px 
+}
