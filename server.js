@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser")
 app.use(cookieParser())
 const cors = require('cors')
 let corsOptions = {
-  credentials: true, 
   origin: 'https://attendancescannerqr.web.app'
 }
 app.use(cors(corsOptions))
@@ -15,7 +14,6 @@ const { exec } = require("child_process");
 
 
 var admin = require("firebase-admin");
-
 admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
