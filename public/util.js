@@ -20,3 +20,7 @@ export function getCookie(cname) {
   }
   return "";
 }
+
+export async function GET(url) {
+  return await fetch('https://scanner2022.glitch.me' + url, {headers:{idtoken: getCookie('idtoken')}});
+}

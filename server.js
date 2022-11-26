@@ -20,7 +20,7 @@ admin.initializeApp({
 
 async function getLoggedInUser(idToken) {
   // idToken comes from the client app
-  admin.auth()
+  let decodedToken = await admin.auth()
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken.uid;
@@ -36,9 +36,10 @@ app.get("/isLoggedIn", (request, response) => {
     response.sendStatus(400);
     return;
   }
-  getLoggedInUser(request.headers.idtoken).then(loggedInUser)
-  response.status = loggedInUser ? 200 : 403;
-  response.send(loggedInUser);
+  getLoggedInUser(request.headers.idtoken).then(loggedInUser => {
+    response.status = loggedInUser ? 200 : 403;
+    response.send(loggedInUser);
+  });
 });
 
 // init sqlite db

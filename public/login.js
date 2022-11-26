@@ -1,4 +1,4 @@
-import {getCookie, setCookie} from './util.js';
+import {GET, setCookie} from './util.js';
 
 const form = document.getElementById("form"); function handleForm(event) { event.preventDefault(); }  form.addEventListener('submit', handleForm);
 
@@ -75,7 +75,8 @@ async function handleLogin(auth) {
   console.log(auth.currentUser.uid);
   auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
     console.log(idToken);
-    fetch('https://scanner2022.glitch.me/isLoggedIn', {headers:{idtoken: idToken}, credentials:'include'}).then(res => console.log(res));
+    setCookie("idtoken", idToken, 1);
+    GET('/isLoggedIn').then(res => console.log(res));
   }).catch(function(error) {
     console.error(error);
   });
