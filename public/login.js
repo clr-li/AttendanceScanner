@@ -73,10 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleLogin(auth) {
   // console.log(auth.currentUser.uid);
-  auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+  try {
+    let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
     setCookie("idtoken", idToken, 1);
-    GET('/isLoggedIn').then(res => console.log(res.status == 200 ? "Server Approved" : "Server Did Not Approve"));
-  }).catch(function(error) {
+    let res = await GET('/isLoggedIn');
+    console.log(res.status == 200 ? "Server Approved" : "Server Did Not Approve"));
+  } catch(function(error) {
     console.error(error);
   });
 }
