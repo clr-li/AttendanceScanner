@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const cookieParser = require("cookie-parser")
-app.use(cookieParser())
+app.use(cookieParser(process.env.SECRET))
 const cors = require('cors')
 let corsOptions = {
   origin: 'https://attendancescannerqr.web.app'
@@ -32,20 +32,24 @@ async function getLoggedInUser(idToken) {
 }
 
 app.get("/isLoggedIn", (request, response) => {
-  console.log(request.cookies.idToken)
+  let idToken;
   if (request.cookies.idtoken) {
-    let idToken = request.cookies.idtoken;
+    console.log('cookie:' + request.cookies.idtoken);
+    idToken = request.cookies.idtoken;
   } else if (request.headers.idtoken) {
+    console.log('header:' + request.headers.idtoken);
     response.cookie("idToken", request.headers.idtoken, {
       secure: true,
       httpOnly: true,
-      expires: 3600000,
+      expire: 3600000 + Date.now(),
+      signed: true
     });
-    let idToken = request.headers.idtoken;
+    idToken = request.headers.idtoken;
   } else {
     response.sendStatus(400);
     return
   }
+  console.log(idToken);
   let loggedInUser = getLoggedInUser(idToken);
   response.status = loggedInUser ? 200 : 403;
   response.send(loggedInUser);
