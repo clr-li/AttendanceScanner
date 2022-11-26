@@ -73,12 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleLogin(auth) {
   // console.log(auth.currentUser.uid);
-  document.getElementById('loader').style.display = "none";
+  document.getElementById('loader').style.display = "block";
   let isLoggedIn = await login(auth);
   if (isLoggedIn) {
-    
+    redirect();
   } else {
-    
+    alert('Wrong password or username. Try again.');
+    document.getElementById('loader').style.display = "none";
   }
 }
 
