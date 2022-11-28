@@ -91,7 +91,7 @@ app.get("/events", (request, response) => {
       response.sendStatus(400);
       return;
     }
-    sql = `SELECT id, name FROM ${table.eventtable}`;
+    sql = `SELECT uid, name FROM ${table.eventtable}`;
     console.log(sql);
     db.all(sql, (err, events) => {
         if (err) {
@@ -106,27 +106,33 @@ app.get("/events", (request, response) => {
 });
 
 app.get("/makeRecord", (request, response) => {
-  let eventid = request.query.eventid;
-  let businessid = request.query.id;
-  let userid = request.query.userid;
-  let sql = `SELECT AttendanceTable
-       FROM Businesses
-       WHERE id = ${businessid};`;
-  console.log(request.query)
-  db.get(sql, (err, table) => {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-    let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
-    db.run(sql, (err) => {
-        if (err) {
-          console.error(err.message);
-          response.sendStatus(400);
-          return;
-        }
-        response.sendStatus(200);
+  getUID(request.headers.idtoken).then(uid => {
+    console.log('logged in: ' + uid);
+    response.status = uid ? 200 : 403;
+    response.send(uid);
+    
+    let eventid = request.query.eventid;
+    let businessid = request.query.id;
+    let userid = request.query.userid;
+    let sql = `SELECT AttendanceTable
+         FROM Businesses
+         WHERE id = ${businessid};`;
+    console.log(request.query)
+    db.get(sql, (err, table) => {
+      if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+      }
+      let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
+      db.run(sql, (err) => {
+          if (err) {
+            console.error(err.message);
+            response.sendStatus(400);
+            return;
+          }
+          response.sendStatus(200);
+      });
     });
   });
 });
