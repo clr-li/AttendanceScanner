@@ -29,17 +29,24 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     signInWithGoogleBtn.addEventListener('click', signInWithGoogle);
+    GET('/isLoggedIn').then(res => {
+      if (res.status == 200) {
+        redirect();
+      } else {
+        signInWithGoogle();
+        document.getElementById('loader').style.display = "none";
+      }
     });
   } catch (e) {
     console.error(e);
   }
   GET('/isLoggedIn').then(res => {
-  if (res.status == 200) {
-    redirect();
-  } else {
-    signInWithGoogle();
-    document.getElementById('loader').style.display = "none";
-  }
+    if (res.status == 200) {
+      redirect();
+    } else {
+      document.getElementById('loader').style.display = "none";
+    }
+  });
 });
 
 async function handleLogin(auth) {

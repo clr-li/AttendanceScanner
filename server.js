@@ -121,7 +121,7 @@ app.get("/makeRecord", (request, response) => {
     let userid = request.query.userid;
     let sql = `SELECT AttendanceTable
          FROM Businesses
-         WHERE id = ${businessid};`;
+         WHERE id = 0`;
     console.log(request.query)
     db.get(sql, (err, table) => {
       if (err) {
@@ -156,7 +156,7 @@ app.get("/makeEvent", (request, response) => {
     let enddate = request.query.enddate;
     let endtime = request.query.endtime;
     let sql=`SELECT eventtable FROM Businesses WHERE id = ?`;
-    let id = uid;
+    let id = 0;
     db.get(sql, (err, table) => {
       if (err) {
         console.error(err.message);
