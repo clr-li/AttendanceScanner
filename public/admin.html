@@ -49,9 +49,9 @@
         starttime = document.getElementById('starttime').value;
         enddate = document.getElementById('enddate').value;
         endtime = document.getElementById('endtime').value;>        
-        fetch`/makeEvent?=name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}` .then((res) => { console.log(res.status) });()    }
-      fetch('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
-      fetch('/events').then((res) => res.json().then((o) => {
+        GET(`/makeEvent?=name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}` .then((res) => { console.log(res.status) });()    }
+      GET('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
+      GET('/events').then((res) => res.json().then((o) => {
         o.forEach(event => {
           let option = document.createElement('option');
           option.innerHTML = event.name;

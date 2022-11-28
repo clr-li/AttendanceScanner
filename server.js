@@ -58,50 +58,55 @@ else {
 app.use(express.static("public"));
 
 app.get("/businessRow", (request, response) => {
-  
-  let sql = `SELECT Name
-         FROM Businesses
-         WHERE id = ?;`;
-  let id = 0;
+  getUID(request.headers.idtoken).then(uid => {
+    console.log('logged in: ' + uid);
+    response.status = uid ? 200 : 403;
+    response.send(uid);
 
-  db.get(sql, id, (err, row) => {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-    console.log(row);
-    response.send(row);
+    let sql = `SELECT Name
+       FROM Businesses
+       WHERE id = ?;`;
+    let id = uid;
+
+    db.get(sql, id, (err, row) => {
+      if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+      }
+      console.log(row);
+      response.send(row);
+    });
   });
 });
 
 app.get("/events", (request, response) => {
-  
-  let sql = `SELECT eventtable
-         FROM Businesses
-         WHERE id = ?;`;
   getUID(request.headers.idtoken).then(uid => {
     console.log('logged in: ' + uid);
     response.status = uid ? 200 : 403;
     response.send(uid);
     
+    let sql = `SELECT eventtable
+       FROM Businesses
+       WHERE id = ?;`;
+    let id = uid;
     db.get(sql, (err, table) => {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-    sql = `SELECT uid, name FROM ${table.eventtable}`;
-    console.log(sql);
-    db.all(sql, (err, events) => {
-        if (err) {
-          console.error(err.message);
-          response.sendStatus(400);
-          return;
-        }
-        response.send(events);
+      if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+      }
+      sql = `SELECT id, name FROM ${table.eventtable}`;
+      console.log(sql);
+      db.all(sql, (err, events) => {
+          if (err) {
+            console.error(err.message);
+            response.sendStatus(400);
+            return;
+          }
+          response.send(events);
+      });
     });
-  });
   });
 });
 
@@ -138,27 +143,35 @@ app.get("/makeRecord", (request, response) => {
 });
 
 app.get("/makeEvent", (request, response) => {
-  let name = request.query.name;
-  let description = request.query.description;
-  let startdate = request.query.startdate;
-  let starttime = request.query.starttime;
-  let enddate = request.query.enddate;
-  let endtime = request.query.endtime;
-  let sql=`SELECT eventtable FROM Businesses WHERE id = 0`;
-  db.get(sql, (err, table) => {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-    let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
-    db.run(sql, (err) => {
-        if (err) {
-          console.error(err.message);
-          response.sendStatus(400);
-          return;
-        }
-        response.sendStatus(200);
+  
+  getUID(request.headers.idtoken).then(uid => {
+    console.log('logged in: ' + uid);
+    response.status = uid ? 200 : 403;
+    response.send(uid);
+    
+    let name = request.query.name;
+    let description = request.query.description;
+    let startdate = request.query.startdate;
+    let starttime = request.query.starttime;
+    let enddate = request.query.enddate;
+    let endtime = request.query.endtime;
+    let sql=`SELECT eventtable FROM Businesses WHERE id = ?`;
+    let id = uid;
+    db.get(sql, (err, table) => {
+      if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+      }
+      let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
+      db.run(sql, (err) => {
+          if (err) {
+            console.error(err.message);
+            response.sendStatus(400);
+            return;
+          }
+          response.sendStatus(200);
+      });
     });
   });
 });
@@ -167,3 +180,12 @@ app.get("/makeEvent", (request, response) => {
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
+
+// How to add idToken to glitch preview:
+// from firebase url:
+//   - login
+//   - run `import('./util.js').then(m => util = m);`
+//   - run `util.getCookie('idtoken')`
+//   - copy result string
+// in glitch preview
+//   - run `util.setCookie('idtoken', [PASTE RESULT STRING HERE], 1)`

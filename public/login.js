@@ -12,43 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const auth = app.auth();
     auth.useDeviceLanguage();
 
-    const emailField = document.getElementById('email');
-    const passwordField = document.getElementById('password');
     const signInWithMail = document.getElementById('signIn');
-
-    // Sign in with email and password ----------------------------------
-    const signInWithEmailFunction = () => {
-      const email = emailField.value;
-      const password = passwordField.value;
-
-      //Built in firebase function responsible for authentication
-      auth.signInWithEmailAndPassword(email, password)
-      .then(() => {
-        //Signed in successfully
-        console.log('You\'re successfully signed in !');
-        handleLogin(auth);
-      })
-      .catch(error => {
-        console.error(error);
-      })
-    }
-    signInWithMail.addEventListener('click', signInWithEmailFunction);
-
-    // Reset password ----------------------------------------------------
-    const resetPassword = document.getElementById('resetPassword');
-    const resetPasswordFunction = () => {
-        const email = emailField.value;
-
-        //Built in Firebase function that sends password reset emails
-        auth.sendPasswordResetEmail(email)
-        .then(() => {
-            console.log('Password Reset Email Sent Successfully!');
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    }
-    resetPassword.addEventListener('click', resetPasswordFunction);
 
     // Sign in with google ----------------------------------------------
     const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
@@ -65,9 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     signInWithGoogleBtn.addEventListener('click', signInWithGoogle);
-
+    });
   } catch (e) {
     console.error(e);
+  }
+  GET('/isLoggedIn').then(res => {
+  if (res.status == 200) {
+    redirect();
+  } else {
+    signInWithGoogle();
+    document.getElementById('loader').style.display = "none";
   }
 });
 
@@ -101,11 +72,3 @@ function redirect() {
   const urlParams = new URLSearchParams(location.search);
   location.replace(urlParams.get('redirect'));
 }
-
-GET('/isLoggedIn').then(res => {
-  if (res.status == 200) {
-    redirect();
-  } else {
-    document.getElementById('loader').style.display = "none";
-  }
-});
