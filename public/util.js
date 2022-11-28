@@ -24,3 +24,15 @@ export function getCookie(cname) {
 export async function GET(url) {
   return await fetch('https://scanner2022.glitch.me' + url, {headers:{idtoken: getCookie('idtoken')}});
 }
+
+export async function POST(url, data) {
+  return await fetch('https://scanner2022.glitch.me' + url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      idtoken: getCookie('idtoken')
+    },
+    body: JSON.stringify(data)
+  });
+}

@@ -80,9 +80,12 @@ app.get("/events", (request, response) => {
   let sql = `SELECT eventtable
          FROM Businesses
          WHERE id = ?;`;
-  let id = 0;
-
-  db.get(sql, id, (err, table) => {
+  getUID(request.headers.idtoken).then(uid => {
+    console.log('logged in: ' + uid);
+    response.status = uid ? 200 : 403;
+    response.send(uid);
+    
+    db.get(sql, (err, table) => {
     if (err) {
       console.error(err.message);
       response.sendStatus(400);
@@ -98,6 +101,7 @@ app.get("/events", (request, response) => {
         }
         response.send(events);
     });
+  });
   });
 });
 
