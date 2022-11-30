@@ -6,7 +6,6 @@ let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
 }
 app.use(cors(corsOptions))
-const util = require('util')
 
 const https = require('https');
 const { exec } = require("child_process"); 
@@ -52,9 +51,6 @@ else {
   const sqlite3 = require('sqlite3').verbose();
   db = new sqlite3.Database(dbFile);
 }
-const get = util.promisify(db.get);
-const all = util.promisify(db.all);
-const run = util.promisify(db.run);
 
 // db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
 
@@ -85,29 +81,38 @@ app.get("/businessRow", (request, response) => {
 });
 
 app.get("/events", async (request, response) => {
-  try {
-    let uid = await getUID(request.headers.idtoken);
-    
-    let id = await get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+  let uid = await getUID(request.headers.idtoken);
+
+  db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`,(id, err) => {
+    if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+    }
     console.log(Object.keys(id));
     let sql = `SELECT eventtable
        FROM Businesses
        WHERE id = ${id.BusinessIDs}`;
-    let table = await get(sql);
-    console.log(table);
-    sql = `SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`;
-    console.log(sql);
-    let events = await all(sql);
-    response.status = 200;
-    response.send(events);
-  } catch (err) {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-  }
-
+    db.get(sql, (table,err) => {
+      if (err) {
+        console.error(err.message);
+        response.sendStatus(400);
+        return;
+      }
+      console.log(table);
+      sql = `SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`;
+      console.log(sql);
+      db.all(sql, (events, err) => {
+        if (err) {
+          console.error(err.message);
+          response.sendStatus(400);
+          return;
+        }
+        response.status = 200;
+        response.send(events);      
+      });
+    });
+  });
 });
 
 app.get("/makeRecord", (request, response) => {
@@ -143,29 +148,26 @@ app.get("/makeRecord", (request, response) => {
 });
 
 app.get("/makeEvent", async function(request, response) {
-  console.log("logged");
-  try {
-    let uid = await getUID(request.headers.idtoken);
+  let uid = await getUID(request.headers.idtoken);
 
-    let name = request.query.name;
-    let description = request.query.description;
-    let startdate = request.query.startdate;
-    let starttime = request.query.starttime;
-    let enddate = request.query.enddate;
-    let endtime = request.query.endtime;
-    let id = await get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
-    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`;
-    let table = await get(sql);
-    sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
-    await db.run(sql);
-    response.sendStatus(200);
-  } catch (err) {
+  let name = request.query.name;
+  let description = request.query.description;
+  let startdate = request.query.startdate;
+  let starttime = request.query.starttime;
+  let enddate = request.query.enddate;
+  let endtime = request.query.endtime;
+  db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`, (id, err) => {
     if (err) {
       console.error(err.message);
       response.sendStatus(400);
       return;
     }
-  }
+    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`;
+    db.get(sql).then
+    sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
+    await run(sql);
+    response.sendStatus(200);
+  });
 });
 
 // listen for requests :)
