@@ -142,38 +142,30 @@ app.get("/makeRecord", (request, response) => {
   });
 });
 
-app.get("/makeEvent", (request, response) => {
-  
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
-    
+app.get("/makeEvent", async function(request, response) {
+  console.log("logged");
+  try {
+    let uid = await getUID(request.headers.idtoken);
+
     let name = request.query.name;
     let description = request.query.description;
     let startdate = request.query.startdate;
     let starttime = request.query.starttime;
     let enddate = request.query.enddate;
     let endtime = request.query.endtime;
-    let sql=`SELECT eventtable FROM Businesses WHERE id = ?`;
-    let id = 0;
-    db.get(sql, (err, table) => {
-      if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
-      }
-      let sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
-      db.run(sql, (err) => {
-          if (err) {
-            console.error(err.message);
-            response.sendStatus(400);
-            return;
-          }
-          response.sendStatus(200);
-      });
-    });
-  });
+    let id = await db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
+    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id}`;
+    let table = await db.get(sql);
+    sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
+    await db.run(sql);
+    response.sendStatus(200);
+  } catch (err) {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+  }
 });
 
 // listen for requests :)
