@@ -53,16 +53,16 @@ else {
 }
 const asyncGet = (sql) => {
   return new Promise((resolve, reject) => {
-    db.get(sql, (result, err) => {
-      if (err) return reject(err);
+    db.get(sql, (err, result) => {
+      if (err) reject(err);
       else resolve(result);
     });
   });
 };
 const asyncAll = (sql) => {
   return new Promise((resolve, reject) => {
-    db.all(sql, (result, err) => {
-      if (err) return reject(err);
+    db.all(sql, (err, result) => {
+      if (err) reject(err);
       else resolve(result);
     });
   });
@@ -70,7 +70,7 @@ const asyncAll = (sql) => {
 const asyncRun = (sql) => {
   return new Promise((resolve, reject) => {
     db.run(sql, (err) => {
-      if (err) return reject(err);
+      if (err) reject(err);
       else resolve();
     });
   });

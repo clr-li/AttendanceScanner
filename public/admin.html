@@ -58,7 +58,7 @@
     }
       
     document.getElementById('submitevent').addEventListener('click', () => {
-      console.log("addeding event");
+      console.log("adding event");
       let name = document.getElementById('name').value;
       let description = document.getElementById('description').value;
       let startdate = document.getElementById('startdate').value;
@@ -67,8 +67,8 @@
       let endtime = document.getElementById('endtime').value;        
       GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}`).then((res) => { 
         console.log(res.status);
+        updateEvents();
       });
-      
     });
       
     document.getElementById('scan').onclick = () => {
@@ -79,6 +79,11 @@
         }
       });
       window.open(`scanner.html?eventid=${id}`)
+    };
+      
+    document.body.onload = () => {
+      GET('/business').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
+      updateEvents();
     };
     </script>
   </body>
