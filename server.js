@@ -54,7 +54,7 @@ else {
 const asyncGet = (sql) => {
   return new Promise((resolve, reject) => {
     db.get(sql, (err, result) => {
-      if (err) reject(err);
+      if (err) { console.log("error: " + sql); reject(err); }
       else resolve(result);
     });
   });
@@ -62,7 +62,7 @@ const asyncGet = (sql) => {
 const asyncAll = (sql) => {
   return new Promise((resolve, reject) => {
     db.all(sql, (err, result) => {
-      if (err) reject(err);
+      if (err) { console.log("error: " + sql); reject(err); }
       else resolve(result);
     });
   });
@@ -70,7 +70,7 @@ const asyncAll = (sql) => {
 const asyncRun = (sql) => {
   return new Promise((resolve, reject) => {
     db.run(sql, (err) => {
-      if (err) reject(err);
+      if (err) { console.log("error: " + sql); reject(err); }
       else resolve();
     });
   });
@@ -88,7 +88,6 @@ app.get("/business", async (request, response) => {
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const sql = `SELECT Name FROM Businesses WHERE id = ${id.BusinessIDs}`;
     const row = await asyncGet(sql);
-    console.log(row);
     response.send(row);
   } catch (err) {
     console.error(err.message);
@@ -140,7 +139,7 @@ app.get("/makeEvent", async function(request, response) {
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES (${name},${starttimestamp},'${endtimestamp},'${userids},'${description}')`);
+    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES ('${name}','${starttimestamp}','${endtimestamp}','${userids}','${description}')`);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);

@@ -45,6 +45,7 @@
     import {GET, POST} from './util.js';
       
     function updateEvents() {
+      document.getElementById('events').innerHTML = '';
       GET('/events').then((res) => res.json().then((events) => {
         console.log(events)
         events.forEach(event => {
@@ -66,8 +67,8 @@
       const starttime = document.getElementById('starttime').value;
       const enddate = document.getElementById('enddate').value;
       const endtime = document.getElementById('endtime').value;
-      const starttimestamp = (new Date('2022-11-02' + 'T' + '15:42')).getTime();
-      const endtimestamp = (new Date('2022-11-02' + 'T' + '15:42')).getTime();
+      const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime();
+      const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime();
       
       const userids = "*";
       GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
