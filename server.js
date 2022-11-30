@@ -85,17 +85,14 @@ app.get("/business", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
 
-    let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    let sql = `SELECT Name FROM Businesses WHERE id = ${id.BusinessIDs}`;
-    let row = await asyncGet(sql);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    const sql = `SELECT Name FROM Businesses WHERE id = ${id.BusinessIDs}`;
+    const row = await asyncGet(sql);
     console.log(row);
     response.send(row);
   } catch (err) {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
+    console.error(err.message);
+    response.sendStatus(400);
   }
 });
 
@@ -103,58 +100,52 @@ app.get("/events", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
 
-    let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    let table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
-    let events = await asyncAll(`SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
+    const events = await asyncAll(`SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`);
     response.status = 200;
     response.send(events);  
   } catch (err) {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
+    console.error(err.message);
+    response.sendStatus(400);
   }    
 });
 
-app.get("/makeRecord", async (request, response) => {
-  const uid = await getUID(request.headers.idtoken);
+app.get("/recordAttendance", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
     
-  let eventid = request.query.eventid;
-  let userid = request.query.userid;
-  let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-  let table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-      let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
-      db.run(sql, (err) => {
-          if (err) {
-            console.error(err.message);
-            response.sendStatus(400);
-            return;
-          }
-          response.sendStatus(200);
+    const eventid = request.query.eventid;
+    const userid = request.query.userid;
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ${id.BusinessIDs}`);
+    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`);
+    response.sendStatus(200);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
 });
 
 app.get("/makeEvent", async function(request, response) {
-  let uid = await getUID(request.headers.idtoken);
+  try {
+    const uid = await getUID(request.headers.idtoken);
 
-  let name = request.query.name;
-  let description = request.query.description;
-  let startdate = request.query.startdate;
-  let starttime = request.query.starttime;
-  let enddate = request.query.enddate;
-  let endtime = request.query.endtime;
-  db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`, (id, err) => {
-    if (err) {
-      console.error(err.message);
-      response.sendStatus(400);
-      return;
-    }
-    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`;
-    db.get(sql).then
-    sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
-    await run(sql);
+    const name = request.query.name;
+    const description = request.query.description;
+    const startdate = request.query.startdate;
+    const starttime = request.query.starttime;
+    const enddate = request.query.enddate;
+    const endtime = request.query.endtime;
+
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`);
+    await asyncRun(`INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`);
     response.sendStatus(200);
-  });
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
 });
 
 // listen for requests :)

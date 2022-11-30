@@ -42,20 +42,12 @@
     </form>
     
     <script type="module">
-    import {GET, setCookie} from './util.js';
-    document.getElementById('submitevent').addEventListener('click', () => {
-      console.log("html log");
-      let name = document.getElementById('name').value;
-      let description = document.getElementById('description').value;
-      let startdate = document.getElementById('startdate').value;
-      let starttime = document.getElementById('starttime').value;
-      let enddate = document.getElementById('enddate').value;
-      let endtime = document.getElementById('endtime').value;        
-      GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}`).then((res) => { console.log(res.status) });
-      // GET('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
-      GET('/events').then((res) => res.json().then((o) => {
-        console.log(o)
-        o.forEach(event => {
+    import {GET, POST} from './util.js';
+      
+    function updateEvents() {
+      GET('/events').then((res) => res.json().then((events) => {
+        console.log(events)
+        events.forEach(event => {
           let option = document.createElement('option');
           option.innerHTML = event.name;
           option.id = event.id;
@@ -63,7 +55,22 @@
           document.getElementById('events').appendChild(option);
         });
       }));
+    }
+      
+    document.getElementById('submitevent').addEventListener('click', () => {
+      console.log("addeding event");
+      let name = document.getElementById('name').value;
+      let description = document.getElementById('description').value;
+      let startdate = document.getElementById('startdate').value;
+      let starttime = document.getElementById('starttime').value;
+      let enddate = document.getElementById('enddate').value;
+      let endtime = document.getElementById('endtime').value;        
+      GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}`).then((res) => { 
+        console.log(res.status);
+      });
+      
     });
+      
     document.getElementById('scan').onclick = () => {
       let id = -1;
       [...document.getElementsByClassName('event')].forEach((elem) => {
