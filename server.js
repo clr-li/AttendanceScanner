@@ -102,7 +102,7 @@ app.get("/events", async (request, response) => {
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
-    const events = await asyncAll(`SELECT name, starttimestamp, endtimestamp, userids, description FROM ${table.eventtable}`);
+    const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM ${table.eventtable}`);
     response.status = 200;
     response.send(events);  
   } catch (err) {
