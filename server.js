@@ -102,7 +102,7 @@ app.get("/events", async (request, response) => {
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
-    const events = await asyncAll(`SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`);
+    const events = await asyncAll(`SELECT name, starttimestamp, endtimestamp, userids, description FROM ${table.eventtable}`);
     response.status = 200;
     response.send(events);  
   } catch (err) {
@@ -117,9 +117,10 @@ app.get("/recordAttendance", async (request, response) => {
     
     const eventid = request.query.eventid;
     const userid = request.query.userid;
+    const status = request.query.status;
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`);
+    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp, status) VALUES (${eventid},'${userid}','${Date.now()}','${status}')`);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
@@ -133,14 +134,13 @@ app.get("/makeEvent", async function(request, response) {
 
     const name = request.query.name;
     const description = request.query.description;
-    const startdate = request.query.startdate;
-    const starttime = request.query.starttime;
-    const enddate = request.query.enddate;
-    const endtime = request.query.endtime;
+    const starttimestamp = request.query.starttimestamp;
+    const endtimestamp = request.query.endtimestamp;
+    const userids = request.query.userids;
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-    await asyncRun(`INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`);
+    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES (${name},${starttimestamp},'${endtimestamp},'${userids},'${description}')`);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
