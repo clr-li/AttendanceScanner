@@ -6,6 +6,7 @@ let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
 }
 app.use(cors(corsOptions))
+const util = require('util')
 
 const https = require('https');
 const { exec } = require("child_process"); 
@@ -48,9 +49,12 @@ if (!exists) {
   console.log("no database file found :(");
 }
 else {
-  const sqlite3 = require("sqlite3").verbose();
+  const sqlite3 = require('sqlite3').verbose();
   db = new sqlite3.Database(dbFile);
 }
+const get = util.promisify(db.get);
+const all = util.promisify(db.all);
+const run = util.promisify(db.run);
 
 // db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
 
@@ -84,16 +88,16 @@ app.get("/events", async (request, response) => {
   try {
     let uid = await getUID(request.headers.idtoken);
     
-    let id = await db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
-    console.log(id.BusinessIDs)
+    let id = await get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    console.log(Object.keys(id));
     let sql = `SELECT eventtable
        FROM Businesses
        WHERE id = ${id.BusinessIDs}`;
-    let table = await db.get(sql);
+    let table = await get(sql);
     console.log(table);
     sql = `SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`;
     console.log(sql);
-    let events = await db.all(sql);
+    let events = await all(sql);
     response.status = 200;
     response.send(events);
   } catch (err) {
@@ -149,9 +153,9 @@ app.get("/makeEvent", async function(request, response) {
     let starttime = request.query.starttime;
     let enddate = request.query.enddate;
     let endtime = request.query.endtime;
-    let id = await db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
+    let id = await get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
     let sql = `SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`;
-    let table = await db.get(sql);
+    let table = await get(sql);
     sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
     await db.run(sql);
     response.sendStatus(200);
