@@ -19,7 +19,7 @@
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
-    <button id="scan" onclick="window.open('scanner.html?=')">
+    <button id="scan">
       Scanner
     </button><br>
     <button> 
@@ -38,20 +38,22 @@
       <input type="date" id="enddate" name="enddate"><br>
       <label for="endtime">End Time: </label>
       <input type="time" id="endtime" name="endtime"><br>
-      <button id="submitevent">Submit</button>
+      <input type="button" value="Submit" id="submitevent">
     </form>
     
-    <script>
-   document.getElementById('submitevent').onclick = function() {
-        name = document.getElementById('name').value;
-        description = document.getElementById('description').value;
-        startdate = document.getElementById('startdate').value;
-        starttime = document.getElementById('starttime').value;
-        enddate = document.getElementById('enddate').value;
-        endtime = document.getElementById('endtime').value;        
-        GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}`).then((res) => { console.log(res.status) });
-        GET('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
-        GET('/events').then((res) => res.json().then((o) => {
+    <script type="module">
+    import {GET, setCookie} from './util.js';
+    document.getElementById('submitevent').addEventListener('click', () => {
+      console.log("html log");
+      let name = document.getElementById('name').value;
+      let description = document.getElementById('description').value;
+      let startdate = document.getElementById('startdate').value;
+      let starttime = document.getElementById('starttime').value;
+      let enddate = document.getElementById('enddate').value;
+      let endtime = document.getElementById('endtime').value;        
+      GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}`).then((res) => { console.log(res.status) });
+      // GET('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
+      GET('/events').then((res) => res.json().then((o) => {
         o.forEach(event => {
           let option = document.createElement('option');
           option.innerHTML = event.name;
@@ -60,15 +62,16 @@
           document.getElementById('events').appendChild(option);
         });
       }));
-      document.getElementById('scan').onclick = () => {
-        let id = -1;
-        [...document.getElementsByClassName('event')].forEach((elem) => {
-          if (elem.selected) {
-            id = elem.id;
-          }
-        });
-        window.open(`scanner.html?eventid=${id}`)
-      };
+    });
+    document.getElementById('scan').onclick = () => {
+      let id = -1;
+      [...document.getElementsByClassName('event')].forEach((elem) => {
+        if (elem.selected) {
+          id = elem.id;
+        }
+      });
+      window.open(`scanner.html?eventid=${id}`)
+    };
     </script>
   </body>
 </html>

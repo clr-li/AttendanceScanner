@@ -80,34 +80,26 @@ app.get("/businessRow", (request, response) => {
   });
 });
 
-app.get("/events", (request, response) => {
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
+app.get("/events", async (request, response) => {
+  try {
+    let uid = await getUID(request.headers.idtoken);
     
     let sql = `SELECT eventtable
        FROM Businesses
-       WHERE id = ?;`;
-    let id = uid;
-    db.get(sql, (err, table) => {
-      if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
-      }
-      sql = `SELECT id, name FROM ${table.eventtable}`;
-      console.log(sql);
-      db.all(sql, (err, events) => {
-          if (err) {
-            console.error(err.message);
-            response.sendStatus(400);
-            return;
-          }
-          response.send(events);
-      });
-    });
-  });
+       WHERE id = ${uid}`;
+    let table = await db.get(sql);
+    sql = `SELECT id, name FROM ${table.eventtable}`;
+    console.log(sql);
+    let events = await db.all(sql);
+    response.send(events);
+  } catch (err) {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+  }
+
 });
 
 app.get("/makeRecord", (request, response) => {
