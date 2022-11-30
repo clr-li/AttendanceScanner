@@ -48,8 +48,8 @@
         startdate = document.getElementById('startdate').value;
         starttime = document.getElementById('starttime').value;
         enddate = document.getElementById('enddate').value;
-        endtime = document.getElementById('endtime').value;>        
-        GET(`/makeEvent?=name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}` .then((res) => { console.log(res.status) });()    }
+        endtime = document.getElementById('endtime').value;        
+        GET(`/makeEvent?name=${name}&description=${description}&startdate=${startdate}&starttime=${starttime}&enddate=${enddate}&endtime=${endtime}` .then((res) => { console.log(res.status) });()    }
       GET('/businessRow').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
       GET('/events').then((res) => res.json().then((o) => {
         o.forEach(event => {
@@ -60,6 +60,7 @@
           document.getElementById('events').appendChild(option);
         });
       }));
+      POST(`/`)
       document.getElementById('scan').onclick = () => {
         let id = -1;
         [...document.getElementsByClassName('event')].forEach((elem) => {
