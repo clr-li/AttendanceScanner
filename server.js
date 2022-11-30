@@ -51,6 +51,22 @@ else {
   const sqlite3 = require('sqlite3').verbose();
   db = new sqlite3.Database(dbFile);
 }
+const asyncGet = (sql) => {
+  return new Promise((resolve, reject) => {
+    db.get(sql, (result, err) => {
+      if (err) return reject(err);
+      else resolve(result);
+    });
+  });
+};
+const asyncGet = (sql) => {
+  return new Promise((resolve, reject) => {
+    db.get(sql, (result, err) => {
+      if (err) return reject(err);
+      else resolve(result);
+    });
+  });
+};
 
 // db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
 
