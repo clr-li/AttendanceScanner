@@ -59,11 +59,19 @@ const asyncGet = (sql) => {
     });
   });
 };
-const asyncGet = (sql) => {
+const asyncAll = (sql) => {
   return new Promise((resolve, reject) => {
-    db.get(sql, (result, err) => {
+    db.all(sql, (result, err) => {
       if (err) return reject(err);
       else resolve(result);
+    });
+  });
+};
+const asyncRun = (sql) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, (err) => {
+      if (err) return reject(err);
+      else resolve();
     });
   });
 };
@@ -73,83 +81,49 @@ const asyncGet = (sql) => {
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-app.get("/businessRow", (request, response) => {
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
+app.get("/business", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
 
-    let sql = `SELECT Name
-       FROM Businesses
-       WHERE id = ?;`;
-    let id = uid;
-
-    db.get(sql, id, (err, row) => {
-      if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
-      }
-      console.log(row);
-      response.send(row);
-    });
-  });
+    let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    let sql = `SELECT Name FROM Businesses WHERE id = ${id.BusinessIDs}`;
+    let row = await asyncGet(sql);
+    console.log(row);
+    response.send(row);
+  } catch (err) {
+    if (err) {
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
+    }
+  }
 });
 
 app.get("/events", async (request, response) => {
-  let uid = await getUID(request.headers.idtoken);
+  try {
+    const uid = await getUID(request.headers.idtoken);
 
-  db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`,(id, err) => {
+    let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+    let table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
+    let events = await asyncAll(`SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`);
+    response.status = 200;
+    response.send(events);  
+  } catch (err) {
     if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
+      console.error(err.message);
+      response.sendStatus(400);
+      return;
     }
-    console.log(Object.keys(id));
-    let sql = `SELECT eventtable
-       FROM Businesses
-       WHERE id = ${id.BusinessIDs}`;
-    db.get(sql, (table,err) => {
-      if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
-      }
-      console.log(table);
-      sql = `SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`;
-      console.log(sql);
-      db.all(sql, (events, err) => {
-        if (err) {
-          console.error(err.message);
-          response.sendStatus(400);
-          return;
-        }
-        response.status = 200;
-        response.send(events);      
-      });
-    });
-  });
+  }    
 });
 
-app.get("/makeRecord", (request, response) => {
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
+app.get("/makeRecord", async (request, response) => {
+  const uid = await getUID(request.headers.idtoken);
     
-    let eventid = request.query.eventid;
-    let businessid = request.query.id;
-    let userid = request.query.userid;
-    let sql = `SELECT AttendanceTable
-         FROM Businesses
-         WHERE id = 0`;
-    console.log(request.query)
-    db.get(sql, (err, table) => {
-      if (err) {
-        console.error(err.message);
-        response.sendStatus(400);
-        return;
-      }
+  let eventid = request.query.eventid;
+  let userid = request.query.userid;
+  let id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
+  let table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ${id.BusinessIDs}`);
       let sql = `INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp) VALUES (${eventid},${userid},'${Date.now()}');`;
       db.run(sql, (err) => {
           if (err) {
@@ -158,9 +132,6 @@ app.get("/makeRecord", (request, response) => {
             return;
           }
           response.sendStatus(200);
-      });
-    });
-  });
 });
 
 app.get("/makeEvent", async function(request, response) {
