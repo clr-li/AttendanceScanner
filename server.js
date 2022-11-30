@@ -84,13 +84,17 @@ app.get("/events", async (request, response) => {
   try {
     let uid = await getUID(request.headers.idtoken);
     
+    let id = await db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
+    console.log(id.BusinessIDs)
     let sql = `SELECT eventtable
        FROM Businesses
-       WHERE id = ${uid}`;
+       WHERE id = ${id.BusinessIDs}`;
     let table = await db.get(sql);
-    sql = `SELECT id, name FROM ${table.eventtable}`;
+    console.log(table);
+    sql = `SELECT name, description, startdate, starttime, enddate, endtime FROM ${table.eventtable}`;
     console.log(sql);
     let events = await db.all(sql);
+    response.status = 200;
     response.send(events);
   } catch (err) {
     if (err) {
@@ -146,7 +150,7 @@ app.get("/makeEvent", async function(request, response) {
     let enddate = request.query.enddate;
     let endtime = request.query.endtime;
     let id = await db.get(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`)
-    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id}`;
+    let sql = `SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`;
     let table = await db.get(sql);
     sql = `INSERT INTO ${table.eventtable} (name, description, startdate, starttime, enddate, endtime) VALUES (${name},${description},'${startdate},'${starttime},'${enddate},'${endtime}');`;
     await db.run(sql);
