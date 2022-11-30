@@ -184,8 +184,7 @@ var listener = app.listen(process.env.PORT, () => {
 // How to add idToken to glitch preview:
 // from firebase url:
 //   - login
+//   - copy idtoken cookie
+// in glitch preview devtools console
 //   - run `import('./util.js').then(m => util = m);`
-//   - run `util.getCookie('idtoken')`
-//   - copy result string
-// in glitch preview
-//   - run `util.setCookie('idtoken', [PASTE RESULT STRING HERE], 1)`
+//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]'', 1)`
