@@ -54,8 +54,8 @@
         events.forEach(event => {
           const option = document.createElement('option');
           var startDate = new Date(event.starttimestamp*1000);
-          var endDate = new Date(event.endtimestamp);
-          option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toISOString();
+          var endDate = new Date(event.endtimestamp * 2000);
+          option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
           option.classList.add('event')
           document.getElementById('events').appendChild(option);
@@ -73,6 +73,7 @@
       const enddate = document.getElementById('enddate').value;
       const endtime = document.getElementById('endtime').value;
       const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime();
+      console.log(starttimestamp + "date" + startdate + " time " + starttime)
       const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime();
       
       const userids = "*";
