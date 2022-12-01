@@ -53,7 +53,9 @@
       GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
           const option = document.createElement('option');
-          option.innerHTML = event.name + " &#8212; " + "from " + event.starttimestamp + " to " + event.endtimestamp;
+          var startDate = new Date(event.starttimestamp*1000);
+          var endDate = new Date(event.endtimestamp);
+          option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toISOString();
           option.id = event.id;
           option.classList.add('event')
           document.getElementById('events').appendChild(option);
