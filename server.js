@@ -22,10 +22,10 @@ async function getUID(idToken) {
     // let decodedToken = await admin.auth().verifyIdToken(idToken);
     // const uid = decodedToken.uid;
     // return uid;    
-    let decodedToken = JSON.parse(Buffer.from(idToken, "base64").toString().split('.'));
+    console.log(Buffer.from(idToken, "base64").toString());
+    let decodedToken = JSON.parse(Buffer.from(idToken, "base64").toString());
     return decodedToken.user_id;
   } catch(error) {
-    console.log(Buffer.from(idToken, "base64").toString())
     console.error(error);
     return false;
   };
