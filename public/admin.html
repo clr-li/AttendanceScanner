@@ -65,8 +65,13 @@
           option.id = event.id;
           document.getElementById('events').appendChild(option);
         });
+        $('#events').selectize({
+            sortField: 'text'
+        });
       }));
     }
+      
+    document.getElementById()
       
     document.getElementById('submitevent').addEventListener('click', () => {
       console.log("adding event");
@@ -77,9 +82,8 @@
       const starttime = document.getElementById('starttime').value;
       const enddate = document.getElementById('enddate').value;
       const endtime = document.getElementById('endtime').value;
-      const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime();
-      console.log(starttimestamp + "date" + startdate + " time " + starttime)
-      const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime();
+      const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
+      const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
       
       const userids = "*";
       GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
@@ -109,9 +113,6 @@
     document.body.onload = () => {
       GET('/business').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
       updateEvents();
-      $('#events').selectize({
-          sortField: 'text'
-      });
     };
     </script>
   </body>
