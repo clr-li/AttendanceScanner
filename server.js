@@ -24,7 +24,8 @@ async function getUID(idToken) {
     return uid;    
   } catch(error) {
     console.error(error);
-    return false;
+    //changed it to true
+    return true;
   };
 }
 
@@ -162,4 +163,4 @@ var listener = app.listen(process.env.PORT, () => {
 //   - copy idtoken cookie
 // in glitch preview devtools console
 //   - run `import('./util.js').then(m => util = m);`
-//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]'', 1)`
+//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 1)`
