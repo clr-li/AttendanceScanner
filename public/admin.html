@@ -73,11 +73,9 @@
     }
       
     function getData() {
-      
+      GET('/attendancedata')
     }
     document.getElementById('events').onchange = getData;
-      
-    //document.getElementById()
       
     document.getElementById('submitevent').addEventListener('click', () => {
       console.log("adding event");
