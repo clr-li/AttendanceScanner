@@ -19,7 +19,7 @@ admin.initializeApp({
 async function getUID(idToken) {
   // idToken comes from the client app
   try {
-    let decodedToken = await admin.auth().verifyIdToken(idToken);
+    // let decodedToken = await admin.auth().verifyIdToken(idToken);
     const uid = decodedToken.uid;
     return uid;    
   } catch(error) {
