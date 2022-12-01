@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
   </head>
   <body>
@@ -49,7 +49,7 @@
     import {GET, POST} from './util.js';
       
     function updateEvents() {
-      document.getElementById('events').innerHTML = '';
+      document.getElementById('events').innerHTML = '<option value="">Pick an event...</option>';
       GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
           const option = document.createElement('option');
