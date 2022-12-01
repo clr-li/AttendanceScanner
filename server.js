@@ -1,7 +1,3 @@
-// problems:
-// the admin cookie only sets for user login instead of admin login
-// the events don't show up on the admin page anymore
-
 const express = require("express");
 const app = express();
 const fs = require("fs");

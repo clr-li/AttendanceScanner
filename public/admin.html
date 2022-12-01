@@ -29,7 +29,7 @@
     <button id="newevent"> 
       New Event
     </button>
-    <form style="visibility: hidden;">
+    <form id="eventform" style="visibility: hidden;">
       <label for="name">Event Name: </label>
       <input type="text" id="name" name="name">
       <label for="description">Description: </label>
@@ -82,7 +82,11 @@
     });
           
     document.getElementById('newevent').onclick = () => {
-      document.getElementById('login').style.visibility = 'visible';
+      if (document.getElementById('eventform').style.visibility == 'visible') {
+        document.getElementById('eventform').style.visibility = 'hidden';
+      } else {
+        document.getElementById('eventform').style.visibility = 'visible';
+      }
     }
       
     document.getElementById('scan').onclick = () => {
