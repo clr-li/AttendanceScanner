@@ -16,14 +16,17 @@ admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 
+function parseJwt(token) {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
 async function getUID(idToken) {
   // idToken comes from the client app
   try {
     // let decodedToken = await admin.auth().verifyIdToken(idToken);
     // const uid = decodedToken.uid;
     // return uid;    
-    console.log(Buffer.from(idToken, "base64").toString());
-    let decodedToken = JSON.parse(Buffer.from(idToken, "base64").toString());
+    let decodedToken = parseJwt(idToken);
     return decodedToken.user_id;
   } catch(error) {
     console.error(error);
@@ -165,4 +168,4 @@ var listener = app.listen(process.env.PORT, () => {
 //   - copy idtoken cookie
 // in glitch preview devtools console
 //   - run `import('./util.js').then(m => util = m);`
-//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 1)`
+//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 24)`
