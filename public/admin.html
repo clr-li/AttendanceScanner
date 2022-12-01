@@ -26,10 +26,10 @@
     <button id="scan">
       Scanner
     </button><br>
-    <button> 
+    <button id="newevent"> 
       New Event
     </button>
-    <form>
+    <form style="visibility: hidden;">
       <label for="name">Event Name: </label>
       <input type="text" id="name" name="name">
       <label for="description">Description: </label>
@@ -80,6 +80,10 @@
         updateEvents();
       });
     });
+          
+    document.getElementById('newevent').onclick = () => {
+      document.getElementById('login').style.visibility = 'visible';
+    }
       
     document.getElementById('scan').onclick = () => {
       let id = -1;
