@@ -147,7 +147,9 @@ app.get("/makeEvent", async function(request, response) {
   }
 });
 
-app.get("/attendancedata")
+app.get("/attendancedata", async function(request, response) {
+  
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, () => {
