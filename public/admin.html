@@ -80,9 +80,10 @@
           id = elem.id;
         }
       });
-      GET(`/eventdata?eventid=${id}`).then((res) => {
-        //display data
-      })
+      GET(`/eventdata?eventid=${id}`).then((res) => res.json().then((eventinfo) => {
+        const data = document.createElement('p');
+        data.innerHTML = "Event Name: " + eventinfo.name;
+      }));
     }
     document.getElementById('events').onchange = getEventData;
       

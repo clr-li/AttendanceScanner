@@ -21,6 +21,7 @@ function parseJwt(token) {
 }
 
 async function getUID(idToken) {
+  if (typeof idToken != "string") return false;
   // idToken comes from the client app
   try {
     // let decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -90,6 +91,10 @@ app.use(express.static("public"));
 app.get("/business", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const row = await asyncGet(`SELECT Name FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
@@ -103,6 +108,10 @@ app.get("/business", async (request, response) => {
 app.get("/events", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
@@ -160,6 +169,7 @@ app.get("/eventdata", async function(request, response) {
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     const eventinfo = await asyncGet(`SELECT * FROM ? WHERE id = ?`, [table.eventtable, eventid]);
+    response.send(eventinfo);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
