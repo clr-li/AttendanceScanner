@@ -127,10 +127,16 @@ app.get("/events", async (request, response) => {
 app.get("/recordAttendance", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
     
     const eventid = request.query.eventid;
     const userid = request.query.userid;
     const status = request.query.status;
+    if (typeof status != "string" || typeof userid != "string" || (typeof eventid != "number" && typeof eventid != "string")) throw "Invalid input";
+    
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     await asyncRun(`INSERT INTO ? (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [table.AttendanceTable, eventid, userid, Date.now(), status]);
@@ -144,12 +150,17 @@ app.get("/recordAttendance", async (request, response) => {
 app.get("/makeEvent", async function(request, response) {
   try {
     const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
 
     const name = request.query.name;
     const description = request.query.description;
     const starttimestamp = request.query.starttimestamp;
     const endtimestamp = request.query.endtimestamp;
     const userids = request.query.userids;
+    if (typeof name != "string" || typeof description != "string" || typeof userids != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
@@ -164,8 +175,15 @@ app.get("/makeEvent", async function(request, response) {
 
 app.get("/eventdata", async function(request, response) {
   try {
-    const eventid = request.query.eventid;
     const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    
+    const eventid = request.query.eventid;
+    if (typeof eventid != "string" && typeof eventid != "number") throw "Invalid input";
+    
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     const eventinfo = await asyncGet(`SELECT * FROM ? WHERE id = ?`, [table.eventtable, eventid]);

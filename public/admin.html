@@ -74,14 +74,14 @@
     }
       
     function getEventData() {
-      let id = -1;
+      let eventid = -1;
       [...document.getElementsByClassName('event')].forEach((elem) => {
         if (elem.selected) {
-          id = elem.id;
+          eventid = elem.id;
         }
       });
-      GET(`/eventdata?eventid=${id}`).then((res) => res.json().then((eventinfo) => {
-        const data = document.createElement('p');
+      GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
+        const data = document.createElement('p'); 
         data.innerHTML = "Event Name: " + eventinfo.name;
       }));
     }
