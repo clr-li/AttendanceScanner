@@ -35,6 +35,16 @@ async function getUID(idToken) {
   };
 }
 
+async function getAccess(businessid, userid, isadmin, isscanner) {
+  const roleaccess = await asyncGet(`SELECT roleaccess FROM Businesses WHERE id = ?`, [businessid]);
+  const roles = JSON.parse(roleaccess);
+  const table = await asyncGet(`SELECT usertable FROM Businesses WHERE id = ?`, [businessid]);
+  const role = await asyncGet(`SELECT role from "${table.usertable}"`);
+  if (!(role in roles)) return false;
+  const access = roles[role];
+  return access['admin'] == isadmin && (access['scanner'] == isscanner || !isscanner)
+}
+
 app.get("/isLoggedIn", (request, response) => {
   if (!request.headers.idtoken) {
     response.sendStatus(400);
