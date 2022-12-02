@@ -39,9 +39,11 @@ async function getAccess(businessid, userid, requireadmin, requirescanner) {
   const roleaccess = await asyncGet(`SELECT roleaccess FROM Businesses WHERE id = ?`, [businessid]);
   const roles = JSON.parse(roleaccess.roleaccess);
   const table = await asyncGet(`SELECT usertable FROM Businesses WHERE id = ?`, [businessid]);
-  const role = await asyncGet(`SELECT role from "${table.usertable}"`);
+  const role = (await asyncGet(`SELECT role from "${table.usertable}" WHERE id = ?`, [userid])).role;
+  console.log(role)
   if (!(role in roles)) return false;
   const access = roles[role];
+  console.log(access)
   return (access['admin'] == requireadmin || !requireadmin) && (access['scanner'] == requirescanner || !requirescanner);
 }
 
