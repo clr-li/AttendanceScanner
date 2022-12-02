@@ -56,6 +56,7 @@
       const option = document.createElement('option');
       option.textContent = "Pick an event...";
       option.value = "";
+      option.classList.add("event");
       document.getElementById('events').appendChild(option);
       GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
@@ -72,10 +73,16 @@
       }));
     }
       
-    function getData() {
-      GET('/attendancedata')
+    function getEventData() {
+      let id = -1;
+      [...document.getElementsByClassName('event')].forEach((elem) => {
+        if (elem.selected) {
+          id = elem.id;
+        }
+      });
+      GET('/eventdata')
     }
-    document.getElementById('events').onchange = getData;
+    document.getElementById('events').onchange = getEventData;
       
     document.getElementById('submitevent').addEventListener('click', () => {
       console.log("adding event");
