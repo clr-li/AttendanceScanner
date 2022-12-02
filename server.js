@@ -35,12 +35,17 @@ async function getUID(idToken) {
   };
 }
 
-async function getAccess(businessid, userid, requireadmin, requirescanner) {
+async function getAccess(businessid, userid, requireadmin, requirescanner, requireuser=true) {
   try {
-    const roleaccess = await asyncGet(`SELECT roleaccess FROM Businesses WHERE id = ?`, [businessid]);
-    const roles = JSON.parse(roleaccess.roleaccess);
-    const table = await asyncGet(`SELECT usertable FROM Businesses WHERE id = ?`, [businessid]);
-    const role = (await asyncGet(`SELECT role from "${table.usertable}" WHERE userid = ?`, [userid])).role;
+    if (requireuser) {
+      const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [userid]);
+      const validbusinessids = user.BusinessIDs.split(',');
+    }
+    const business = await asyncGet(`SELECT roleaccess, usertable FROM Businesses WHERE id = ?`, [businessid]);
+    const roleaccess = business.roleaccess;
+    const roles = JSON.parse(roleaccess);
+    const table = business.usertable;
+    const role = (await asyncGet(`SELECT role from "${table}" WHERE userid = ?`, [userid])).role;
     if (!(role in roles)) return false; // if the role is invalid, user doesn't have access
     const access = roles[role];
     return (access['admin'] == requireadmin || !requireadmin) && (access['scanner'] == requirescanner || !requirescanner);
