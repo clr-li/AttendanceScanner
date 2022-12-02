@@ -37,7 +37,7 @@ async function getUID(idToken) {
 
 async function getAccess(businessid, userid, requireadmin, requirescanner) {
   const roleaccess = await asyncGet(`SELECT roleaccess FROM Businesses WHERE id = ?`, [businessid]);
-  const roles = JSON.parse(roleaccess);
+  const roles = JSON.parse(roleaccess.roleaccess);
   const table = await asyncGet(`SELECT usertable FROM Businesses WHERE id = ?`, [businessid]);
   const role = await asyncGet(`SELECT role from "${table.usertable}"`);
   if (!(role in roles)) return false;
