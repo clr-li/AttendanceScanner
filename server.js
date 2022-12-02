@@ -57,25 +57,25 @@ else {
   const sqlite3 = require('sqlite3').verbose();
   db = new sqlite3.Database(dbFile);
 }
-const asyncGet = (sql) => {
+const asyncGet = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
-    db.get(sql, (err, result) => {
+    db.get(sql, params, (err, result) => {
       if (err) { console.log("error: " + sql); reject(err); }
       else resolve(result);
     });
   });
 };
-const asyncAll = (sql) => {
+const asyncAll = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
-    db.all(sql, (err, result) => {
+    db.all(sql, params, (err, result) => {
       if (err) { console.log("error: " + sql); reject(err); }
       else resolve(result);
     });
   });
 };
-const asyncRun = (sql) => {
+const asyncRun = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
-    db.run(sql, (err) => {
+    db.run(sql, params, (err) => {
       if (err) { console.log("error: " + sql); reject(err); }
       else resolve();
     });
@@ -91,9 +91,8 @@ app.get("/business", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
 
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    const sql = `SELECT Name FROM Businesses WHERE id = ${id.BusinessIDs}`;
-    const row = await asyncGet(sql);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const row = await asyncGet(`SELECT Name FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     response.send(row);
   } catch (err) {
     console.error(err.message);
@@ -105,9 +104,9 @@ app.get("/events", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
 
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id=${id.BusinessIDs}`);
-    const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM ${table.eventtable}`);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM ?`, [table.eventtable]);
     response.status = 200;
     response.send(events);  
   } catch (err) {
@@ -123,9 +122,9 @@ app.get("/recordAttendance", async (request, response) => {
     const eventid = request.query.eventid;
     const userid = request.query.userid;
     const status = request.query.status;
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp, status) VALUES (${eventid},'${userid}','${Date.now()}','${status}')`);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [eventid, userid, Date.now(), status]);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
@@ -143,9 +142,10 @@ app.get("/makeEvent", async function(request, response) {
     const endtimestamp = request.query.endtimestamp;
     const userids = request.query.userids;
 
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id='${uid}'`);
-    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ${id.BusinessIDs}`);
-    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES ('${name}','${starttimestamp}','${endtimestamp}','${userids}','${description}')`);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
+                  [name, starttimestamp, endtimestamp, userids, description]);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
@@ -155,7 +155,9 @@ app.get("/makeEvent", async function(request, response) {
 
 app.get("/eventdata", async function(request, response) {
   try {
+    const eventid = request.query.eventid;
     
+    const eventname = await asyncGet(`SELECT name FROM `)
   } catch (err) {
     
   }
