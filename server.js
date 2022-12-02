@@ -39,7 +39,8 @@ async function getAccess(businessid, userid, requireadmin, requirescanner, requi
   try {
     if (requireuser) {
       const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [userid]);
-      const validbusinessids = user.BusinessIDs.split(',');
+      const validbusinessids = new Set(user.BusinessIDs.split(','));
+      if (!validbusinessids.has(businessid)) return false; // user doesn't belong to the business
     }
     const business = await asyncGet(`SELECT roleaccess, usertable FROM Businesses WHERE id = ?`, [businessid]);
     const roleaccess = business.roleaccess;
@@ -53,7 +54,6 @@ async function getAccess(businessid, userid, requireadmin, requirescanner, requi
     console.error("getAccess error: " + err);
     return false;
   }
-
 }
 
 app.get("/isLoggedIn", (request, response) => {
