@@ -35,14 +35,14 @@ async function getUID(idToken) {
   };
 }
 
-async function getAccess(businessid, userid, isadmin, isscanner) {
+async function getAccess(businessid, userid, requireadmin, requirescanner) {
   const roleaccess = await asyncGet(`SELECT roleaccess FROM Businesses WHERE id = ?`, [businessid]);
   const roles = JSON.parse(roleaccess);
   const table = await asyncGet(`SELECT usertable FROM Businesses WHERE id = ?`, [businessid]);
   const role = await asyncGet(`SELECT role from "${table.usertable}"`);
   if (!(role in roles)) return false;
   const access = roles[role];
-  return access['admin'] == isadmin && (access['scanner'] == isscanner || !isscanner)
+  return (access['admin'] == requireadmin || !requireadmin) && (access['scanner'] == requirescanner || !requirescanner);
 }
 
 app.get("/isLoggedIn", (request, response) => {
@@ -141,13 +141,17 @@ app.get("/recordAttendance", async (request, response) => {
       response.sendStatus(403);
       return;
     }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!getAccess(id.BusinessIDs, uid, false, true)) {
+      response.sendStatus(403);
+      return;
+    }
     
     const eventid = request.query.eventid;
     const userid = request.query.userid;
     const status = request.query.status;
     if (typeof status != "string" || typeof userid != "string" || (typeof eventid != "number" && typeof eventid != "string")) throw "Invalid input";
     
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     await asyncRun(`INSERT INTO "${table.AttendanceTable}" (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [eventid, userid, Date.now(), status]);
     response.sendStatus(200);
@@ -164,6 +168,11 @@ app.get("/makeEvent", async function(request, response) {
       response.sendStatus(403);
       return;
     }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!getAccess(id.BusinessIDs, uid, true, false)) {
+      response.sendStatus(403);
+      return;
+    }
 
     const name = request.query.name;
     const description = request.query.description;
@@ -172,7 +181,6 @@ app.get("/makeEvent", async function(request, response) {
     const userids = request.query.userids;
     if (typeof name != "string" || typeof description != "string" || typeof userids != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
 
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     await asyncRun(`INSERT INTO "${table.eventtable}" (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
                   [name, starttimestamp, endtimestamp, userids, description]);
@@ -190,11 +198,15 @@ app.get("/eventdata", async function(request, response) {
       response.sendStatus(403);
       return;
     }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!getAccess(id.BusinessIDs, uid, true, false)) {
+      response.sendStatus(403);
+      return;
+    }
     
     const eventid = request.query.eventid;
     if (typeof eventid != "string" && typeof eventid != "number") throw "Invalid input";
     
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     const eventinfo = await asyncGet(`SELECT * FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
     response.send(eventinfo);
