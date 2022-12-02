@@ -56,7 +56,6 @@
       const option = document.createElement('option');
       option.textContent = "Pick an event...";
       option.value = "";
-      option.classList.add("event");
       document.getElementById('events').appendChild(option);
       GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
@@ -65,6 +64,7 @@
           var endDate = new Date(event.endtimestamp*1000);
           option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
+          option.classList.add("event");
           document.getElementById('events').appendChild(option);
         });
         $('#events').selectize({
@@ -80,7 +80,9 @@
           id = elem.id;
         }
       });
-      GET('/eventdata')
+      GET(`/eventdata?eventid=${id}`).then((res) => {
+        //display data
+      })
     }
     document.getElementById('events').onchange = getEventData;
       

@@ -153,8 +153,12 @@ app.get("/makeEvent", async function(request, response) {
   }
 });
 
-app.get("/attendancedata", async function(request, response) {
-  
+app.get("/eventdata", async function(request, response) {
+  try {
+    
+  } catch (err) {
+    
+  }
 });
 
 // listen for requests :)
