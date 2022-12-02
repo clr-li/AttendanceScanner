@@ -122,8 +122,12 @@ app.get("/events", async (request, response) => {
       response.sendStatus(403);
       return;
     }
-
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!(await getAccess(id.BusinessIDs, uid, false, true))) {
+      response.sendStatus(403);
+      return;
+    }
+
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM "${table.eventtable}"`);
     response.status = 200;
@@ -142,7 +146,7 @@ app.get("/recordAttendance", async (request, response) => {
       return;
     }
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-    if (!getAccess(id.BusinessIDs, uid, false, true)) {
+    if (!(await getAccess(id.BusinessIDs, uid, false, true))) {
       response.sendStatus(403);
       return;
     }
@@ -169,7 +173,7 @@ app.get("/makeEvent", async function(request, response) {
       return;
     }
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-    if (!getAccess(id.BusinessIDs, uid, true, false)) {
+    if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
       response.sendStatus(403);
       return;
     }
@@ -199,7 +203,7 @@ app.get("/eventdata", async function(request, response) {
       return;
     }
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-    if (!getAccess(id.BusinessIDs, uid, true, false)) {
+    if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
       response.sendStatus(403);
       return;
     }
