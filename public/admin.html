@@ -23,6 +23,9 @@
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
+    <div>
+      <p id="eventdetails"></p>
+    </div>
     <button id="scan">
       Scanner
     </button><br>
@@ -81,8 +84,7 @@
         }
       });
       GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
-        const data = document.createElement('p'); 
-        data.innerHTML = "Event Name: " + eventinfo.name;
+        document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
       }));
     }
     document.getElementById('events').onchange = getEventData;
