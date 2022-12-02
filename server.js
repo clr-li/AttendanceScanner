@@ -124,7 +124,7 @@ app.get("/recordAttendance", async (request, response) => {
     const status = request.query.status;
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-    await asyncRun(`INSERT INTO ${table.AttendanceTable} (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [eventid, userid, Date.now(), status]);
+    await asyncRun(`INSERT INTO ? (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [table.AttendanceTable, eventid, userid, Date.now(), status]);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
@@ -144,8 +144,8 @@ app.get("/makeEvent", async function(request, response) {
 
     const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-    await asyncRun(`INSERT INTO ${table.eventtable} (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
-                  [name, starttimestamp, endtimestamp, userids, description]);
+    await asyncRun(`INSERT INTO ? (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
+                  [table.eventtable, name, starttimestamp, endtimestamp, userids, description]);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
@@ -156,10 +156,13 @@ app.get("/makeEvent", async function(request, response) {
 app.get("/eventdata", async function(request, response) {
   try {
     const eventid = request.query.eventid;
-    
-    const eventname = await asyncGet(`SELECT name FROM `)
+    const uid = await getUID(request.headers.idtoken);
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    const eventinfo = await asyncGet(`SELECT * FROM ? WHERE id = ?`, [table.eventtable, eventid]);
   } catch (err) {
-    
+    console.error(err.message);
+    response.sendStatus(400);
   }
 });
 
