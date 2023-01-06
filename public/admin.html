@@ -115,8 +115,13 @@
       function getEventData() {
         let eventid = selectizeControl.getValue();
         GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
+          var startDate = new Date(eventinfo.starttimestamp*1000);
+          var endDate = new Date(eventinfo.endtimestamp*1000);
           document.getElementById("eventdetails").innerHTML = `
-          Name: ${eventinfo.name} <input type="text" placeholder="New event name">
+          Name: <input type="text" placeholder="${eventinfo.name}">
+          Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}">
+          
+          <button>Update Event</button>
           `;
         }));
       }
