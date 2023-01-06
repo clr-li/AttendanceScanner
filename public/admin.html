@@ -134,7 +134,7 @@
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
             GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}`).then((res) => {
-              selectizeControl.getOption(eventid).title = eventinfo.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
+              document.getElementsByClassName('item')[0].innerHTML = name + " — " + "from " + (new Date(starttimestamp*1000)).toDateString() + " to " + (new Date(endtimestamp*1000)).toDateString();
               console.log(res.status);
               updateEvents();
             })
