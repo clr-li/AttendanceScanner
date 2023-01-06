@@ -51,46 +51,34 @@
     <script type="module">
     import {GET, POST} from './util.js';
       
-    function updateEvents() {
+    let selectizeControl;
+    let select;
+    async function updateEvents() {
       while (document.getElementById('events').firstChild) {
         document.getElementById('events').removeChild(document.getElementById('events').firstChild);
         $('#events').selectize()[0].selectize.destroy();
       }
       let options = [];
-      let option = {}; // document.createElement('option');
-      option.textContent = "Pick an event...";
-      option.value = "";
-      options.push('')
-      // document.getElementById('events').appendChild(option);
-      GET('/events').then((res) => res.json().then((events) => {
+      await GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
-          option = {}; // document.createElement('option');
+          let option = {};
           var startDate = new Date(event.starttimestamp*1000);
           var endDate = new Date(event.endtimestamp*1000);
-          option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
+          option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
-          options = [...options, option];
-          // document.getElementById('events').appendChild(option);
+          options.push(option);
         });
-        $('#events').selectize({
-            sortField: 'text',
+        select = $('#events').selectize({
+            placeholder: "Pick an event...",
+            valueField: 'title',
+            labelField: 'title',
+            searchField: 'title',
+            sortField: 'title',
             options: options
         });
+        selectizeControl = select[0].selectize;
       }));
     }
-      
-    function getEventData() {
-      let eventid = -1;
-      [...document.getElementsByClassName('event')].forEach((elem) => {
-        if (elem.selected) {
-          eventid = elem.id;
-        }
-      });
-      GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
-        document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
-      }));
-    }
-    document.getElementById('events').onchange = getEventData;
       
     document.getElementById('submitevent').addEventListener('click', () => {
       console.log("adding event");
@@ -120,18 +108,22 @@
     }
       
     document.getElementById('scan').onclick = () => {
-      let id = -1;
-      [...document.getElementsByClassName('event')].forEach((elem) => {
-        if (elem.selected) {
-          id = elem.id;
-        }
-      });
+      let id = document.getElementById('events').firstChild.id;
       window.open(`scanner.html?eventid=${id}`)
     };
       
-    document.body.onload = () => {
+    document.body.onload = async () => {
       GET('/business').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
-      updateEvents();
+      await updateEvents();
+      
+      function getEventData() {
+        let eventid = document.getElementById('events').firstChild.id;
+        GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
+          document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
+        }));
+      }
+      selectizeControl.on('change', getEventData);
+      // document.getElementById('events').onchange = getEventData;
     };
     </script>
   </body>
