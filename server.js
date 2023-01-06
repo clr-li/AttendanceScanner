@@ -206,6 +206,37 @@ app.get("/makeEvent", async function(request, response) {
   }
 });
 
+app.get("/updateevent", async function(request, response) {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
+      response.sendStatus(403);
+      return;
+    }
+
+    const name = request.query.name;
+    const description = request.query.description;
+    const starttimestamp = request.query.starttimestamp;
+    const endtimestamp = request.query.endtimestamp;
+    const eventid = request.query.eventid;
+    console.log(name);
+    if (typeof name != "string" || typeof description != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
+
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    await asyncRun(`UPDATE "${table.eventtable}" SET name = ?, starttimestamp = ?, endtimestamp = ?, userids = ?, description = ? WHERE id = ?`,
+                  [name, starttimestamp, endtimestamp, description, eventid]);
+    response.sendStatus(200);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
 app.get("/eventdata", async function(request, response) {
   try {
     const uid = await getUID(request.headers.idtoken);

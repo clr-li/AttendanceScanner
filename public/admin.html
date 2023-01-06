@@ -54,10 +54,6 @@
     let selectizeControl;
     let select;
     async function updateEvents() {
-      while (document.getElementById('events').firstChild) {
-        document.getElementById('events').removeChild(document.getElementById('events').firstChild);
-        $('#events').selectize()[0].selectize.destroy();
-      }
       let options = [];
       await GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
