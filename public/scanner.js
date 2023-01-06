@@ -1,3 +1,5 @@
+import {GET, POST} from './util.js';
+
 let lastUserId = -1;
 function onScanSuccess(decodedText, decodedResult) {
   // Handle on success condition with the decoded text or result.
@@ -7,7 +9,7 @@ function onScanSuccess(decodedText, decodedResult) {
   let params = url.searchParams;
   let eventid = params.get('eventid');
   if (lastUserId != decodedText) {
-    fetch(`/makeRecord?eventid=${eventid}&userid=${decodedText}&id=0`).then((res) => { console.log(res.status) });
+    GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT`).then((res) => { console.log(res.status) });
     html5QrcodeScanner.resume();
     lastUserId = decodedText;
   } else {
