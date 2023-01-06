@@ -56,22 +56,25 @@
         document.getElementById('events').removeChild(document.getElementById('events').firstChild);
         $('#events').selectize()[0].selectize.destroy();
       }
-      const option = document.createElement('option');
+      let options = [];
+      let option = {}; // document.createElement('option');
       option.textContent = "Pick an event...";
       option.value = "";
-      document.getElementById('events').appendChild(option);
+      options.push('')
+      // document.getElementById('events').appendChild(option);
       GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
-          const option = document.createElement('option');
+          option = {}; // document.createElement('option');
           var startDate = new Date(event.starttimestamp*1000);
           var endDate = new Date(event.endtimestamp*1000);
           option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
-          option.classList.add('event');
-          document.getElementById('events').appendChild(option);
+          options = [...options, option];
+          // document.getElementById('events').appendChild(option);
         });
         $('#events').selectize({
-            sortField: 'text'
+            sortField: 'text',
+            options: options
         });
       }));
     }
