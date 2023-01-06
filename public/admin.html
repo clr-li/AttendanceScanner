@@ -118,10 +118,15 @@
           var startDate = new Date(eventinfo.starttimestamp*1000);
           var endDate = new Date(eventinfo.endtimestamp*1000);
           document.getElementById("eventdetails").innerHTML = `
-          Name: <input type="text" placeholder="${eventinfo.name}">
+          Name: <input type="text" placeholder="${eventinfo.name}"><br>
           Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}">
-          
-          <button>Update Event</button>
+          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${startDate.getMinutes()}"><br>
+          End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}">
+          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}"><br>
+          Description: <input type="text" placeholder="${eventinfo.description}">
+          <br><button onclick="
+          GET()
+          ">Update Event</button>
           `;
         }));
       }
