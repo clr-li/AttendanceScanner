@@ -118,18 +118,33 @@
           var startDate = new Date(eventinfo.starttimestamp*1000);
           var endDate = new Date(eventinfo.endtimestamp*1000);
           document.getElementById("eventdetails").innerHTML = `
-          Name: <input type="text" placeholder="${eventinfo.name}"><br>
-          Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}">
-          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${startDate.getMinutes()}"><br>
-          End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}">
-          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}"><br>
-          Description: <input type="text" placeholder="${eventinfo.description}">
-          <br><button onclick="
-          GET()
-          ">Update Event</button>
+          Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
+          Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
+          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${startDate.getMinutes()}" id="update-starttime"><br>
+          End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
+          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}" id="update-endtime"><br>
+          Description: <input type="text" value="${eventinfo.description}" id="update-description">
+          <br><button id="update">Update Event</button>
           `;
+        
+          document.getElementById('update').onclick = () => {
+            const name = document.getElementById('update-name').value;
+            const description = document.getElementById('update-description').value;
+
+            const startdate = document.getElementById('update-startdate').value;
+            const starttime = document.getElementById('update-starttime').value;
+            const enddate = document.getElementById('update-enddate').value;
+            const endtime = document.getElementById('update-endtime').value;
+            const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
+            const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
+            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}`).then((res) => {
+              console.log(res.status);
+              updateEvents();
+            })
+          }
         }));
       }
+      
       selectizeControl.on('change', getEventData);
       
       document.getElementById('scan').onclick = () => {
