@@ -36,3 +36,7 @@ export async function POST(url, data) {
     body: JSON.stringify(data)
   });
 }
+
+export function parseJwt(token) {
+    return JSON.parse(ethereumjs.Buffer.Buffer.from(token.split('.')[1], 'base64').toString());
+}
