@@ -115,7 +115,9 @@
       function getEventData() {
         let eventid = selectizeControl.getValue();
         GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
-          document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
+          document.getElementById("eventdetails").innerHTML = `
+          Name: ${eventinfo.name} <input type="text" placeholder="New event name">
+          `;
         }));
       }
       selectizeControl.on('change', getEventData);
