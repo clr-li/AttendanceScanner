@@ -67,7 +67,7 @@
           var endDate = new Date(event.endtimestamp*1000);
           option.innerHTML = event.name + " &#8212; " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
-          option.classList.add("event");
+          option.classList.add('event');
           document.getElementById('events').appendChild(option);
         });
         $('#events').selectize({
