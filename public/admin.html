@@ -65,12 +65,13 @@
           var startDate = new Date(event.starttimestamp*1000);
           var endDate = new Date(event.endtimestamp*1000);
           option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
-          option.id = event.id;
-          options.push(`<div data-id="${option.id}>${}"`);
+          option["data-id"] = event.id;
+          options.push(option);
         });
+        console.log(options)
         select = $('#events').selectize({
             placeholder: "Pick an event...",
-            valueField: 'title',
+            valueField: 'data-id',
             labelField: 'title',
             searchField: 'title',
             sortField: 'title',
@@ -107,24 +108,22 @@
       }
     }
       
-    document.getElementById('scan').onclick = () => {
-      let id = document.getElementById('events').firstChild.id;
-      window.open(`scanner.html?eventid=${id}`)
-    };
-      
     document.body.onload = async () => {
       GET('/business').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
       await updateEvents();
       
       function getEventData() {
-        console.log(selectizeControl.getOption('id'))
-        let eventid = selectizeControl.getOption('id').id;
+        let eventid = selectizeControl.getValue();
         GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
           document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
         }));
       }
       selectizeControl.on('change', getEventData);
-      // document.getElementById('events').onchange = getEventData;
+      
+      document.getElementById('scan').onclick = () => {
+        let id = selectizeControl.getValue();
+        window.open(`scanner.html?eventid=${id}`)
+      };
     };
     </script>
   </body>
