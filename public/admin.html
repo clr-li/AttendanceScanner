@@ -66,7 +66,7 @@
           var endDate = new Date(event.endtimestamp*1000);
           option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
           option.id = event.id;
-          options.push(option);
+          options.push(`<div data-id="${option.id}>${}"`);
         });
         select = $('#events').selectize({
             placeholder: "Pick an event...",
@@ -117,7 +117,8 @@
       await updateEvents();
       
       function getEventData() {
-        let eventid = document.getElementById('events').firstChild.id;
+        console.log(selectizeControl.getOption('id'))
+        let eventid = selectizeControl.getOption('id').id;
         GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
           document.getElementById("eventdetails").innerHTML = "Event Name: " + eventinfo.name;
         }));
