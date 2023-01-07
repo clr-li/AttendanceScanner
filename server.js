@@ -190,11 +190,17 @@ app.get("/attendancedata", async function(request, response) {
     }
     
     const eventid = request.query.eventid;
-    if (typeof eventid != "string" && typeof eventid != "number") throw "Invalid input";
+    const userid = request.query.userid;
+    if ((eventid != "*" && typeof eventid != "number") || typeof userid != "string") throw "Invalid input";
     
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-    const eventinfo = await asyncGet(`SELECT * FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
-    response.send(eventinfo);
+    if (eventid == "*" && userid == "*") {
+      
+    } else if (eventid == "*") {
+      
+    } else if ()
+    const attendanceinfo = await asyncGet(`SELECT * FROM "${table.AttendanceTable}" WHERE id = ?`, [eventid]);
+    response.send(attendanceinfo);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
