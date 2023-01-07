@@ -193,14 +193,15 @@ app.get("/attendancedata", async function(request, response) {
     if (typeof userid != "string") throw new Error("Invalid input");
     
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    let sql = `SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
     if (eventid == "*" && userid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id ORDER BY ""${table.AttendanceTable}.timestamp DESC GROUP BY Users.id, ${table.AttendanceTable}.eventid`);
+      var attendanceinfo = await asyncAll(sql);
     } else if (eventid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE userid = ?`, [userid]);
+      var attendanceinfo = await asyncAll(sql + "WHERE userid = ?", [userid]);
     } else if (userid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ?`, [eventid]);
+      var attendanceinfo = await asyncAll(sql + "WHERE eventid = ?", [eventid]);
     } else {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ? AND userid = ?`, [eventid, userid]);
+      var attendanceinfo = await asyncAll(sql + "WHERE eventid = ? AND userid = ?", [eventid, userid]);
     }
     response.send(attendanceinfo);
   } catch (err) {

@@ -147,13 +147,12 @@
       selectizeControl.on('change', getEventData);
       let attendancearr = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
       console.log(attendancearr);
+      let map = new Map();
       let html = "<tr><th>Name (id)</th>"; 
       for (let i = 0; i < attendancearr.length; i++) {
-        html += `
-        <tr>
-          <th></th>
-        </tr>
-        `;
+        if(!map.containsKey(attendancearr[i].userid)) {
+          map.put(attendancearr[i].userid, attendancearr[i]);
+        }
       }
       document.getElementById("attendancetable").innerHTML = html;
     };
