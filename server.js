@@ -194,13 +194,13 @@ app.get("/attendancedata", async function(request, response) {
     
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     if (eventid == "*" && userid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, AttendanceTable.* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id`);
+      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id`);
     } else if (eventid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, AttendanceTable.* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE userid = ?`, [userid]);
+      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE userid = ?`, [userid]);
     } else if (userid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, AttendanceTable.* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ?`, [eventid]);
+      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ?`, [eventid]);
     } else {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, AttendanceTable.* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ? AND userid = ?`, [eventid, userid]);
+      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE eventid = ? AND userid = ?`, [eventid, userid]);
     }
     response.send(attendanceinfo);
   } catch (err) {

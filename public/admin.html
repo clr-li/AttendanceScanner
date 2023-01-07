@@ -145,14 +145,17 @@
       }
       
       selectizeControl.on('change', getEventData);
-      let attendancearr = await (await GET(`/attendancedata?eventid="*"&userid="*"`)).json();
+      let attendancearr = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
+      console.log(attendancearr);
+      let html = "<tr><th>Name (id)</th>"; 
       for (let i = 0; i < attendancearr.length; i++) {
-        document.getElementById("attendancetable").innerHTML += `
+        html += `
         <tr>
           <th></th>
         </tr>
         `;
       }
+      document.getElementById("attendancetable").innerHTML = html;
     };
     </script>
   </body>
