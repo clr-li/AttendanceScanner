@@ -176,6 +176,31 @@ app.get("/recordAttendance", async (request, response) => {
   }
 });
 
+app.get("/attendancedata", async function(request, response) {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
+      response.sendStatus(403);
+      return;
+    }
+    
+    const eventid = request.query.eventid;
+    if (typeof eventid != "string" && typeof eventid != "number") throw "Invalid input";
+    
+    const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    const eventinfo = await asyncGet(`SELECT * FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
+    response.send(eventinfo);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
 app.get("/makeEvent", async function(request, response) {
   try {
     const uid = await getUID(request.headers.idtoken);

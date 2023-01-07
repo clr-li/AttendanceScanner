@@ -26,9 +26,6 @@
     <div>
       <p id="eventdetails"></p>
     </div>
-    <button id="scan">
-      Scanner
-    </button><br>
     <button id="newevent"> 
       New Event
     </button>
@@ -121,8 +118,14 @@
           End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}" id="update-endtime"><br>
           Description: <input type="text" value="${eventinfo.description}" id="update-description">
           <br><button id="update">Update Event</button>
+          <button id="scan">
+            Scanner
+          </button><br>
           `;
-        
+          document.getElementById('scan').onclick = () => {
+            let id = selectizeControl.getValue();
+            window.open(`scanner.html?eventid=${id}`)
+          };
           document.getElementById('update').onclick = () => {
             const name = document.getElementById('update-name').value;
             const description = document.getElementById('update-description').value;
@@ -143,11 +146,6 @@
       }
       
       selectizeControl.on('change', getEventData);
-      
-      document.getElementById('scan').onclick = () => {
-        let id = selectizeControl.getValue();
-        window.open(`scanner.html?eventid=${id}`)
-      };
     };
     </script>
   </body>
