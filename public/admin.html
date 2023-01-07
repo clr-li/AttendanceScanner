@@ -27,8 +27,7 @@
     <button id="newevent"> 
       New Event
     </button>
-    <table id="displayattendance"></table>
-    <form id="eventform" style="visibility: hidden;">
+    <form id="eventform" style="display: none;">
       <label for="name">Event Name: </label>
       <input type="text" id="name" name="name">
       <label for="description">Description: </label>
@@ -43,6 +42,7 @@
       <input type="time" id="endtime" name="endtime"><br>
       <input type="button" value="Submit" id="submitevent">
     </form>
+    <table id="displayattendance"></table>
     
     <script type="module">
     import {GET, POST} from './util.js';
@@ -52,27 +52,26 @@
     let events;
     async function updateEvents() {
       let options = [];
-      await GET('/events').then((res) => res.json().then((events) => {
-        events.forEach(event => {
-          let option = {};
-          events
-          var startDate = new Date(event.starttimestamp*1000);
-          var endDate = new Date(event.endtimestamp*1000);
-          option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
-          option["data-id"] = event.id;
-          options.push(option);
-        });
-        console.log(options)
-        select = $('#events').selectize({
-            placeholder: "Pick an event...",
-            valueField: 'data-id',
-            labelField: 'title',
-            searchField: 'title',
-            sortField: 'title',
-            options: options
-        });
-        selectizeControl = select[0].selectize;
-      }));
+      let res = await GET('/events');
+      events = await res.json();
+      events.forEach(event => {
+        let option = {};
+        var startDate = new Date(event.starttimestamp*1000);
+        var endDate = new Date(event.endtimestamp*1000);
+        option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
+        option["data-id"] = event.id;
+        options.push(option);
+      });
+      console.log(options)
+      select = $('#events').selectize({
+          placeholder: "Pick an event...",
+          valueField: 'data-id',
+          labelField: 'title',
+          searchField: 'title',
+          sortField: 'title',
+          options: options
+      });
+      selectizeControl = select[0].selectize;
     }
       
     document.getElementById('submitevent').addEventListener('click', () => {
@@ -95,10 +94,10 @@
     });
           
     document.getElementById('newevent').onclick = () => {
-      if (document.getElementById('eventform').style.visibility == 'visible') {
-        document.getElementById('eventform').style.visibility = 'hidden';
+      if (document.getElementById('eventform').style.display == 'block') {
+        document.getElementById('eventform').style.display = 'none';
       } else {
-        document.getElementById('eventform').style.visibility = 'visible';
+        document.getElementById('eventform').style.display = 'block';
       }
     }
       
@@ -157,11 +156,16 @@
         map.get(attendancearr[i].userid).push(attendancearr[i]);
       }
       let html = "<tr><th>Name (id)</th>"; 
-      for (let i = 0; i < )
+      for (let i = 0; i < events.length; i++) {
+        var startDate = new Date(events[i].starttimestamp*1000);
+        var endDate = new Date(events[i].endtimestamp*1000);
+        html += `<th>${events[i].name}: ${startDate.toDateString()} to ${endDate.toDateString()}</th>`;
+      }
+      html += "</tr>";
       for (let i = 0; i < map.keys.length; i++) {
         
       }
-      // document.getElementById("attendancetable").innerHTML = html;
+      document.getElementById("displayattendance").innerHTML = html;
     };
     </script>
   </body>
