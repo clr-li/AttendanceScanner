@@ -194,7 +194,7 @@ app.get("/attendancedata", async function(request, response) {
     
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     if (eventid == "*" && userid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id`);
+      var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id ORDER BY ""${table.AttendanceTable}.timestamp DESC GROUP BY Users.id, ${table.AttendanceTable}.eventid`);
     } else if (eventid == "*") {
       var attendanceinfo = await asyncAll(`SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON ${table.AttendanceTable}.userid = Users.id WHERE userid = ?`, [userid]);
     } else if (userid == "*") {
