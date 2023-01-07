@@ -23,10 +23,11 @@
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
-    <p id="eventdetails"></p>
+    <div id="eventdetails"></div>
     <button id="newevent"> 
       New Event
     </button>
+    <table id="displayattendance"></table>
     <form id="eventform" style="visibility: hidden;">
       <label for="name">Event Name: </label>
       <input type="text" id="name" name="name">
@@ -144,7 +145,14 @@
       }
       
       selectizeControl.on('change', getEventData);
-      console.log(await (await GET(`/attendancedata?eventid=${-1}&userid=${'hgh16Ss67PhWsD8sca3FiotlFFv2'}`)).json());
+      let attendancearr = await (await GET(`/attendancedata?eventid="*"&userid="*"`)).json();
+      for (let i = 0; i < attendancearr.length; i++) {
+        document.getElementById("attendancetable").innerHTML += `
+        <tr>
+          <th></th>
+        </tr>
+        `;
+      }
     };
     </script>
   </body>

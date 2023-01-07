@@ -202,6 +202,7 @@ app.get("/attendancedata", async function(request, response) {
     } else {
       var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ? AND userid = ?`, [eventid, userid]);
     }
+    const userdetails = await asyncAll(SELECT)
     response.send(attendanceinfo);
   } catch (err) {
     console.error(err.message);
