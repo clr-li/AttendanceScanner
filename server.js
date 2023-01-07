@@ -196,13 +196,12 @@ app.get("/attendancedata", async function(request, response) {
     if (eventid == "*" && userid == "*") {
       var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}"`);
     } else if (eventid == "*") {
-      var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE userid = ?`, [userid]);
+      var attendanceinfo = await asyncAll(`SELECT sf,hgdadkuGDH FROM "${table.AttendanceTable}" WHERE userid = ?`, [userid]);
     } else if (userid == "*") {
       var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ?`, [eventid]);
     } else {
       var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ? AND userid = ?`, [eventid, userid]);
     }
-    const userdetails = await asyncAll(SELECT)
     response.send(attendanceinfo);
   } catch (err) {
     console.error(err.message);
