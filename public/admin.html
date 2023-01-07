@@ -163,7 +163,12 @@
       }
       html += "</tr>";
       for (let i = 0; i < map.keys.length; i++) {
-        
+        let userid = map.keys[i];
+        let records = map.get(userid);
+        html += `<tr><td>${records[0].name}</td>`;
+        for (let j = 0; j < events.length; j++) {        
+          if ( )
+        }
       }
       document.getElementById("displayattendance").innerHTML = html;
     };
