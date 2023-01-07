@@ -23,9 +23,7 @@
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
-    <div>
-      <p id="eventdetails"></p>
-    </div>
+    <p id="eventdetails"></p>
     <button id="newevent"> 
       New Event
     </button>
@@ -146,9 +144,8 @@
       }
       
       selectizeControl.on('change', getEventData);
+      console.log(await (await GET(`/attendancedata?eventid=${-1}&userid=${'hgh16Ss67PhWsD8sca3FiotlFFv2'}`)).json());
     };
-      
-      console.log(GET(`/attendancedata?eventid=${-1}&userid=${'hgh16Ss67PhWsD8sca3FiotlFFv2'}`));
     </script>
   </body>
 </html>

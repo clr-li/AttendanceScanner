@@ -190,19 +190,17 @@ app.get("/attendancedata", async function(request, response) {
     }
     const eventid = request.query.eventid;
     const userid = request.query.userid;
-    console.log((eventid != "*" && typeof eventid != "number"));
-    console.log(typeof userid != "string");
-    if ((eventid != "*" && typeof eventid != "number") || typeof userid != "string") throw new Error("Invalid input");
+    if (typeof userid != "string") throw new Error("Invalid input");
     
     const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     if (eventid == "*" && userid == "*") {
-      var attendanceinfo = await asyncGet(`SELECT * FROM "${table.AttendanceTable}"`);
+      var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}"`);
     } else if (eventid == "*") {
-      var attendanceinfo = await asyncGet(`SELECT * FROM "${table.AttendanceTable}" WHERE userid = ?`, [userid]);
+      var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE userid = ?`, [userid]);
     } else if (userid == "*") {
-      var attendanceinfo = await asyncGet(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ?`, [eventid]);
+      var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ?`, [eventid]);
     } else {
-      var attendanceinfo = await asyncGet(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ?, userid = ?`, [eventid, userid]);
+      var attendanceinfo = await asyncAll(`SELECT * FROM "${table.AttendanceTable}" WHERE eventid = ? AND userid = ?`, [eventid, userid]);
     }
     response.send(attendanceinfo);
   } catch (err) {
