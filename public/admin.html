@@ -49,11 +49,13 @@
       
     let selectizeControl;
     let select;
+    let events;
     async function updateEvents() {
       let options = [];
       await GET('/events').then((res) => res.json().then((events) => {
         events.forEach(event => {
           let option = {};
+          events
           var startDate = new Date(event.starttimestamp*1000);
           var endDate = new Date(event.endtimestamp*1000);
           option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
@@ -148,13 +150,18 @@
       let attendancearr = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
       console.log(attendancearr);
       let map = new Map();
-      let html = "<tr><th>Name (id)</th>"; 
       for (let i = 0; i < attendancearr.length; i++) {
-        if(!map.containsKey(attendancearr[i].userid)) {
-          map.put(attendancearr[i].userid, attendancearr[i]);
+        if(!map.has(attendancearr[i].userid)) {
+          map.set(attendancearr[i].userid, []);
         }
+        map.get(attendancearr[i].userid).push(attendancearr[i]);
       }
-      document.getElementById("attendancetable").innerHTML = html;
+      let html = "<tr><th>Name (id)</th>"; 
+      for (let i = 0; i < )
+      for (let i = 0; i < map.keys.length; i++) {
+        
+      }
+      // document.getElementById("attendancetable").innerHTML = html;
     };
     </script>
   </body>
