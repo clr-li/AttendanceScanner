@@ -62,7 +62,6 @@
         option["data-id"] = event.id;
         options.push(option);
       });
-      console.log(options)
       select = $('#events').selectize({
           placeholder: "Pick an event...",
           valueField: 'data-id',
@@ -147,7 +146,6 @@
       
       selectizeControl.on('change', getEventData);
       let attendancearr = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
-      console.log(attendancearr);
       let map = new Map();
       for (let i = 0; i < attendancearr.length; i++) {
         if(!map.has(attendancearr[i].userid)) {
@@ -165,10 +163,7 @@
       for (let i = 0; i < [...map.keys()].length; i++) {
         let userid = [...map.keys()][i];
         let records = map.get(userid);
-        console.log(map);
-        console.log(records);
-        console.log(events);
-        html += `<tr><td>${records[0].FirstName} ${records[0].LastName}</td>`;
+        html += `<tr><td>${records[0].FirstName} ${records[0].LastName} (${userid.substr(0,4)})</td>`;
         for (let j = 0; j < events.length; j++) {   
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
@@ -179,7 +174,7 @@
             }
           }
           if (!statusupdate) {
-            html += `<td></td>`;
+            html += `<td>N/A</td>`;
           }
         }
         html += "</tr>";
