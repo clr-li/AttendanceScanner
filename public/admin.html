@@ -162,12 +162,17 @@
         html += `<th>${events[i].name}: ${startDate.toDateString()} to ${endDate.toDateString()}</th>`;
       }
       html += "</tr>";
-      for (let i = 0; i < map.keys.length; i++) {
-        let userid = map.keys[i];
+      console.log(map.keys());
+      for (let i = 0; i < map.keys().length; i++) {
+        let userid = map.keys()[i];
         let records = map.get(userid);
+        console.log(map);
+        console.log(records);
         html += `<tr><td>${records[0].name}</td>`;
         for (let j = 0; j < events.length; j++) {        
-          if ( )
+          for (let k = 0; k < records.length; k++) {
+            //if (records.includes())
+          }
         }
       }
       document.getElementById("displayattendance").innerHTML = html;
