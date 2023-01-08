@@ -157,7 +157,7 @@
       for (let i = 0; i < events.length; i++) {
         var startDate = new Date(events[i].starttimestamp*1000);
         var endDate = new Date(events[i].endtimestamp*1000);
-        html += `<th>${events[i].name}: ${startDate.toDateString()} to ${endDate.toDateString()}</th>`;
+        html += `<th>${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
       }
       html += "</tr>";
       for (let i = 0; i < [...map.keys()].length; i++) {
