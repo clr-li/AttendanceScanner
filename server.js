@@ -258,12 +258,35 @@ app.get("/updateevent", async function(request, response) {
     const starttimestamp = request.query.starttimestamp;
     const endtimestamp = request.query.endtimestamp;
     const eventid = request.query.eventid;
-    console.log(name);
     if (typeof name != "string" || typeof description != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
 
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     await asyncRun(`UPDATE "${table.eventtable}" SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE id = ?`,
                   [name, starttimestamp, endtimestamp, description, eventid]);
+    response.sendStatus(200);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
+app.get("/deleteevent", async function(request, response) {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
+      response.sendStatus(403);
+      return;
+    }
+
+    const eventid = request.query.eventid;
+
+    const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    await asyncRun(`DELETE FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);

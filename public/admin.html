@@ -116,14 +116,22 @@
           End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
           End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}" id="update-endtime"><br>
           Description: <input type="text" value="${eventinfo.description}" id="update-description">
-          <br><button id="update">Update Event</button>
+          <br><button id="update">Update Event</button><br>
+          <button id="delete">Delete Event</button><br>
           <button id="scan">
             Scanner
-          </button><br>
+          </button><br><br>
           `;
           document.getElementById('scan').onclick = () => {
             let id = selectizeControl.getValue();
             window.open(`scanner.html?eventid=${id}`)
+          };
+          document.getElementById('delete').onclick = () => {
+            GET(`/deleteevent?eventid=${eventid}`).then((res) => {
+              console.log(res.status);
+              selectizeControl.removeOption(eventid)
+            })
+            
           };
           document.getElementById('update').onclick = () => {
             const name = document.getElementById('update-name').value;
