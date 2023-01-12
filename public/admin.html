@@ -85,6 +85,7 @@
       const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
       const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
       
+      
       const userids = "*";
       GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
         console.log(res.status);
@@ -129,7 +130,8 @@
           document.getElementById('delete').onclick = () => {
             GET(`/deleteevent?eventid=${eventid}`).then((res) => {
               console.log(res.status);
-              selectizeControl.removeOption(eventid)
+              selectizeControl.removeOption(eventid);
+              document.getElementById("eventdetails").innerHTML = "";
             })
             
           };
