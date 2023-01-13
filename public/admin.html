@@ -93,11 +93,12 @@
       GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
         console.log(res.status);
         let option = {};
-        var startDate = new Date(event.starttimestamp*1000);
-        var endDate = new Date(event.endtimestamp*1000);
+        var startDate = new Date(starttimestamp*1000);
+        var endDate = new Date(endtimestamp*1000);
         option.title = name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
-        option["data-id"] = event.id;
+        option["data-id"] = res.id;
         selectizeControl.addOption(option);
+        selectizeControl.addItem(res.id);
       });
     });
           

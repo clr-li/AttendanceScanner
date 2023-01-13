@@ -233,8 +233,9 @@ app.get("/makeEvent", async function(request, response) {
     const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     await asyncRun(`INSERT INTO "${table.eventtable}" (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
                   [name, starttimestamp, endtimestamp, userids, description]);
-    response.sendStatus(200);
-    response.send()
+    const eventid = await asyncGet(`SELECT last_insert_rowid() FROM "${table.eventtable}"`);
+    response.status(200);
+    response.send(eventid);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
