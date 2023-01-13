@@ -92,7 +92,12 @@
       const userids = "*";
       GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
         console.log(res.status);
-        updateEvents();
+        let option = {};
+        var startDate = new Date(event.starttimestamp*1000);
+        var endDate = new Date(event.endtimestamp*1000);
+        option.title = name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
+        option["data-id"] = event.id;
+        selectizeControl.addOption(option);
       });
     });
           
@@ -134,7 +139,6 @@
             GET(`/deleteevent?eventid=${eventid}`).then((res) => {
               console.log(res.status);
               selectizeControl.removeOption(eventid);
-              document.getElementById("eventdetails").innerHTML = "";
             })
             
           };

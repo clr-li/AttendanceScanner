@@ -234,6 +234,7 @@ app.get("/makeEvent", async function(request, response) {
     await asyncRun(`INSERT INTO "${table.eventtable}" (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
                   [name, starttimestamp, endtimestamp, userids, description]);
     response.sendStatus(200);
+    response.send()
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
