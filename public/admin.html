@@ -61,7 +61,10 @@
         option.title = event.name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
         option["data-id"] = event.id;
         options.push(option);
-      });
+      });      
+      if (selectizeControl) {
+        selectizeControl.destroy();
+      }
       select = $('#events').selectize({
           placeholder: "Pick an event...",
           valueField: 'data-id',
