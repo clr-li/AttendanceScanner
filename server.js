@@ -143,6 +143,31 @@ app.get("/joincode", async (request, response) => {
   }
 });
 
+app.get("/join", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+
+    const businessId = request.query.id;
+    const joincode = request.query.code;
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    // const email = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const row = await asyncGet(`SELECT joincode, usertable, pendingemails FROM Businesses WHERE id = ?`, [id]);
+    if (row.joincode === joincode) {
+        await asyncRun(`INSERT INTO "${row.usertable}" (userid, role) VALUES (?, 'user')`, [uid]);
+      response.sendStatus(200);
+    } else {
+      response.sendStatus(403);
+    }
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
 app.get("/events", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
