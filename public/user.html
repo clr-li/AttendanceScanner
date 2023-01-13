@@ -33,17 +33,12 @@
     <script type="module">
       import {GET, POST} from './util.js';
 
-      let lastBusinessId = -1;
       function onScanSuccess(decodedText, decodedResult) {
         // Handle on success condition with the decoded text or result.
         html5QrcodeScanner.pause();
         console.log(`Scan result: ${decodedText}`, decodedResult);
-        let url = new URL(window.location);
-        let params = url.searchParams;
-        let eventid = params.get('eventid');
-        if (lastBusinessId != decodedText) {
-          html5QrcodeScanner.resume();
-          lastUserId = decodedText;
+        if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
+          window.location = decodedText;
         } else {
           html5QrcodeScanner.resume();
         }
@@ -52,6 +47,15 @@
       let html5QrcodeScanner = new Html5QrcodeScanner(
         "reader", { fps: 10, qrbox: 250 });
       html5QrcodeScanner.render(onScanSuccess);
+      
+      
+      let url = new URL(window.location);
+      let params = url.searchParams;
+      let businessId = params.get('id');
+      let joincode = params.get('code');
+      if (businessId && joincode) {
+        console.log("joined: " + businessId + "_" + joincode);
+      }
     </script>
   </body>
 </html>
