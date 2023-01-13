@@ -153,11 +153,10 @@ app.get("/join", async (request, response) => {
 
     const businessId = request.query.id;
     const joincode = request.query.code;
-    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
     // const email = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-    const row = await asyncGet(`SELECT joincode, usertable, pendingemails FROM Businesses WHERE id = ?`, [id]);
+    const row = await asyncGet(`SELECT joincode, usertable, pendingemails FROM Businesses WHERE id = ?`, [businessId]);
     if (row.joincode === joincode) {
-        await asyncRun(`INSERT INTO "${row.usertable}" (userid, role) VALUES (?, 'user')`, [uid]);
+        await asyncRun(`INSERT OR IGNORE INTO "${row.usertable}" (userid, role) VALUES (?, 'user')`, [uid]);
       response.sendStatus(200);
     } else {
       response.sendStatus(403);

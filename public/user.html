@@ -55,6 +55,7 @@
       let joincode = params.get('code');
       if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
+        GET(`/join?id=${businessId}&code=${joincode}`);
       }
     </script>
   </body>
