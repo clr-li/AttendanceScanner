@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     
+    <!--   Import QR generating capabilities   -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
@@ -22,7 +25,16 @@
     <h2 id="businessname"></h2>
     <h3>Join Info</h3>
     <div></div>
-    <a href="">Join</a>
+    <a href="">Join Link</a>
+    <script type="module">
+      import {GET, POST} from './util.js';
+      let res = await GET('/joincode');
+      let data = await res.json();
+      let joincode = data.joincode;
+      let businessId = data.id;
+      let joinlink = "https://attendancescannerqr.web.app/user.html?id=" + businessId
+      new QRCode(document.getElementById("qrcode"), );
+    </script>
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>

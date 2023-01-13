@@ -126,6 +126,23 @@ app.get("/business", async (request, response) => {
   }
 });
 
+app.get("/joincode", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+
+    const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+    const row = await asyncGet(`SELECT id, joincode FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    response.send(row);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
 app.get("/events", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
