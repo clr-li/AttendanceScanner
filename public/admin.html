@@ -90,15 +90,18 @@
       
       
       const userids = "*";
-      GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then((res) => { 
+      GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then(async (res) => { 
         console.log(res.status);
+        let id = (await res.json())["last_insert_rowid()"];
         let option = {};
         var startDate = new Date(starttimestamp*1000);
         var endDate = new Date(endtimestamp*1000);
         option.title = name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
-        option["data-id"] = res.id;
+        option["data-id"] = id;
+        console.log(option)
         selectizeControl.addOption(option);
-        selectizeControl.addItem(res.id);
+        selectizeControl.refreshOptions();
+        selectizeControl.addItem(id);
       });
     });
           
