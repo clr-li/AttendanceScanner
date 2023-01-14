@@ -8,6 +8,9 @@ let corsOptions = {
 }
 app.use(cors(corsOptions))
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 const https = require('https');
 const { exec } = require("child_process"); 
 
@@ -140,9 +143,15 @@ app.get("/clientToken", async (request, response) => {
 });
 
 app.post("/checkout", (req, res) => {
-  console.log('Got body:', req.body);
   const nonceFromTheClient = req.body.nonce;
-  // Use payment method nonce here
+  gateway.transaction.sale({
+  amount: "10.00",
+  paymentMethodNonce: nonceFromTheClient,
+  deviceData: deviceDataFromTheClient,
+  options: {
+    submitForSettlement: true
+  }
+}).then(result => { });
 });
 
 app.get("/business", async (request, response) => {
