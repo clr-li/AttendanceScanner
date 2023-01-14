@@ -14,12 +14,16 @@
     <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
   </head>
   <body>
-    <div id="dropin-container"></div>
+    <form id="payment-form" action="/route/on/your/server" method="post">
+      <div id="dropin-container"></div>
+      <input type="submit" />
+      <input type="hidden" id="nonce" name="payment_method_nonce"/>
+    </form>
 
     <script type="module">
       import {GET, POST} from './util.js';
       
-      GET("/clientToken").then(res => res.json().then(token => {
+      GET("/clientToken").then(res => res.text().then(token => {
         braintree.dropin.create({
           authorization: token,
           container: document.getElementById('dropin-container'),
