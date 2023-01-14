@@ -142,9 +142,9 @@
           document.getElementById("eventdetails").innerHTML = `
           Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
           Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
-          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${startDate.getMinutes()}" id="update-starttime"><br>
+          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
           End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
-          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${endDate.getMinutes()}" id="update-endtime"><br>
+          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
           Description: <input type="text" value="${eventinfo.description}" id="update-description">
           <br><button id="update">Update Event</button><br>
           <button id="delete">Delete Event</button><br>
