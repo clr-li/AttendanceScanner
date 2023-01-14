@@ -144,15 +144,16 @@ app.get("/clientToken", async (request, response) => {
 
 app.post("/checkout", (req, res) => {
   const nonceFromTheClient = req.body.nonce;
-  console.log(req.body.deviceData);
   gateway.transaction.sale({
-  amount: "10.00",
-  paymentMethodNonce: nonceFromTheClient,
-  deviceData: req.body.deviceData,
-  options: {
-    submitForSettlement: true
-  }
-}).then(result => { });
+    amount: "10.00",
+    paymentMethodNonce: nonceFromTheClient,
+    deviceData: req.body.deviceData,
+    options: {
+      submitForSettlement: true
+    }
+  }).then(result => { 
+    console.log(result);
+  });
 });
 
 app.get("/business", async (request, response) => {
