@@ -16,13 +16,17 @@
   <body>
     <div id="dropin-container"></div>
 
-    <script type="text/javascript">
-      braintree.dropin.create({
-        authorization: CLIENT_TOKEN_FROM_SERVER,
-        container: document.getElementById('dropin-container'),
-      }).then((dropinInstance) => {
-        
-      }).catch((error) => {});
+    <script type="module">
+      import {GET, POST} from './util.js';
+      
+      GET("/clientToken").then(res => res.json().then(token => {
+        braintree.dropin.create({
+          authorization: token,
+          container: document.getElementById('dropin-container'),
+        }).then((dropinInstance) => {
+
+        }).catch((error) => {});
+      }));
     </script>
   </body>
 </html>

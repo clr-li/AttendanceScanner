@@ -15,8 +15,8 @@ const braintree = require("braintree");
 const gateway = new braintree.BraintreeGateway({
   environment: braintree.Environment.Sandbox,
   merchantId: process.env.MERCHANTID,
-  publicKey: "useYourPublicKey",
-  privateKey: "useYourPrivateKey"
+  publicKey: process.env.MERCHANTPUBLIC,
+  privateKey: process.env.MERCHANTPRIVATE
 });
 
 var admin = require("firebase-admin");
@@ -120,6 +120,25 @@ const asyncRun = (sql, params=[]) => {
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
+
+app.get("/clientToken", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    
+    let res = await gateway.clientToken.generate({
+      customerId: uid
+    });
+    const clientToken = res.clientToken;
+    response.send(clientToken);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
 
 app.get("/business", async (request, response) => {
   try {
