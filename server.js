@@ -30,7 +30,7 @@ async function getUID(idToken) {
     let decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
     let name = await asyncGet(`SELECT FirstName FROM Users WHERE id=?`, [decodedToken.user_id]);
     if (!name) {
-      await asyncRun(`INSERT INTO Users (FirstName, LastName, BusinessIDs, id) VALUES (?, ?, ?, ?)`, [decodedToken.name.split(" ")[0], decodedToken.name.split(" ")[1], "", decodedToken.user_id]);
+      await asyncRun(`INSERT INTO Users (FirstName, LastName, BusinessIDs, id) VALUES (?, ?, ?, ?)`, [decodedToken.name.split(" ")[0], decodedToken.name.split(" ")[1], "", decodedToken.user_id]);z
     }
     return decodedToken.user_id;
   } catch(error) {
