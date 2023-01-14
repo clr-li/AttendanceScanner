@@ -14,10 +14,9 @@
     <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
   </head>
   <body>
-    <form id="payment-form" action="/route/on/your/server" method="post">
+    <form id="payment-form">
       <div id="dropin-container"></div>
       <input type="submit" />
-      <input type="hidden" id="nonce" name="payment_method_nonce"/>
     </form>
 
     <script type="module">
@@ -33,8 +32,8 @@
           event.preventDefault();
 
           dropinInstance.requestPaymentMethod().then((payload) => {
-            document.getElementById('nonce').value = payload.nonce;
-            console.log(payload.nonce)
+            console.log(payload);
+            POST("/checkout", payload);
           }).catch((error) => { throw error; });
         });
       }).catch((error) => {

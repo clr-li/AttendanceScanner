@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require('body-parser');
 const app = express();
 const fs = require("fs");
 const cors = require('cors')
@@ -136,6 +137,12 @@ app.get("/clientToken", async (request, response) => {
     console.error(err.message);
     response.sendStatus(400);
   }
+});
+
+app.post("/checkout", (req, res) => {
+  console.log('Got body:', req.body);
+  const nonceFromTheClient = req.body.nonce;
+  // Use payment method nonce here
 });
 
 app.get("/business", async (request, response) => {
