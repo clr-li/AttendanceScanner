@@ -10,6 +10,14 @@ app.use(cors(corsOptions))
 const https = require('https');
 const { exec } = require("child_process"); 
 
+const braintree = require("braintree");
+
+const gateway = new braintree.BraintreeGateway({
+  environment: braintree.Environment.Sandbox,
+  merchantId: process.env.MERCHANTID,
+  publicKey: "useYourPublicKey",
+  privateKey: "useYourPrivateKey"
+});
 
 var admin = require("firebase-admin");
 admin.initializeApp({

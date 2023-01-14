@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Attendance Scanner</title>
+    <meta name="description" content="A program to automate attendance">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    
+    <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
+  </head>
+  <body>
+    <div id="dropin-container"></div>
+
+    <script type="text/javascript">
+      braintree.dropin.create({
+        authorization: CLIENT_TOKEN_FROM_SERVER,
+        container: document.getElementById('dropin-container'),
+      }).then((dropinInstance) => {
+        
+      }).catch((error) => {});
+    </script>
+  </body>
+</html>
