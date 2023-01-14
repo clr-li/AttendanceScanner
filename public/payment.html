@@ -11,7 +11,10 @@
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     
+    <!-- Payment with Braintree -->
     <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.88.6/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.88.6/js/data-collector.min.js"></script>
   </head>
   <body>
     <form id="payment-form">
@@ -24,21 +27,37 @@
       
       const form = document.getElementById('payment-form');
       GET("/clientToken").then(res => res.text().then(token => {
-        braintree.dropin.create({
-          authorization: token,
-          container: document.getElementById('dropin-container'),
-        }).then((dropinInstance) => {
-          form.addEventListener('submit', (event) => {
-          event.preventDefault();
+        braintree.client.create({
+          authorization: token
+        }).then(function (clientInstance) {
+          // Creation of any other components...
+          braintree.dropin.create({
+            authorization: token,
+            container: document.getElementById('dropin-container'),
+          }).then((dropinInstance) => {
+            form.addEventListener('submit', (event) => {
+              event.preventDefault();
 
-          dropinInstance.requestPaymentMethod().then((payload) => {
-            console.log(payload);
-            POST("/checkout", payload);
-          }).catch((error) => { throw error; });
+              dropinInstance.requestPaymentMethod().then((payload) => {
+                console.log(payload);
+                payload.deviceData = localStorage.getItem("device-data");
+                POST("/checkout", payload);
+              }).catch((error) => { throw error; });
+            });
+          }).catch((error) => {
+            // handle errors
+          });
+
+          // device data collection
+          return braintree.dataCollector.create({
+            client: clientInstance
+          }).then(function (dataCollectorInstance) {
+            var deviceData = dataCollectorInstance.deviceData;
+            localStorage.setItem("device-data", deviceData);
+          });
+        }).catch(function (err) {
+          // Handle error in creation of components
         });
-      }).catch((error) => {
-        // handle errors
-      });
       }));
     </script>
   </body>
