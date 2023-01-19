@@ -24,7 +24,8 @@ const gateway = new braintree.BraintreeGateway({
 });
 
 const PLAN_IDS = {
-  STANDARD_PLAN = "n2wg";
+  STANDARD: "n2wg"
+};
 
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -181,7 +182,7 @@ app.post("/checkout", async (request, response) => {
     let paymentToken;
     if (user.Customer_id) { // customer already exists in braintree vault
       const customer = await gateway.customer.find("" + user.Customer_id);
-      paymentToken = customer.paymentMethods[0].token; // e.g f28wm
+      paymentToken = customer.paymentMethods.find(element => element.default).token; // e.g f28wm
     } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
       const result = await gateway.customer.create({
         firstName: user.FirstName,
@@ -201,7 +202,11 @@ app.post("/checkout", async (request, response) => {
       asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
     }
     
-    console.log(paymentToken)
+    console.log("Added subscription via paymentToken: " + paymentToken)
+    const subscriptionResult = gateway.subscription.create({
+      paymentMethodToken: paymentToken,
+      planId: PLAN_IDS.STANDARD,
+    });
     
     response.sendStatus(200);
   } catch (err) {
