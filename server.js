@@ -23,7 +23,8 @@ const gateway = new braintree.BraintreeGateway({
   privateKey: process.env.MERCHANTPRIVATE
 });
 
-const STANDARD_PLAN_ID = "n2wg";
+const PLAN_IDS = {
+  STANDARD_PLAN = "n2wg";
 
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -127,6 +128,9 @@ const asyncRun = (sql, params=[]) => {
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
+
+// this token authorizes the client to access the payment portal and modify customer payment information
+// if the client is already a customer, we give them access to their braintree customer via the stored id
 app.get("/clientToken", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
@@ -137,7 +141,7 @@ app.get("/clientToken", async (request, response) => {
     
     const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
     const tokenOptions = {};
-    console.log(customerId)
+    console.log("CustomerId requested a client token: " + customerId)
     if (customerId) {
       tokenOptions.customerId = customerId;
       tokenOptions.options = {
@@ -156,11 +160,16 @@ app.get("/clientToken", async (request, response) => {
   }
 });
 
+// we get the paymentNonce from the client (a secure way to communicate payment information)
+// and use it to create a customer in the braintree vault
+// or if the client already has a customer, we get that customer using the stored id
+// then we select the default payment method (as set by the client SDK) of the customer 
+// and use the corresponding paymentMethodToken to subscribe to the payment plan
 app.post("/checkout", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
     if (!uid) {
-      response.sendStatus(401);
+      response.sendStatus(403);
       return;
     }
     
@@ -173,7 +182,7 @@ app.post("/checkout", async (request, response) => {
     if (user.Customer_id) { // customer already exists in braintree vault
       const customer = await gateway.customer.find("" + user.Customer_id);
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
-    } else {
+    } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
       const result = await gateway.customer.create({
         firstName: user.FirstName,
         lastName: user.LastName,
@@ -182,7 +191,7 @@ app.post("/checkout", async (request, response) => {
       });
       if (!result.success) {
           // customer validations, payment method validations or card verification is NOT in order
-          response.sendStatus(403);
+          response.sendStatus(401);
           return;
       }
       const customer = result.customer;
