@@ -23,6 +23,8 @@ const gateway = new braintree.BraintreeGateway({
   privateKey: process.env.MERCHANTPRIVATE
 });
 
+const STANDARD_PLAN_ID = "n2wg";
+
 var admin = require("firebase-admin");
 admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
