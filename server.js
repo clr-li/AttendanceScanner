@@ -308,19 +308,30 @@ app.get("/cancelSubscription", async (request, response) => {
       return;
     }
     
+    const subscriptionId = request.query.id;
+    
     const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
     if (!customerId) {
         response.sendStatus(401);
         return;
     }
     const customer = await gateway.customer.find("" + customerId);
-    let subscriptions = [];
     
+    let subscriptions = [];
     customer.paymentMethods.forEach(paymentMethod => {
       subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
     });
     
-    response.sendStatus(200);
+    for (let i = 0; i < subscriptions.length; i++) {
+      let subscription = subscriptions[i];
+      if (subscription.id === subscriptionId) {
+        await gateway.subscription.cancel(subscriptionId);
+        response.sendStatus(200);
+        return
+      }
+    }
+    
+    response.sendStatus(403); // subscription is not owned by customer
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);

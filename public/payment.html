@@ -17,10 +17,25 @@
     <script src="https://js.braintreegateway.com/web/3.88.6/js/data-collector.min.js"></script>
   </head>
   <body>
-    <form id="payment-form">
-      <div id="dropin-container"></div>
-      <button type="submit">Purchase Standard Subscription</button>
-    </form>
+    <section id="subscriptions">
+      <h1>
+        Manage Subscriptions
+      </h1>
+    </section>
+    
+    <section>
+      <h2>
+        Add Subscriptions
+      </h2>
+      <form id="payment-form">
+        <div id="dropin-container"></div>
+        <button type="submit">Purchase Standard Subscription</button>
+      </form>
+    </section>
+    
+    <div id="loader" style="position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">
+        <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
 
     <script type="module">
       import {GET, POST} from './util.js';
