@@ -159,23 +159,31 @@ app.post("/checkout", async (request, response) => {
     }
     
     const nonceFromTheClient = request.body.nonce;
+    const deviceData = request.body.deviceData;
     
-    const customerId = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
+    const user = await asyncGet(`SELECT Customer_id, FirstName, LastName FROM Users WHERE id = ?`, [uid]);
     
-    gateway.customer.create({
-      firstName: "Charity",
-      lastName: "Smith",
-      paymentMethodNonce: nonceFromTheClient
-    }).then(result => {
-      result.success;
-      // true
+    let customerResponse;
+    if (user.Customer_id) { // customer already exists in braintree vault
+      customerResponse = 
+    } else {
+      customerResponse = await gateway.customer.create({
+        firstName: user.FirstName,
+        lastName: user.LastName,
+        paymentMethodNonce: nonceFromTheClient,
+        deviceData: deviceData
+      });
+        result.success; // true if customer validations, payment method validations and card verification is in order
 
-      result.customer.id;
-      // e.g 160923
+        result.customer.id;
+        // e.g 160923
 
-      result.customer.paymentMethods[0].token;
-      // e.g f28wm
-    });
+        result.customer.paymentMethods[0].token;
+        // e.g f28wm
+    }
+    
+    
+    
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
@@ -184,7 +192,7 @@ app.post("/checkout", async (request, response) => {
   // gateway.transaction.sale({
   //   amount: "10.00",
   //   paymentMethodNonce: nonceFromTheClient,
-  //   deviceData: req.body.deviceData,
+  //   deviceData: deviceData,
   //   options: {
   //     submitForSettlement: true
   //   }
