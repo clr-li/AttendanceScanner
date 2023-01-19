@@ -138,10 +138,10 @@ app.get("/clientToken", async (request, response) => {
     const customerId = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
     const tokenOptions = {};
     if (customerId) {
-      tokenOptions
+      tokenOptions.customerId = customerId;
     }
     
-    let res = await gateway.clientToken.generate({});
+    let res = await gateway.clientToken.generate(tokenOptions);
     const clientToken = res.clientToken;
     response.send(clientToken);
   } catch (err) {
@@ -150,19 +150,48 @@ app.get("/clientToken", async (request, response) => {
   }
 });
 
-app.post("/checkout", (req, res) => {
-  const nonceFromTheClient = req.body.nonce;
-  gateway.transaction.sale({
-    amount: "10.00",
-    paymentMethodNonce: nonceFromTheClient,
-    deviceData: req.body.deviceData,
-    options: {
-      submitForSettlement: true
+app.post("/checkout", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
     }
-  }).then(result => { 
-    console.log(result);
-    res.send(result);
-  });
+    
+    const nonceFromTheClient = request.body.nonce;
+    
+    const customerId = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
+    
+    gateway.customer.create({
+      firstName: "Charity",
+      lastName: "Smith",
+      paymentMethodNonce: nonceFromTheClient
+    }).then(result => {
+      result.success;
+      // true
+
+      result.customer.id;
+      // e.g 160923
+
+      result.customer.paymentMethods[0].token;
+      // e.g f28wm
+    });
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+  
+  // gateway.transaction.sale({
+  //   amount: "10.00",
+  //   paymentMethodNonce: nonceFromTheClient,
+  //   deviceData: req.body.deviceData,
+  //   options: {
+  //     submitForSettlement: true
+  //   }
+  // }).then(result => { 
+  //   console.log(result);
+  //   response.send(result);
+  // });
 });
 
 app.get("/business", async (request, response) => {
