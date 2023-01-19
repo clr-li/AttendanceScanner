@@ -196,8 +196,6 @@ app.post("/checkout", async (request, response) => {
           return;
       }
       paymentToken = result.paymentMethod.token;
-      // const customer = await gateway.customer.find("" + user.Customer_id);
-      // paymentToken = customer.paymentMethods.find(element => element.default).token; // e.g f28wm
     } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
       const result = await gateway.customer.create({
         firstName: user.FirstName,
@@ -214,10 +212,12 @@ app.post("/checkout", async (request, response) => {
       const customerId = customer.id; // e.g 160923
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
       
+      console.log("Created customer with id: " + customerId);
+      
+      // save customer id in database so we can find their information in the braintree vault later
       asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
     }
     
-    console.log("Added subscription via paymentToken: " + paymentToken)
     const subscriptionResult = await gateway.subscription.create({
       paymentMethodToken: paymentToken,
       planId: PLAN_IDS.STANDARD,
@@ -227,28 +227,19 @@ app.post("/checkout", async (request, response) => {
         response.sendStatus(401);
         return;
     }
-    
-    console.log(subscriptionResult)
+    console.log("Added subscription via paymentToken: " + paymentToken)
     
     response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
   }
-  
-  // gateway.transaction.sale({
-  //   amount: "10.00",
-  //   paymentMethodNonce: nonceFromTheClient,
-  //   deviceData: deviceData,
-  //   options: {
-  //     submitForSettlement: true
-  //   }
-  // }).then(result => { 
-  //   console.log(result);
-  //   response.send(result);
-  // });
 });
 
+// returns true if the user (specified by uid) subscribes at least once to the planId 
+// (allowtrial specifies whether trial subscriptions should count)
+// throws a "notFoundError" if the user hasn't signed up as a customer yet
+// returns false otherwise
 async function verifySubscription(uid, planId, allowtrial=true) {
   const user = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
   if (!user.Customer_id) return false;
@@ -260,7 +251,11 @@ async function verifySubscription(uid, planId, allowtrial=true) {
   }
   customer.paymentMethods.forEach(paymentMethod => {
     paymentMethod.subscriptions.forEach(subscription => {
-      if (subscription.status === "Active" && subscription.planId === planId && ()) return true;
+      if (subscription.status === "Active" 
+          && subscription.planId === planId 
+          && (allowtrial || !subscription.trialPeriod)) {
+          return true;
+      }
     });
   });
   return false;
