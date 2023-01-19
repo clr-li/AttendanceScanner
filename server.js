@@ -163,9 +163,17 @@ app.post("/checkout", async (request, response) => {
     
     const user = await asyncGet(`SELECT Customer_id, FirstName, LastName FROM Users WHERE id = ?`, [uid]);
     
-    let customer;
+    let paymentToken;
     if (user.Customer_id) { // customer already exists in braintree vault
-      customer = await gateway.customer.find(user.Customer_id);
+      gateway.paymentMethod.create({
+        customerId: "12345",
+        paymentMethodNonce: nonceFromTheClient,
+        options: {
+          makeDefault: true,
+          failOnDuplicatePaymentMethod: true
+        }
+      }).then(result => { });
+      let customer = await gateway.customer.find(user.Customer_id);
     } else {
       let result = await gateway.customer.create({
         firstName: user.FirstName,
@@ -178,13 +186,12 @@ app.post("/checkout", async (request, response) => {
           response.sendStatus(403);
           return;
       }
-      customer = response.customer;
-      asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customer.id, uid]);
-    }
-    
-    const customerId = customer.id; // e.g 160923
-    const paymentToken = customer.paymentMethods[0].token; // e.g f28wm
-    
+      let customer = response.customer;
+      const customerId = customer.id; // e.g 160923
+      paymentToken = customer.paymentMethods[0].token; // e.g f28wm
+      
+      asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
+    }    
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
