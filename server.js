@@ -135,6 +135,10 @@ app.get("/clientToken", async (request, response) => {
       return;
     }
     
+    const customerId = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
+    const tokenOptions = {};
+    if (customerId)
+    
     let res = await gateway.clientToken.generate({});
     const clientToken = res.clientToken;
     response.send(clientToken);
