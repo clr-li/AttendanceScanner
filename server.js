@@ -135,13 +135,15 @@ app.get("/clientToken", async (request, response) => {
       return;
     }
     
-    const customerId = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
+    const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
     const tokenOptions = {};
+    console.log(customerId)
     if (customerId) {
       tokenOptions.customerId = customerId;
       tokenOptions.options = {
         failOnDuplicatePaymentMethod: true,
-        
+        makeDefault: true,
+        verifyCard: true
       };
     }
     
@@ -193,14 +195,15 @@ app.post("/checkout", async (request, response) => {
           response.sendStatus(403);
           return;
       }
-      const customer = response.customer;
+      console.log(result)
+      const customer = result.customer;
       const customerId = customer.id; // e.g 160923
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
       
-      asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
+      // asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
     }
     
-    
+    console.log(paymentToken)
     
   } catch (err) {
     console.error(err.message);

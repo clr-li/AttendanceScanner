@@ -42,7 +42,7 @@
                 console.log(payload);
                 payload.deviceData = localStorage.getItem("device-data");
                 POST("/checkout", payload).then(res => {
-                  window.location.reload();
+                  alert("payment " + res.status);
                 });
               }).catch((error) => { throw error; });
             });
