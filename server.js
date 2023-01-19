@@ -26,7 +26,7 @@ const gateway = new braintree.BraintreeGateway({
 const PLAN_IDS = {
   STANDARD: "n2wg"
 };
-const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]]));
+const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]])); // reverse lookup plan name from plan id
 
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -125,11 +125,8 @@ const asyncRun = (sql, params=[]) => {
   });
 };
 
-// db.run("CREATE TABLE Businesses", (err) => { console.log(err) });
-
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
-
 
 // this token authorizes the client to access the payment portal and modify customer payment information
 // if the client is already a customer, we give them access to their braintree customer via the stored id
@@ -262,6 +259,7 @@ async function verifySubscription(uid, planId, allowtrial=true) {
   return false;
 }
 
+// get's the noncanceled subscriptions
 app.get("/subscriptions", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
@@ -282,7 +280,18 @@ app.get("/subscriptions", async (request, response) => {
       subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
     });
     
-    subscriptions.map
+    subscriptions = subscriptions.filter(subscription => subscription.status != "Canceled");
+    
+    subscriptions = subscriptions.map(subscription => {
+      return {
+        plan: PLAN_NAME.get(subscription.planId),
+        nextBillingDate: subscription.nextBillingDate,
+        nextBillAmount: subscription.nextBillAmount,
+        status: subscription.status,
+        trialPeriod: subscription.trialPeriod,
+        id: subscription.id
+      };
+    });
     
     response.send(subscriptions);
   } catch (err) {
@@ -290,6 +299,36 @@ app.get("/subscriptions", async (request, response) => {
     response.sendStatus(400);
   }
 });
+
+app.get("/cancelSubscription", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    
+    const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
+    if (!customerId) {
+        response.sendStatus(401);
+        return;
+    }
+    const customer = await gateway.customer.find("" + customerId);
+    let subscriptions = [];
+    
+    customer.paymentMethods.forEach(paymentMethod => {
+      subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+    });
+    
+    response.sendStatus(200);
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
+
+
+// =================== ATTENDANCE LOGIC =========================
 
 app.get("/business", async (request, response) => {
   try {
