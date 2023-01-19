@@ -180,8 +180,8 @@ app.post("/checkout", async (request, response) => {
       //   }
       // });
       // paymentToken = result.token;
-      const customer = await gateway.customer.find(user.Customer_id);
-      const customerId = customer.id; // e.g 160923
+      const customer = await gateway.customer.find("" + user.Customer_id);
+      console.log(customer);
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
     } else {
       const result = await gateway.customer.create({
@@ -195,16 +195,16 @@ app.post("/checkout", async (request, response) => {
           response.sendStatus(403);
           return;
       }
-      console.log(result)
       const customer = result.customer;
       const customerId = customer.id; // e.g 160923
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
       
-      // asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
+      asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
     }
     
     console.log(paymentToken)
     
+    response.sendStatus(200);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
