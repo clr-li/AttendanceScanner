@@ -41,7 +41,9 @@
               dropinInstance.requestPaymentMethod().then((payload) => {
                 console.log(payload);
                 payload.deviceData = localStorage.getItem("device-data");
-                POST("/checkout", payload);
+                POST("/checkout", payload).then(res => {
+                  window.location.reload();
+                });
               }).catch((error) => { throw error; });
             });
           }).catch((error) => {
