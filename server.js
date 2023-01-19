@@ -196,8 +196,7 @@ app.post("/checkout", async (request, response) => {
           return;
       }
       paymentToken = result.paymentMethod.token;
-      const customer = await gateway.customer.find("" + user.Customer_id);
-      console.log(customer)
+      // const customer = await gateway.customer.find("" + user.Customer_id);
       // paymentToken = customer.paymentMethods.find(element => element.default).token; // e.g f28wm
     } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
       const result = await gateway.customer.create({
@@ -250,9 +249,22 @@ app.post("/checkout", async (request, response) => {
   // });
 });
 
-// async function verifySubscription(uid, planId, disallowtrial=false) {
-//   const result = await gateway.subscription.find("aSubscriptionId");
-// }
+async function verifySubscription(uid, planId, allowtrial=true) {
+  const user = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
+  if (!user.Customer_id) return false;
+  try {
+    var customer = await gateway.customer.find("" + user.Customer_id);
+  } catch (err) {
+    if (err.type === "notFoundError") return false;
+    throw err;
+  }
+  customer.paymentMethods.forEach(paymentMethod => {
+    paymentMethod.subscriptions.forEach(subscription => {
+      if (subscription.status === "Active" && subscription.planId === planId && ()) return true;
+    });
+  });
+  return false;
+}
 
 app.get("/business", async (request, response) => {
   try {
