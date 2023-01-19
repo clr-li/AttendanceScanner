@@ -33,12 +33,32 @@
       </form>
     </section>
     
-    <div id="loader" style="position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">
+    <div id="loader" style="z-index: 999999; position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">
         <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
 
     <script type="module">
       import {GET, POST} from './util.js';
+      
+      async function showSubscriptions() {
+        const res = await GET("/subscriptions");
+        const subscriptions = await res.json();
+        
+        subscriptions.forEach(sub => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <h3>${sub.plan} PLAN</h3>
+            <ul>
+              <li>Status: ${sub.status}</li>
+            </ul>
+          `;
+          document.getElementById("subscriptions").appendChild(div);
+        });
+        
+        document.getElementById("loader").style.display = "hidden";
+      }
+      
+      window.body.onload = showSubscriptions;
       
       const form = document.getElementById('payment-form');
       GET("/clientToken").then(res => res.text().then(token => {
@@ -58,15 +78,17 @@
               event.preventDefault();
 
               dropinInstance.requestPaymentMethod().then((payload) => {
-                console.log(payload);
+                document.getElementById("loader").style.display = "block";
                 payload.deviceData = localStorage.getItem("device-data");
                 POST("/checkout", payload).then(res => {
-                  alert("payment " + res.status);
+                  showSubscriptions();
                 });
               }).catch((error) => { throw error; });
             });
           }).catch((error) => {
             // handle errors
+            console.error(error);
+            showSubscriptions();
           });
 
           // device data collection
@@ -78,6 +100,8 @@
           });
         }).catch(function (err) {
           // Handle error in creation of components
+          console.error(error);
+          showSubscriptions();
         });
       }));
     </script>
