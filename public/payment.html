@@ -18,9 +18,7 @@
   </head>
   <body>
     <section id="subscriptions">
-      <h1>
-        Manage Subscriptions
-      </h1>
+      <h1>Manage Subscriptions</h1>
     </section>
     
     <section>
@@ -51,6 +49,7 @@
         const res = await GET("/subscriptions");
         const subscriptions = await res.json();
         
+        document.getElementById("subscriptions").innerHTML = "<h1>Manage Subscriptions</h1>";
         subscriptions.forEach(sub => {
           const div = document.createElement("div");
           div.id = sub.id;
