@@ -153,6 +153,7 @@ app.post("/checkout", (req, res) => {
     }
   }).then(result => { 
     console.log(result);
+    res.send(result);
   });
 });
 
