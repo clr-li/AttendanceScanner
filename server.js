@@ -238,7 +238,7 @@ app.post("/checkout", async (request, response) => {
 
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)
-// throws a "notFoundError" if the user hasn't signed up as a customer yet
+// throws any error that's not a "notFoundError" (the user hasn't signed up as a customer yet)
 // returns false otherwise
 async function verifySubscription(uid, planId, allowtrial=true) {
   const user = await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid]);
@@ -260,6 +260,29 @@ async function verifySubscription(uid, planId, allowtrial=true) {
   });
   return false;
 }
+
+app.get("/subscriptions", async (request, response) => {
+  try {
+    const uid = await getUID(request.headers.idtoken);
+    if (!uid) {
+      response.sendStatus(403);
+      return;
+    }
+    
+    const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
+    if (!customerId) {
+        response.sendStatus(401);
+        return;
+    }
+    const customer = await gateway.customer.find("" + customerId);
+    const subscriptions = []
+    
+    response.send();
+  } catch (err) {
+    console.error(err.message);
+    response.sendStatus(400);
+  }
+});
 
 app.get("/business", async (request, response) => {
   try {
