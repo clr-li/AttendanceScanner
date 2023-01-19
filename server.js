@@ -171,17 +171,7 @@ app.post("/checkout", async (request, response) => {
     
     let paymentToken;
     if (user.Customer_id) { // customer already exists in braintree vault
-      // const result = gateway.paymentMethod.create({
-      //   customerId: user.Customer_id,
-      //   paymentMethodNonce: nonceFromTheClient,
-      //   options: {
-      //     makeDefault: true,
-      //     failOnDuplicatePaymentMethod: true
-      //   }
-      // });
-      // paymentToken = result.token;
       const customer = await gateway.customer.find("" + user.Customer_id);
-      console.log(customer);
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
     } else {
       const result = await gateway.customer.create({
