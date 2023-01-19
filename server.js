@@ -26,6 +26,7 @@ const gateway = new braintree.BraintreeGateway({
 const PLAN_IDS = {
   STANDARD: "n2wg"
 };
+const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]]));
 
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -275,9 +276,15 @@ app.get("/subscriptions", async (request, response) => {
         return;
     }
     const customer = await gateway.customer.find("" + customerId);
-    const subscriptions = []
+    let subscriptions = [];
     
-    response.send();
+    customer.paymentMethods.forEach(paymentMethod => {
+      subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+    });
+    
+    subscriptions.map
+    
+    response.send(subscriptions);
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
