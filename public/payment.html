@@ -58,7 +58,7 @@
             <h3>${sub.plan} PLAN</h3>
             <ul>
               <li>Status: ${sub.status} ${sub.trialPeriod ? "(free trial)" : ""}</li>
-              <li>Next Billing Date: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
+              <li>${sub.trialPeriod ? "First Payment (trial ends)" : "Next Billing Date"}: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
               <li>Next Billing Amount: ${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount))}</li>
             </ul>
             <button aria-label="delete" id="btn-${sub.id}" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0">❌</button>
