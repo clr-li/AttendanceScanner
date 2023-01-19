@@ -190,8 +190,14 @@ app.post("/checkout", async (request, response) => {
           verifyCard: true
         }
       });
+      if (!result.success) {
+          // customer validations, payment method validations or card verification is NOT in order
+          response.sendStatus(401);
+          return;
+      }
       paymentToken = result.paymentMethod.token;
-      // const customer = await gateway.customer.find("" + user.Customer_id);
+      const customer = await gateway.customer.find("" + user.Customer_id);
+      console.log(customer)
       // paymentToken = customer.paymentMethods.find(element => element.default).token; // e.g f28wm
     } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
       const result = await gateway.customer.create({
@@ -213,10 +219,15 @@ app.post("/checkout", async (request, response) => {
     }
     
     console.log("Added subscription via paymentToken: " + paymentToken)
-    const subscriptionResult = gateway.subscription.create({
+    const subscriptionResult = await gateway.subscription.create({
       paymentMethodToken: paymentToken,
       planId: PLAN_IDS.STANDARD,
     });
+    if (!subscriptionResult.success) {
+        // customer validations, payment method validations or card verification is NOT in order
+        response.sendStatus(401);
+        return;
+    }
     
     console.log(subscriptionResult)
     
@@ -238,6 +249,10 @@ app.post("/checkout", async (request, response) => {
   //   response.send(result);
   // });
 });
+
+// async function verifySubscription(uid, planId, disallowtrial=false) {
+//   const result = await gateway.subscription.find("aSubscriptionId");
+// }
 
 app.get("/business", async (request, response) => {
   try {
