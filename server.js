@@ -139,6 +139,10 @@ app.get("/clientToken", async (request, response) => {
     const tokenOptions = {};
     if (customerId) {
       tokenOptions.customerId = customerId;
+      tokenOptions.options = {
+        failOnDuplicatePaymentMethod: true,
+        
+      };
     }
     
     let res = await gateway.clientToken.generate(tokenOptions);
@@ -165,17 +169,20 @@ app.post("/checkout", async (request, response) => {
     
     let paymentToken;
     if (user.Customer_id) { // customer already exists in braintree vault
-      gateway.paymentMethod.create({
-        customerId: "12345",
-        paymentMethodNonce: nonceFromTheClient,
-        options: {
-          makeDefault: true,
-          failOnDuplicatePaymentMethod: true
-        }
-      }).then(result => { });
-      let customer = await gateway.customer.find(user.Customer_id);
+      // const result = gateway.paymentMethod.create({
+      //   customerId: user.Customer_id,
+      //   paymentMethodNonce: nonceFromTheClient,
+      //   options: {
+      //     makeDefault: true,
+      //     failOnDuplicatePaymentMethod: true
+      //   }
+      // });
+      // paymentToken = result.token;
+      const customer = await gateway.customer.find(user.Customer_id);
+      const customerId = customer.id; // e.g 160923
+      paymentToken = customer.paymentMethods[0].token; // e.g f28wm
     } else {
-      let result = await gateway.customer.create({
+      const result = await gateway.customer.create({
         firstName: user.FirstName,
         lastName: user.LastName,
         paymentMethodNonce: nonceFromTheClient,
@@ -186,12 +193,15 @@ app.post("/checkout", async (request, response) => {
           response.sendStatus(403);
           return;
       }
-      let customer = response.customer;
+      const customer = response.customer;
       const customerId = customer.id; // e.g 160923
       paymentToken = customer.paymentMethods[0].token; // e.g f28wm
       
       asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
-    }    
+    }
+    
+    
+    
   } catch (err) {
     console.error(err.message);
     response.sendStatus(400);
