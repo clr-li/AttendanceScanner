@@ -49,16 +49,20 @@
           div.innerHTML = `
             <h3>${sub.plan} PLAN</h3>
             <ul>
-              <li>Status: ${sub.status}</li>
+              <li>Status: ${sub.status} ${sub.trialPeriod ? "(free trial)" : ""}</li>
+              <li>Next Billing Date: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
+              <li>Next Billing Amount: ${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount))}</li>
             </ul>
+            <button aria-label="delete">❌</button>
           `;
+          div.style = "border: 1px solid black; border-radius: 20px; padding: 10px; margin: 8px";
           document.getElementById("subscriptions").appendChild(div);
         });
         
-        document.getElementById("loader").style.display = "hidden";
+        document.getElementById("loader").style.display = "none";
       }
       
-      window.body.onload = showSubscriptions;
+      document.body.onload = showSubscriptions;
       
       const form = document.getElementById('payment-form');
       GET("/clientToken").then(res => res.text().then(token => {
