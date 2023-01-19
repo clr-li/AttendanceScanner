@@ -154,7 +154,7 @@ app.post("/checkout", async (request, response) => {
   try {
     const uid = await getUID(request.headers.idtoken);
     if (!uid) {
-      response.sendStatus(403);
+      response.sendStatus(401);
       return;
     }
     
@@ -163,26 +163,27 @@ app.post("/checkout", async (request, response) => {
     
     const user = await asyncGet(`SELECT Customer_id, FirstName, LastName FROM Users WHERE id = ?`, [uid]);
     
-    let customerResponse;
+    let customer;
     if (user.Customer_id) { // customer already exists in braintree vault
-      customerResponse = 
+      customer = await gateway.customer.find(user.Customer_id);
     } else {
-      customerResponse = await gateway.customer.create({
+      let result = await gateway.customer.create({
         firstName: user.FirstName,
         lastName: user.LastName,
         paymentMethodNonce: nonceFromTheClient,
         deviceData: deviceData
       });
-        result.success; // true if customer validations, payment method validations and card verification is in order
-
-        result.customer.id;
-        // e.g 160923
-
-        result.customer.paymentMethods[0].token;
-        // e.g f28wm
+      if (!result.success) {
+          // customer validations, payment method validations or card verification is NOT in order
+          response.sendStatus(403);
+          return;
+      }
+      customer = response.customer;
+      asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customer.id, uid]);
     }
     
-    
+    const customerId = customer.id; // e.g 160923
+    const paymentToken = customer.paymentMethods[0].token; // e.g f28wm
     
   } catch (err) {
     console.error(err.message);
