@@ -34,6 +34,10 @@
           braintree.dropin.create({
             authorization: token,
             container: document.getElementById('dropin-container'),
+            // paypal: { -- paypal, apple pay, etc. requires signing up for their services and connecting to braintree
+            //   flow: 'vault'
+            // },
+            // venmo: {} -- does not allow subscription services
           }).then((dropinInstance) => {
             form.addEventListener('submit', (event) => {
               event.preventDefault();
