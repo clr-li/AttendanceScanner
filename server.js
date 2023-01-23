@@ -465,7 +465,7 @@ app.get("/attendancedata", async function(request, response) {
     const userid = request.query.userid;
     if (typeof userid != "string") throw new Error("Invalid input");
     
-    const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    const table = await asyncGet(`SELECT AttendanceTable, usertable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
     let sql = `SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
     if (eventid == "*" && userid == "*") {
       var attendanceinfo = await asyncAll(sql);
@@ -477,7 +477,11 @@ app.get("/attendancedata", async function(request, response) {
       var attendanceinfo = await asyncAll(sql + "WHERE eventid = ? AND userid = ?", [eventid, userid]);
     }
     if (userid == "*") {
-      sql = `SELECT Users`
+      attendanceinfo.foreach((attendance) => {
+        
+      });
+      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid WHERE`;
+      sql += 
     }
     response.send(attendanceinfo);
   } catch (err) {
