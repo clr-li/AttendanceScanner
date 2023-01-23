@@ -132,17 +132,18 @@
     });
           
     document.getElementById('submitfilter').onclick = () => {
-      [...docu,document.querySelector("tr")].forEach ((row) => {
-        if (document.getElementById('filtername').value != "") {
+      [...document.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach ((row) => {
+        if (row.firstChild.nodeName == 'TD' && document.getElementById('filtername').value != "") {
           if (row.firstChild.innerHTML != document.getElementById('filtername').value) {
             row.style.display = "none";
           } else {
-            row.style.display = "block";
+            row.style.display = "table-row";
           }
         } else {
-          row.style.display = "block";
+          row.style.display = "table-row";
         }
       });
+      [...document.getElementByClassName('col')].forEach((column))
     }
       
     document.getElementById('newevent').onclick = () => {
@@ -229,7 +230,7 @@
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
             if (records[k].eventid == events[j].id) {
-              html += `<td>${records[k].status}</td>`;
+              html += `<td class="col" data-time="${events[i].starttimestamp}">${records[k].status}</td>`;
               statusupdate = true;
               break;
             }
