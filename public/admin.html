@@ -143,14 +143,21 @@
           row.style.display = "table-row";
         }
       });
-      [...document.getElementByClassName('cell')].forEach((cell) => {
+      [...document.getElementsByClassName('cell')].forEach((cell) => {
         let showstart = document.getElementById("filterstart").value != "";
         let showend = document.getElementById("filterend").value != "";
         let showCell = true;
         if (showstart) {
-          
+          showCell = showCell && (new Date(document.getElementById("filterstart").value + 'T00:00')).getTime() / 1000 < cell.dataset.time;
         }
-        if (cell.dataset.time > )
+        if (showend) {
+          showCell = showCell && (new Date(document.getElementById("filterend").value + 'T23:59' + endtime)).getTime() / 1000 > cell.dataset.time;
+        }
+        if (showCell) {
+          cell.style.display = "table-cell";
+        } else {
+          cell.style.display = "none";
+        }
       })
     }
       
@@ -227,7 +234,7 @@
       for (let i = 0; i < events.length; i++) {
         var startDate = new Date(events[i].starttimestamp*1000);
         var endDate = new Date(events[i].endtimestamp*1000);
-        html += `<th>${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
+        html += `<th class="cell" data-time="${events[i].starttimestamp}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
       }
       html += "</tr>";
       for (let i = 0; i < [...map.keys()].length; i++) {
@@ -238,13 +245,13 @@
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
             if (records[k].eventid == events[j].id) {
-              html += `<td class="cell" data-time="${events[i].starttimestamp}">${records[k].status}</td>`;
+              html += `<td class="cell" data-time="${events[j].starttimestamp}">${records[k].status}</td>`;
               statusupdate = true;
               break;
             }
           }
           if (!statusupdate) {
-            html += `<td class="cell" data-time="${events[i].starttimestamp}">N/A</td>`;
+            html += `<td class="cell" data-time="${events[j].starttimestamp}">N/A</td>`;
           }
         }
         html += "</tr>";
