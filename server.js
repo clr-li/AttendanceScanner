@@ -174,6 +174,7 @@ app.post("/checkout", async (request, response) => {
     
     const nonceFromTheClient = request.body.nonce;
     const deviceData = request.body.deviceData;
+    const businessName = request.body.businessName;
     
     const user = await asyncGet(`SELECT Customer_id, FirstName, LastName FROM Users WHERE id = ?`, [uid]);
     
@@ -226,6 +227,7 @@ app.post("/checkout", async (request, response) => {
         return;
     }
     console.log("Added subscription via paymentToken: " + paymentToken)
+    createBusiness(uid, businessName);
     
     response.sendStatus(200);
   } catch (err) {
@@ -233,6 +235,13 @@ app.post("/checkout", async (request, response) => {
     response.sendStatus(400);
   }
 });
+
+async function createBusiness(uid, name) {
+  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+  if (user.BusinessIDs != "") return
+  
+  await asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
+}
 
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)

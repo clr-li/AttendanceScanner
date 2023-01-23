@@ -28,7 +28,7 @@
       <form id="payment-form">
         <div id="dropin-container"></div>
         <label for="businessName">Business Name:</label>
-        <input type="text" id="businessName" name="BusinessName" placeholder="Enter The Name of The Business You Want To Create"/>
+        <input type="text" id="businessName" name="BusinessName"/>
         <button type="submit">Purchase Standard Subscription</button>
       </form>
     </section>
@@ -98,6 +98,7 @@
               dropinInstance.requestPaymentMethod().then((payload) => {
                 document.getElementById("loader").style.display = "block";
                 payload.deviceData = localStorage.getItem("device-data");
+                payload.businessName = document.getElementById("businessName").value;
                 POST("/checkout", payload).then(res => {
                   showSubscriptions();
                 });
