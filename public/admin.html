@@ -59,6 +59,15 @@
       <input type="time" id="endtime" name="endtime"><br>
       <input type="button" value="Submit" id="submitevent">
     </form>
+    <form id="filterform">
+      <label for="filtername">Filter by Name: </label>
+      <input type="text" id="filtername" name="filtername">
+      <label for="filterstart">Start Date: </label>
+      <input type="date" id="filterstart" name="filterstart"><br>
+      <label for="filterend">End Date: </label>
+      <input type="date" id="filterend" name="filterend"><br>
+      <input type="button" value="Submit" id="submitfilter">
+    </form>
     <table id="displayattendance"></table>
     
     <script type="module">
@@ -122,6 +131,10 @@
       });
     });
           
+    document.getElementById('filtersubmit').onclick = () => {
+      document.getElementById('filtersubmit')
+    }
+      
     document.getElementById('newevent').onclick = () => {
       if (document.getElementById('eventform').style.display == 'block') {
         document.getElementById('eventform').style.display = 'none';

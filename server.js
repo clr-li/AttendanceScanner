@@ -466,6 +466,7 @@ app.get("/attendancedata", async function(request, response) {
     if (typeof userid != "string") throw new Error("Invalid input");
     
     const table = await asyncGet(`SELECT AttendanceTable, usertable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+    console.log(table)
     let sql = `SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
     if (eventid == "*" && userid == "*") {
       var attendanceinfo = await asyncAll(sql);
@@ -481,15 +482,15 @@ app.get("/attendancedata", async function(request, response) {
       attendanceinfo.forEach((attendanceRecord) => {
         userids.add(attendanceRecord.userid);
       });
-      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM Users LEFT JOIN Users ON "${table.usertable}".userid`;
-      // userids.forEach((uID) => {
-      //   sql += `"${uID}" != "${table.usertable}".userid AND `;
-      // });
-      // if (userids.size === 0) {
-      //   sql = sql.substr(0, sql.length - 7);
-      // } else {
-      //   sql = sql.substr(0, sql.length - 5);
-      // }
+      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid = Users.id WHERE `;
+      userids.forEach((uID) => {
+        sql += `"${uID}" != "${table.usertable}".userid AND `;
+      });
+      if (userids.size === 0) {
+        sql = sql.substr(0, sql.length - 7);
+      } else {
+        sql = sql.substr(0, sql.length - 5);
+      }
       attendanceinfo = attendanceinfo.concat(await asyncAll(sql));
     }
     response.send(attendanceinfo);
