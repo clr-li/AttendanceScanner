@@ -481,16 +481,16 @@ app.get("/attendancedata", async function(request, response) {
       attendanceinfo.forEach((attendanceRecord) => {
         userids.add(attendanceRecord.userid);
       });
-      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid WHERE `;
-      userids.forEach((uID) => {
-        sql += uID + ` != "${table.usertable}".userid AND `;
-      });
-      if (userids.isEmpty()) {
-        sql.substr(0, sql.length() - 7);
-      } else {
-        sql.substr(0, sql.length() - 5);
-      }
-      attendanceinfo.appen(await asyncAll(sql));
+      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM Users LEFT JOIN Users ON "${table.usertable}".userid`;
+      // userids.forEach((uID) => {
+      //   sql += `"${uID}" != "${table.usertable}".userid AND `;
+      // });
+      // if (userids.size === 0) {
+      //   sql = sql.substr(0, sql.length - 7);
+      // } else {
+      //   sql = sql.substr(0, sql.length - 5);
+      // }
+      attendanceinfo = attendanceinfo.concat(await asyncAll(sql));
     }
     response.send(attendanceinfo);
   } catch (err) {
