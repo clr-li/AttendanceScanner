@@ -27,6 +27,8 @@
       </h2>
       <form id="payment-form">
         <div id="dropin-container"></div>
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" name="BusinessName" placeholder="Enter The Name of The Business You Want To Create"/>
         <button type="submit">Purchase Standard Subscription</button>
       </form>
     </section>
@@ -46,8 +48,12 @@
       }
       
       async function showSubscriptions() {
-        const res = await GET("/subscriptions");
-        const subscriptions = await res.json();
+        try {
+          const res = await GET("/subscriptions");
+          var subscriptions = await res.json();
+        } catch (err) {
+          var subscriptions = [];
+        }
         
         document.getElementById("subscriptions").innerHTML = "<h1>Manage Subscriptions</h1>";
         subscriptions.forEach(sub => {

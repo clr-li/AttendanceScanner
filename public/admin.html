@@ -151,14 +151,14 @@
           showCell = showCell && (new Date(document.getElementById("filterstart").value + 'T00:00')).getTime() / 1000 < cell.dataset.time;
         }
         if (showend) {
-          showCell = showCell && (new Date(document.getElementById("filterend").value + 'T23:59' + endtime)).getTime() / 1000 > cell.dataset.time;
+          showCell = showCell && (new Date(document.getElementById("filterend").value + 'T23:59')).getTime() / 1000 > cell.dataset.time;
         }
         if (showCell) {
           cell.style.display = "table-cell";
         } else {
           cell.style.display = "none";
         }
-      })
+      });
     }
       
     document.getElementById('newevent').onclick = () => {
