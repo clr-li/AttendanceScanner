@@ -476,6 +476,9 @@ app.get("/attendancedata", async function(request, response) {
     } else {
       var attendanceinfo = await asyncAll(sql + "WHERE eventid = ? AND userid = ?", [eventid, userid]);
     }
+    if (userid == "*") {
+      sql = `SELECT Users`
+    }
     response.send(attendanceinfo);
   } catch (err) {
     console.error(err.message);
