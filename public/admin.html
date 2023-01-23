@@ -131,8 +131,18 @@
       });
     });
           
-    document.getElementById('filtersubmit').onclick = () => {
-      document.getElementById('filtersubmit')
+    document.getElementById('submitfilter').onclick = () => {
+      [...docu,document.querySelector("tr")].forEach ((row) => {
+        if (document.getElementById('filtername').value != "") {
+          if (row.firstChild.innerHTML != document.getElementById('filtername').value) {
+            row.style.display = "none";
+          } else {
+            row.style.display = "block";
+          }
+        } else {
+          row.style.display = "block";
+        }
+      });
     }
       
     document.getElementById('newevent').onclick = () => {
