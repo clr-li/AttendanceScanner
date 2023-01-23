@@ -143,7 +143,15 @@
           row.style.display = "table-row";
         }
       });
-      [...document.getElementByClassName('col')].forEach((column))
+      [...document.getElementByClassName('cell')].forEach((cell) => {
+        let showstart = document.getElementById("filterstart").value != "";
+        let showend = document.getElementById("filterend").value != "";
+        let showCell = true;
+        if (showstart) {
+          
+        }
+        if (cell.dataset.time > )
+      })
     }
       
     document.getElementById('newevent').onclick = () => {
@@ -230,13 +238,13 @@
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
             if (records[k].eventid == events[j].id) {
-              html += `<td class="col" data-time="${events[i].starttimestamp}">${records[k].status}</td>`;
+              html += `<td class="cell" data-time="${events[i].starttimestamp}">${records[k].status}</td>`;
               statusupdate = true;
               break;
             }
           }
           if (!statusupdate) {
-            html += `<td>N/A</td>`;
+            html += `<td class="cell" data-time="${events[i].starttimestamp}">N/A</td>`;
           }
         }
         html += "</tr>";
