@@ -477,11 +477,20 @@ app.get("/attendancedata", async function(request, response) {
       var attendanceinfo = await asyncAll(sql + "WHERE eventid = ? AND userid = ?", [eventid, userid]);
     }
     if (userid == "*") {
-      attendanceinfo.foreach((attendance) => {
-        
+      let userids = new Set();
+      attendanceinfo.forEach((attendanceRecord) => {
+        userids.add(attendanceRecord.userid);
       });
-      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid WHERE`;
-      sql += 
+      sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid WHERE `;
+      userids.forEach((uID) => {
+        sql += uID + ` != "${table.usertable}".userid AND `;
+      });
+      if (userids.isEmpty()) {
+        sql.substr(0, sql.length() - 7);
+      } else {
+        sql.substr(0, sql.length() - 5);
+      }
+      attendanceinfo.appen(await asyncAll(sql));
     }
     response.send(attendanceinfo);
   } catch (err) {
