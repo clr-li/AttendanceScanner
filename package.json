@@ -13,7 +13,8 @@
     "firebase-tools": "^11.16.0",
     "sqlite3": "^5.1.2",
     "body-parser": "^1.20.1",
-    "braintree": "^3.13.0"
+    "braintree": "^3.13.0",
+    "uuid": "^9.0.0"
   },
   "engines": {
     "node": "14.x"

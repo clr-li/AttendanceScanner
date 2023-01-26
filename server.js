@@ -7,6 +7,7 @@ let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
 }
 app.use(cors(corsOptions))
+const uuid = require('uuid');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -247,6 +248,8 @@ app.post("/checkout", async (request, response) => {
 async function createBusiness(uid, name) {
   const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
   if (user.BusinessIDs != "") return
+  
+  const attendanceTableName = "Att" + uuid.v4();
   
   const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, role) VALUES (?, 'user') `, []);
 }
