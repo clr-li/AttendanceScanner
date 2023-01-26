@@ -124,6 +124,14 @@ const asyncRun = (sql, params=[]) => {
     });
   });
 };
+const asyncRunWithID = (sql, params=[]) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) { console.log("error: " + sql); reject(err); }
+      else resolve(this.lastId);
+    });
+  });
+};
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
@@ -236,12 +244,12 @@ app.post("/checkout", async (request, response) => {
   }
 });
 
-// async function createBusiness(uid, name) {
-//   const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-//   if (user.BusinessIDs != "") return
+async function createBusiness(uid, name) {
+  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+  if (user.BusinessIDs != "") return
   
-//   await asyncRun(`UPDATE Users SET Customer_id = ? WHERE id = ?`, [customerId, uid]);
-// }
+  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, role) VALUES (?, 'user') `, []);
+}
 
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)
