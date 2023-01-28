@@ -7,7 +7,7 @@ let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
 }
 app.use(cors(corsOptions))
-// const uuid = require('uuid');
+const uuid = require('uuid');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -236,7 +236,7 @@ app.post("/checkout", async (request, response) => {
         return;
     }
     console.log("Added subscription via paymentToken: " + paymentToken)
-    // createBusiness(uid, businessName);
+    createBusiness(uid, businessName);
     
     response.sendStatus(200);
   } catch (err) {
@@ -245,49 +245,49 @@ app.post("/checkout", async (request, response) => {
   }
 });
 
-// async function createBusiness(uid, name) {
-//   const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-//   if (user.BusinessIDs != "") return
+async function createBusiness(uid, name) {
+  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+  if (user.BusinessIDs != "") return
   
-//   const rand = uuid.v4();
-//   const attendanceTableName = "ATT" + rand;
-//   const eventTableName = "EVT" + rand;
-//   const userTableName = "USR" + rand;
-//   await asyncRun(`
-//     CREATE TABLE "${userTableName}" (
-//         "userid"        TEXT NOT NULL UNIQUE,
-//         "role"  TEXT,
-//         FOREIGN KEY("userid") REFERENCES "Users"("id"),
-//         PRIMARY KEY("userid")
-//     );
-//   `);
-//   await asyncRun(`
-//     CREATE TABLE "${eventTableName}" (
-//         "id"    INTEGER NOT NULL UNIQUE,
-//         "name"  TEXT,
-//         "starttimestamp"        TEXT NOT NULL,
-//         "userids"       TEXT,
-//         "description"   TEXT,
-//         "endtimestamp"  TEXT,
-//         PRIMARY KEY("id" AUTOINCREMENT)
-//     );
-//   `);
-//   await asyncRun(`
-//     CREATE TABLE "${attendanceTableName}" (
-//         "eventid"       INTEGER NOT NULL,
-//         "userid"        INTEGER NOT NULL,
-//         "timestamp"     TEXT NOT NULL,
-//         "status"        TEXT NOT NULL,
-//         FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
-//         FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
-//     );
-//   `);
+  const rand = uuid.v4();
+  const attendanceTableName = "ATT" + rand;
+  const eventTableName = "EVT" + rand;
+  const userTableName = "USR" + rand;
+  await asyncRun(`
+    CREATE TABLE "${userTableName}" (
+        "userid"        TEXT NOT NULL UNIQUE,
+        "role"  TEXT,
+        FOREIGN KEY("userid") REFERENCES "Users"("id"),
+        PRIMARY KEY("userid")
+    );
+  `);
+  await asyncRun(`
+    CREATE TABLE "${eventTableName}" (
+        "id"    INTEGER NOT NULL UNIQUE,
+        "name"  TEXT,
+        "starttimestamp"        TEXT NOT NULL,
+        "userids"       TEXT,
+        "description"   TEXT,
+        "endtimestamp"  TEXT,
+        PRIMARY KEY("id" AUTOINCREMENT)
+    );
+  `);
+  await asyncRun(`
+    CREATE TABLE "${attendanceTableName}" (
+        "eventid"       INTEGER NOT NULL,
+        "userid"        INTEGER NOT NULL,
+        "timestamp"     TEXT NOT NULL,
+        "status"        TEXT NOT NULL,
+        FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
+        FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
+    );
+  `);
   
-//   const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
-//     name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
-//   ]);
-//   await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
-// }
+  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
+    name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
+  ]);
+  await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
+}
 
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)
