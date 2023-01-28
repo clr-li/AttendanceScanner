@@ -281,8 +281,7 @@ async function createBusiness(uid, name) {
         FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
         FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
     );
-  `);
-  
+  `); 
   const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
     name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
   ]);
