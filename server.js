@@ -296,39 +296,8 @@ async function deleteBusiness(uids, businessID) {
   const attendanceTableName = "ATT" + rand;
   const eventTableName = "EVT" + rand;
   const userTableName = "USR" + rand;
-  await asyncRun(`
-    CREATE TABLE "${userTableName}" (
-        "userid"        TEXT NOT NULL UNIQUE,
-        "role"  TEXT,
-        FOREIGN KEY("userid") REFERENCES "Users"("id"),
-        PRIMARY KEY("userid")
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${eventTableName}" (
-        "id"    INTEGER NOT NULL UNIQUE,
-        "name"  TEXT,
-        "starttimestamp"        TEXT NOT NULL,
-        "userids"       TEXT,
-        "description"   TEXT,
-        "endtimestamp"  TEXT,
-        PRIMARY KEY("id" AUTOINCREMENT)
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${attendanceTableName}" (
-        "eventid"       INTEGER NOT NULL,
-        "userid"        INTEGER NOT NULL,
-        "timestamp"     TEXT NOT NULL,
-        "status"        TEXT NOT NULL,
-        FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
-        FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
-    );
-  `); 
-  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
-    name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
-  ]);
-  console.log('Created new business with id: ' + businessID);
+  
+  console.log('Deleted the business with id: ' + businessID);
   
 }
 
