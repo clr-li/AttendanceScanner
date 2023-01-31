@@ -403,6 +403,7 @@ async function createBusiness(uid, name) {
   ]);
   console.log('Created new business with id: ' + businessID);
   await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
+  await asyncRun(`INSERT INTO "${userTableName}" (userid, role) VALUES (?, ?)`, [uid, 'admin']);
 }
 
 async function deleteBusiness(uids, businessID) {
