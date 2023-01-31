@@ -247,7 +247,7 @@ app.post("/checkout", async (request, response) => {
         return;
     }
     console.log("Added subscription via paymentToken: " + paymentToken)
-    createBusiness(uid, businessName);
+    await createBusiness(uid, businessName);
     
     response.sendStatus(200);
   } catch (err) {
@@ -363,7 +363,7 @@ app.get("/cancelSubscription", async (request, response) => {
 // ============================ ATTENDANCE ============================
 async function createBusiness(uid, name) {
   const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (user.BusinessIDs != "") return
+  if (user.BusinessIDs) return
   
   const rand = uuid.v4();
   const attendanceTableName = "ATT" + rand;
