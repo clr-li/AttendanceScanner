@@ -34,6 +34,7 @@ app.use(express.static("public"));
 // in glitch preview devtools console
 //   - run `import('./util.js').then(m => util = m);`
 //   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 24)`
+//cliuw@uw.edu token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImQwNWI0MDljNmYyMmM0MDNlMWY5MWY5ODY3YWM0OTJhOTA2MTk1NTgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQ2xhaXJlIENsaXV3QFVXLkVkdSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BRWRGVHA0d1R5UVJFNU13dVhNa1B1MGpkZV9ma1FHRllxTDlyTTE3cHBLZT1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hdHRlbmRhbmNlc2Nhbm5lcnFyIiwiYXVkIjoiYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1dGhfdGltZSI6MTY3NTIwNjM5MCwidXNlcl9pZCI6IkEySVN4WktRVU9nSlRhQkpmM2pHMEVjNUNMdzIiLCJzdWIiOiJBMklTeFpLUVVPZ0pUYUJKZjNqRzBFYzVDTHcyIiwiaWF0IjoxNjc1MjA2MzkwLCJleHAiOjE2NzUyMDk5OTAsImVtYWlsIjoiY2xpdXdAdXcuZWR1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDIzNDg1MDIyODIwMzg4OTQ5MzUiXSwiZW1haWwiOlsiY2xpdXdAdXcuZWR1Il19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.RA4rqYq1fGfU58OthW1zdb76zfSbvmYTf2al-gwQei8d0sZ5YgUKvXt-wHRAsYCzah1mUebmvfG8U2n_wFcIIZG5W48EN2G4idvHtKJNV149SA5H-QZ9MxaYK3FdY68wtKRcl9IExX0tNth7-4gKHfMWF15Yz8ja2MxH8Xp_RgXmEd1gxKD-86-hT0VADM7ccMbIrURK2d9GCpUoCjCgdzLJVuJ62CotCUjF5QoMwL2IeK-pIBwp2eyh-Hsy1BB3bwcgtxf926bD3MLuWjSNJNjntvcqTbtpD-38xt2TzyWIA6t9xkGHTRCMhFlm8dmv_CPXzN12nLqg6xjp-CYCnQ
 
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -405,13 +406,15 @@ async function createBusiness(uid, name) {
 }
 
 async function deleteBusiness(uids, businessID) {
-  await asyncRun(`UPDATE Users SET BusinessIDs = NULL WHERE id IN (${uids.join(", ")})`);
+  await asyncRun(`UPDATE Users SET BusinessIDs = NULL WHERE id IN ('${uids.join("', '")}')`);
  
   const tables = await asyncGet(`SELECT AttendanceTable, usertable, eventtable FROM Businesses WHERE id = ?`, [businessID]);
-  const
+  await asyncRun(`DROP TABLE "${tables.AttendanceTable}"`);
+  await asyncRun(`DROP TABLE "${tables.usertable}"`);
+  await asyncRun(`DROP TABLE "${tables.eventtable}"`);
+  await asyncRun(`DELETE FROM Businesses WHERE id = ?`, [businessID]);
   
   console.log('Deleted the business with id: ' + businessID);
-  
 }
 
 app.get("/business", async (request, response) => {
