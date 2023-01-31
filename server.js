@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const https = require('https');
-const { exec } = require("child_process"); 
 
 const braintree = require("braintree");
 
@@ -24,20 +23,27 @@ const gateway = new braintree.BraintreeGateway({
   privateKey: process.env.MERCHANTPRIVATE
 });
 
-const PLAN_IDS = {
-  STANDARD: "n2wg"
-};
-const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]])); // reverse lookup plan name from plan id
+// http://expressjs.com/en/starter/static-files.html
+app.use(express.static("public"));
+
+// ============================ AUTHENTICATION ============================
+// How to add idToken to glitch preview:
+// from firebase url:
+//   - login
+//   - copy idtoken cookie
+// in glitch preview devtools console
+//   - run `import('./util.js').then(m => util = m);`
+//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 24)`
 
 var admin = require("firebase-admin");
 admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 
+// Delete later
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
-
 async function getUID(idToken) {
   if (typeof idToken != "string") throw 'Invalid idToken';
   // idToken comes from the client app
@@ -90,6 +96,7 @@ app.get("/isLoggedIn", (request, response) => {
   });
 });
 
+// ============================ DATABASE ============================
 // init sqlite db
 const dbFile = "./.data/AttendanceSoftware.db";
 const exists = fs.existsSync(dbFile);
@@ -134,8 +141,11 @@ const asyncRunWithID = (sql, params=[]) => {
   });
 };
 
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static("public"));
+// ============================ PAYMENT ============================
+const PLAN_IDS = {
+  STANDARD: "n2wg"
+};
+const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]])); // reverse lookup plan name from plan id
 
 // this token authorizes the client to access the payment portal and modify customer payment information
 // if the client is already a customer, we give them access to their braintree customer via the stored id
@@ -245,62 +255,6 @@ app.post("/checkout", async (request, response) => {
   }
 });
 
-async function createBusiness(uid, name) {
-  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (user.BusinessIDs != "") return
-  
-  const rand = uuid.v4();
-  const attendanceTableName = "ATT" + rand;
-  const eventTableName = "EVT" + rand;
-  const userTableName = "USR" + rand;
-  await asyncRun(`
-    CREATE TABLE "${userTableName}" (
-        "userid"        TEXT NOT NULL UNIQUE,
-        "role"  TEXT,
-        FOREIGN KEY("userid") REFERENCES "Users"("id"),
-        PRIMARY KEY("userid")
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${eventTableName}" (
-        "id"    INTEGER NOT NULL UNIQUE,
-        "name"  TEXT,
-        "starttimestamp"        TEXT NOT NULL,
-        "userids"       TEXT,
-        "description"   TEXT,
-        "endtimestamp"  TEXT,
-        PRIMARY KEY("id" AUTOINCREMENT)
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${attendanceTableName}" (
-        "eventid"       INTEGER NOT NULL,
-        "userid"        INTEGER NOT NULL,
-        "timestamp"     TEXT NOT NULL,
-        "status"        TEXT NOT NULL,
-        FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
-        FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
-    );
-  `); 
-  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
-    name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
-  ]);
-  console.log('Created new business with id: ' + businessID);
-  await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
-}
-
-async function deleteBusiness(uids, businessID) {
-  await asyncRun(`UPDATE Users SET BusinessIDs = NULL WHERE id IN (${arr.join(", ")})`);
- 
-  const rand = uuid.v4();
-  const attendanceTableName = "ATT" + rand;
-  const eventTableName = "EVT" + rand;
-  const userTableName = "USR" + rand;
-  
-  console.log('Deleted the business with id: ' + businessID);
-  
-}
-
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)
 // throws any error that's not a "notFoundError" (the user hasn't signed up as a customer yet)
@@ -405,8 +359,60 @@ app.get("/cancelSubscription", async (request, response) => {
   }
 });
 
+// ============================ ATTENDANCE ============================
+async function createBusiness(uid, name) {
+  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+  if (user.BusinessIDs != "") return
+  
+  const rand = uuid.v4();
+  const attendanceTableName = "ATT" + rand;
+  const eventTableName = "EVT" + rand;
+  const userTableName = "USR" + rand;
+  await asyncRun(`
+    CREATE TABLE "${userTableName}" (
+        "userid"        TEXT NOT NULL UNIQUE,
+        "role"  TEXT,
+        FOREIGN KEY("userid") REFERENCES "Users"("id"),
+        PRIMARY KEY("userid")
+    );
+  `);
+  await asyncRun(`
+    CREATE TABLE "${eventTableName}" (
+        "id"    INTEGER NOT NULL UNIQUE,
+        "name"  TEXT,
+        "starttimestamp"        TEXT NOT NULL,
+        "userids"       TEXT,
+        "description"   TEXT,
+        "endtimestamp"  TEXT,
+        PRIMARY KEY("id" AUTOINCREMENT)
+    );
+  `);
+  await asyncRun(`
+    CREATE TABLE "${attendanceTableName}" (
+        "eventid"       INTEGER NOT NULL,
+        "userid"        INTEGER NOT NULL,
+        "timestamp"     TEXT NOT NULL,
+        "status"        TEXT NOT NULL,
+        FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
+        FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
+    );
+  `); 
+  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
+    name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
+  ]);
+  console.log('Created new business with id: ' + businessID);
+  await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
+}
 
-// =================== ATTENDANCE LOGIC =========================
+async function deleteBusiness(uids, businessID) {
+  await asyncRun(`UPDATE Users SET BusinessIDs = NULL WHERE id IN (${uids.join(", ")})`);
+ 
+  const tables = await asyncGet(`SELECT AttendanceTable, usertable, eventtable FROM Businesses WHERE id = ?`, [businessID]);
+  const
+  
+  console.log('Deleted the business with id: ' + businessID);
+  
+}
 
 app.get("/business", async (request, response) => {
   try {
@@ -682,11 +688,3 @@ app.get("/eventdata", async function(request, response) {
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
-
-// How to add idToken to glitch preview:
-// from firebase url:
-//   - login
-//   - copy idtoken cookie
-// in glitch preview devtools console
-//   - run `import('./util.js').then(m => util = m);`
-//   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 24)`
