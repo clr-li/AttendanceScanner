@@ -40,3 +40,14 @@ export async function POST(url, data) {
 export function parseJwt(token) {
     return JSON.parse(ethereumjs.Buffer.Buffer.from(token.split('.')[1], 'base64').toString());
 }
+
+export function LevenshteinDistance(str1, str2) {
+  let matrix = Array(str1.length + 1).fill().map(() => Array(str2.length + 1).fill(0));
+  
+  for (let i = 0; i <= str1.length; i++) {
+    matrix[i][0] = i;
+  }
+  for (let j = 0; j <= str2.length; j++) {
+    matrix[0][j] = j;
+  }
+}
