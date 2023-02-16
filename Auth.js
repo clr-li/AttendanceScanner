@@ -7,37 +7,39 @@ const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database')
 // ============================ AUTHENTICATION SETTINGS ============================
 const TOKEN_VERIFICATION = false;
 const ACCESS_TABLE = {
-  owner: 4000,
-  admin: 3000,
-  scanner: 2000,
-  user: 1000
+  owner:   { owner: true , admin: true , scanner: true  },
+  admin:   { owner: false, admin: true , scanner: true  },
+  scanner: { owner: false, admin: false, scanner: true  },
+  user:    { owner: false, admin: false, scanner: false }
 }
 
+// ============================ AUTHENTICATION LOGIC ============================
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
-async function getUID(idToken) {
+async function getUID(idToken, registerIfNewUser=true) {
   if (typeof idToken != "string") throw 'Invalid idToken';
   // idToken comes from the client app
   try {
-    let name;
+    let truename;
     let uid;
     if (TOKEN_VERIFICATION) {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       uid = decodedToken.uid; 
-      name = decodedToken.name;
+      truename = decodedToken.name;
     } else {
-      let decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-      
+      const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
+      uid = decodedToken.user_id;
+      truename = decodedToken.name;
     }
-    
-    
-    let name = await asyncGet(`SELECT name FROM Users WHERE id=?`, [decodedToken.user_id]);
-    if (!name) {
-      await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [decodedToken.user_id, decodedToken.name]);
+    if (registerIfNewUser) {
+      let name = await asyncGet(`SELECT name FROM Users WHERE id=?`, [uid]);
+      if (!name) {
+        await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [uid, truename]);
+      }
     }
-    return decodedToken.user_id;
+    return uid;
   } catch(error) {
     console.error("getUID error: " + error);
     return false;
@@ -65,6 +67,7 @@ async function getAccess(businessid, userid, requireadmin, requirescanner, requi
   }
 }
 
+// ============================ AUTHENTICATION ROUTES ============================
 app.get("/isLoggedIn", (request, response) => {
   if (!request.headers.idtoken) {
     response.sendStatus(400);
@@ -76,3 +79,5 @@ app.get("/isLoggedIn", (request, response) => {
     response.send(uid);
   });
 });
+
+// ============================ AUTHENTICATION EXPORTS ============================

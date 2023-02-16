@@ -1,6 +1,9 @@
 const fs = require("fs");
+
+// ============================ DATABASE SETTINGS ============================
+const dbFile = "./.data/ATT.db"; // filepath for the database
+
 // ============================ INIT SQLite DATABASE ============================
-const dbFile = "./.data/AttendanceSoftware.db";
 const exists = fs.existsSync(dbFile);
 let db = null;
 if (!exists) {
@@ -15,31 +18,34 @@ else {
 const asyncGet = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, result) => {
-      if (err) { console.log("error: " + sql); reject(err); }
+      if (err) { console.log("sql error: " + sql); reject(err); }
       else resolve(result);
     });
   });
 };
+
 const asyncAll = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, result) => {
-      if (err) { console.log("error: " + sql); reject(err); }
+      if (err) { console.log("sql error: " + sql); reject(err); }
       else resolve(result);
     });
   });
 };
+
 const asyncRun = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
     db.run(sql, params, (err) => {
-      if (err) { console.log("error: " + sql); reject(err); }
+      if (err) { console.log("sql error: " + sql); reject(err); }
       else resolve();
     });
   });
 };
+
 const asyncRunWithID = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
-      if (err) { console.log("error: " + sql); reject(err); }
+      if (err) { console.log("sql error: " + sql); reject(err); }
       else resolve(this.lastID);
     });
   });
