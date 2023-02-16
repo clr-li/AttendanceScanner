@@ -1,5 +1,5 @@
-// ============================ DATABASE ============================
-// init sqlite db
+const fs = require("fs");
+// ============================ INIT SQLite DATABASE ============================
 const dbFile = "./.data/AttendanceSoftware.db";
 const exists = fs.existsSync(dbFile);
 let db = null;
@@ -10,6 +10,8 @@ else {
   const sqlite3 = require('sqlite3').verbose();
   db = new sqlite3.Database(dbFile);
 }
+
+// ============================ ASYNC DATABASE FUNCTIONS ============================
 const asyncGet = (sql, params=[]) => {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, result) => {
@@ -42,3 +44,10 @@ const asyncRunWithID = (sql, params=[]) => {
     });
   });
 };
+
+// ============================ MODULE EXPORTS ============================
+exports.db = db
+exports.asyncGet = asyncGet
+exports.asyncAll = asyncAll
+exports.asyncRun = asyncRun
+exports.asyncRunWithID = asyncRunWithID

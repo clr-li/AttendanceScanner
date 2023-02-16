@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require('body-parser');
 const app = express();
-const fs = require("fs");
 const cors = require('cors')
 let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
@@ -26,6 +25,9 @@ const gateway = new braintree.BraintreeGateway({
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
+// ============================ DATABASE ============================
+const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
+
 // ============================ AUTHENTICATION ============================
 // How to add idToken to glitch preview:
 // from firebase url:
@@ -34,68 +36,9 @@ app.use(express.static("public"));
 // in glitch preview devtools console
 //   - run `import('./util.js').then(m => util = m);`
 //   - run `util.setCookie('idtoken', '[PASTE COOKIE STRING HERE]', 24)`
-//cliuw@uw.edu token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImQwNWI0MDljNmYyMmM0MDNlMWY5MWY5ODY3YWM0OTJhOTA2MTk1NTgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQ2xhaXJlIENsaXV3QFVXLkVkdSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BRWRGVHA0d1R5UVJFNU13dVhNa1B1MGpkZV9ma1FHRllxTDlyTTE3cHBLZT1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hdHRlbmRhbmNlc2Nhbm5lcnFyIiwiYXVkIjoiYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1dGhfdGltZSI6MTY3NTIwNjM5MCwidXNlcl9pZCI6IkEySVN4WktRVU9nSlRhQkpmM2pHMEVjNUNMdzIiLCJzdWIiOiJBMklTeFpLUVVPZ0pUYUJKZjNqRzBFYzVDTHcyIiwiaWF0IjoxNjc1MjA2MzkwLCJleHAiOjE2NzUyMDk5OTAsImVtYWlsIjoiY2xpdXdAdXcuZWR1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDIzNDg1MDIyODIwMzg4OTQ5MzUiXSwiZW1haWwiOlsiY2xpdXdAdXcuZWR1Il19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.RA4rqYq1fGfU58OthW1zdb76zfSbvmYTf2al-gwQei8d0sZ5YgUKvXt-wHRAsYCzah1mUebmvfG8U2n_wFcIIZG5W48EN2G4idvHtKJNV149SA5H-QZ9MxaYK3FdY68wtKRcl9IExX0tNth7-4gKHfMWF15Yz8ja2MxH8Xp_RgXmEd1gxKD-86-hT0VADM7ccMbIrURK2d9GCpUoCjCgdzLJVuJ62CotCUjF5QoMwL2IeK-pIBwp2eyh-Hsy1BB3bwcgtxf926bD3MLuWjSNJNjntvcqTbtpD-38xt2TzyWIA6t9xkGHTRCMhFlm8dmv_CPXzN12nLqg6xjp-CYCnQ
+// cliuw@uw.edu token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImQwNWI0MDljNmYyMmM0MDNlMWY5MWY5ODY3YWM0OTJhOTA2MTk1NTgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQ2xhaXJlIENsaXV3QFVXLkVkdSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BRWRGVHA0d1R5UVJFNU13dVhNa1B1MGpkZV9ma1FHRllxTDlyTTE3cHBLZT1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hdHRlbmRhbmNlc2Nhbm5lcnFyIiwiYXVkIjoiYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1dGhfdGltZSI6MTY3NTIwNjM5MCwidXNlcl9pZCI6IkEySVN4WktRVU9nSlRhQkpmM2pHMEVjNUNMdzIiLCJzdWIiOiJBMklTeFpLUVVPZ0pUYUJKZjNqRzBFYzVDTHcyIiwiaWF0IjoxNjc1MjA2MzkwLCJleHAiOjE2NzUyMDk5OTAsImVtYWlsIjoiY2xpdXdAdXcuZWR1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDIzNDg1MDIyODIwMzg4OTQ5MzUiXSwiZW1haWwiOlsiY2xpdXdAdXcuZWR1Il19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.RA4rqYq1fGfU58OthW1zdb76zfSbvmYTf2al-gwQei8d0sZ5YgUKvXt-wHRAsYCzah1mUebmvfG8U2n_wFcIIZG5W48EN2G4idvHtKJNV149SA5H-QZ9MxaYK3FdY68wtKRcl9IExX0tNth7-4gKHfMWF15Yz8ja2MxH8Xp_RgXmEd1gxKD-86-hT0VADM7ccMbIrURK2d9GCpUoCjCgdzLJVuJ62CotCUjF5QoMwL2IeK-pIBwp2eyh-Hsy1BB3bwcgtxf926bD3MLuWjSNJNjntvcqTbtpD-38xt2TzyWIA6t9xkGHTRCMhFlm8dmv_CPXzN12nLqg6xjp-CYCnQ
 
-var admin = require("firebase-admin");
-admin.initializeApp({
-  credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-});
 
-// Delete later
-function parseJwt(token) {
-    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-}
-async function getUID(idToken) {
-  if (typeof idToken != "string") throw 'Invalid idToken';
-  // idToken comes from the client app
-  try {
-    // let decodedToken = await admin.auth().verifyIdToken(idToken);
-    // const uid = decodedToken.uid;
-    // return uid;    
-    let decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-    let name = await asyncGet(`SELECT name FROM Users WHERE id=?`, [decodedToken.user_id]);
-    if (!name) {
-      await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [decodedToken.user_id, decodedToken.name]);
-    }
-    return decodedToken.user_id;
-  } catch(error) {
-    console.error("getUID error: " + error);
-    return false;
-  };
-}
-
-async function getAccess(businessid, userid, requireadmin, requirescanner, requireuser=true) {
-  try {
-    if (requireuser) {
-      const user = await asyncGet(`SELECT business_id FROM Members WHERE id = ?`, [userid]);
-      // const validbusinessids = new Set(user.BusinessIDs.split(','));
-      // if (!validbusinessids.has(businessid)) return false; // user doesn't belong to the business
-    }
-    const business = await asyncGet(`SELECT roleaccess, usertable FROM Businesses WHERE id = ?`, [businessid]);
-    const roleaccess = business.roleaccess;
-    const roles = JSON.parse(roleaccess);
-    const table = business.usertable;
-    const role = (await asyncGet(`SELECT role from "${table}" WHERE userid = ?`, [userid])).role;
-    if (!(role in roles)) return false; // if the role is invalid, user doesn't have access
-    const access = roles[role];
-    return (access['admin'] == requireadmin || !requireadmin) && (access['scanner'] == requirescanner || !requirescanner);
-  } catch (err) {
-    console.error("getAccess error: " + err);
-    return false;
-  }
-}
-
-app.get("/isLoggedIn", (request, response) => {
-  if (!request.headers.idtoken) {
-    response.sendStatus(400);
-    return;
-  }
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
-  });
-});
 
 // ============================ PAYMENT ============================
 const PLAN_IDS = {
