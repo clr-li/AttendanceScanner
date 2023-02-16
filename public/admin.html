@@ -59,14 +59,14 @@
       <input type="time" id="endtime" name="endtime"><br>
       <input type="button" value="Submit" id="submitevent">
     </form>
-    <form id="filterform">
+    <form id="filterform" onsubmit="return false">
       <label for="filtername">Filter by Name: </label>
       <input type="text" id="filtername" name="filtername">
       <label for="filterstart">Start Date: </label>
       <input type="date" id="filterstart" name="filterstart"><br>
       <label for="filterend">End Date: </label>
       <input type="date" id="filterend" name="filterend"><br>
-      <input type="button" value="Submit" id="submitfilter">
+      <button value="Submit" id="submitfilter">Submit</button>
     </form>
     <table id="displayattendance"></table>
     
