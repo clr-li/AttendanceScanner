@@ -71,7 +71,7 @@
     <table id="displayattendance"></table>
     
     <script type="module">
-    import {GET, POST} from './util.js';
+    import {GET, POST, calcSimilarity} from './util.js';
       
     let selectizeControl;
     let select;
@@ -134,11 +134,12 @@
     document.getElementById('submitfilter').onclick = () => {
       [...document.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach ((row) => {
         if (row.firstChild.nodeName == 'TD' && document.getElementById('filtername').value != "") {
-          if (row.firstChild.innerHTML != document.getElementById('filtername').value) {
-            row.style.display = "none";
-          } else {
-            row.style.display = "table-row";
-          }
+          // if (row.firstChild.innerHTML != document.getElementById('filtername').value) {
+          //   row.style.display = "none";
+          // } else {
+          //   row.style.display = "table-row";
+          // }
+          sortStudents(document.getElementById('filtername').value);
         } else {
           row.style.display = "table-row";
         }
@@ -161,7 +162,8 @@
       });
     }
     
-    function sortStudents() {
+    function sortStudents(searchword) {
+      searchword = searchword.toLowerCase();
       var table, rows, switching, i, x, y, shouldSwitch;
       table = document.getElementById("displayattendance");
       switching = true;
@@ -181,7 +183,7 @@
           x = rows[i].getElementsByTagName("TD")[0];
           y = rows[i + 1].getElementsByTagName("TD")[0];
           // Check if the two rows should switch place:
-          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          if (calcSimilarity(x.innerHTML.toLowerCase(), searchword) < calcSimilarity(y.innerHTML.toLowerCase(), searchword)) {
             // If so, mark as a switch and break the loop:
             shouldSwitch = true;
             break;

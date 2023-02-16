@@ -42,7 +42,7 @@ export function parseJwt(token) {
 }
 
 export function calcSimilarity(str1, str2) {
-  return -LevenshteinDistance(str1, str2);
+  return -LevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length);
 }
 
 function LevenshteinDistance(str1, str2) {
