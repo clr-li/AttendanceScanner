@@ -53,9 +53,9 @@ async function getUID(idToken) {
     // const uid = decodedToken.uid;
     // return uid;    
     let decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-    let name = await asyncGet(`SELECT FirstName FROM Users WHERE id=?`, [decodedToken.user_id]);
+    let name = await asyncGet(`SELECT name FROM Users WHERE id=?`, [decodedToken.user_id]);
     if (!name) {
-      await asyncRun(`INSERT INTO Users (FirstName, LastName, BusinessIDs, id) VALUES (?, ?, ?, ?)`, [decodedToken.name.split(" ")[0], decodedToken.name.split(" ")[1], "", decodedToken.user_id]);
+      await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [decodedToken.user_id, decodedToken.name]);
     }
     return decodedToken.user_id;
   } catch(error) {
@@ -67,7 +67,7 @@ async function getUID(idToken) {
 async function getAccess(businessid, userid, requireadmin, requirescanner, requireuser=true) {
   try {
     if (requireuser) {
-      const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [userid]);
+      const user = await asyncGet(`SELECT business_id FROM Members WHERE id = ?`, [userid]);
       // const validbusinessids = new Set(user.BusinessIDs.split(','));
       // if (!validbusinessids.has(businessid)) return false; // user doesn't belong to the business
     }
