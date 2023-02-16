@@ -577,6 +577,10 @@ app.get("/attendancedata", async function(request, response) {
   }
 });
 
+app.get("/getBusinesses", async function(request, response) {
+  let sql = `SELECT`
+});
+
 app.get("/makeEvent", async function(request, response) {
   try {
     const uid = await getUID(request.headers.idtoken);

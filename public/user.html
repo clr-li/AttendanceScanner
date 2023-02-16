@@ -60,7 +60,8 @@
         GET(`/join?id=${businessId}&code=${joincode}`);
       }
       
-      
+      html = "<tr><th>";
+      let userBusinesses = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
     </script>
   </body>
 </html>
