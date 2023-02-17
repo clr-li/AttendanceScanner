@@ -50,7 +50,7 @@ async function getUID(idToken, registerIfNewUser=true) {
   };
 }
 
-async function getAccess(userid, businessid, requiredPriviledges={owner: false, admin: true, scanner: true}) {
+async function getAccess(userid, businessid, requiredPriviledges={admin: true}) {
   try {
     const role = (await asyncGet(`SELECT role from Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
@@ -65,28 +65,34 @@ async function getAccess(userid, businessid, requiredPriviledges={owner: false, 
   }
 }
 
-async function handleAuth(request, response) {
-  if (!request.headers.idtoken) {
-    response.sendStatus(400);
-    return;
+// Handles the authentication and authorization of the user
+// @param businessid the id of the business to check access for
+// @param requiredPriviledges an object of which priviledges are required
+// @param requires 
+// @return the uid of the user if auth succeeded, false otherwise
+async function handleAuth(request, response, businessid=false, requiredPriviledges=false) {
+  if (!request.headers.idtoken) { 
+    response.sendStatus(400); // no idToken
+    return false;
   }
   const uid = await getUID(request.headers.idtoken);
   if (!uid) {
-    response.sendStatus = 403;
+    response.sendStatus(401); // invalid idToken
+    return false;
   }
+  if (requiredPriviledges && !(await getAccess(uid, businessid, requiredPriviledges))) {
+    response.sendStatus(403); // don't have access
+    return false;
+  }
+  return uid;
 }
 
 // ============================ AUTHENTICATION ROUTES ============================
-router.get("/isLoggedIn", (request, response) => {
-  if (!request.headers.idtoken) {
-    response.sendStatus(400);
-    return;
-  }
-  getUID(request.headers.idtoken).then(uid => {
-    console.log('logged in: ' + uid);
-    response.status = uid ? 200 : 403;
-    response.send(uid);
-  });
+router.get("/isLoggedIn", async (request, response) => {
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+  console.log('logged in: ' + uid);
+  response.send(uid);
 });
 
 // ============================ AUTHENTICATION EXPORTS ============================
