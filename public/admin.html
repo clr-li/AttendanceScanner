@@ -27,17 +27,6 @@
     <h3>Join Info</h3>
     <div id="qrcode"></div>
     <a id="joinlink">Join Link</a><br><br>
-    <script type="module">
-      import {GET, POST} from './util.js';
-      let res = await GET('/joincode');
-      let data = await res.json();
-      let joincode = data.joincode;
-      let businessId = data.id;
-      let joinlink = "https://" + window.location.hostname + "/user.html?id=" + businessId + "&code=" + joincode;
-      new QRCode(document.getElementById("qrcode"), joinlink);
-      document.getElementById("joinlink").href = joinlink;
-      document.getElementById("joinlink").textContent = joinlink;
-    </script>
     <label for="events">Event: </label>
     <select id="events" name="events"></select>
     <br>
@@ -74,12 +63,16 @@
     <script type="module">
     import {GET, POST, calcSimilarity} from './util.js';
       
+    function getBusinessId() {
+      return document.getElementById("businessname").options[document.getElementById("businessname").options.selectedIndex].dataset.id;
+    }
+      
     let selectizeControl;
     let select;
     let events;
     async function updateEvents() {
       let options = [];
-      let res = await GET('/events?businessId=' + );
+      let res = await GET('/events?businessId=' + getBusinessId());
       events = await res.json();
       events.forEach(event => {
         let option = {};
@@ -208,15 +201,25 @@
     }
       
     document.body.onload = async () => {
-      GET('/businesses').then((res) => { res.json().then((o) => {
-        let html = '';
-        o.forEach(business => {
-          if (business.role != 'user')
-            html += `<option data-id="${business.id}">${business.name}</option>`;
-        });
-        document.getElementById("businessname").innerHTML = html;
-      })});
+      let res2 = await GET('/businesses');
+      let o = await res2.json();
+      let html2 = '';
+      o.forEach(business => {
+        if (business.role != 'user')
+          html2 += `<option data-id="${business.id}">${business.name}</option>`;
+      });
+      document.getElementById("businessname").innerHTML = html2;
       await updateEvents();
+      
+      let res = await GET('/joincode?businessId=' + getBusinessId());
+      let data = await res.json();
+      let joincode = data.joincode;
+      let businessId = data.id;
+      let joinlink = "https://" + window.location.hostname + "/user.html?id=" + businessId + "&code=" + joincode;
+      new QRCode(document.getElementById("qrcode"), joinlink);
+      document.getElementById("joinlink").href = joinlink;
+      document.getElementById("joinlink").textContent = joinlink;
+      
       
       function getEventData() {
         let eventid = selectizeControl.getValue();
