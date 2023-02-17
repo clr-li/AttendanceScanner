@@ -207,7 +207,7 @@
     }
       
     document.body.onload = async () => {
-      GET('/business').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o.Name) });
+      GET('/businesses').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o[0].name) });
       await updateEvents();
       
       function getEventData() {

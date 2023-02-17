@@ -145,12 +145,10 @@ router.get("/eventdata", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-
+  const id = request.query.businessId;
   const eventid = request.query.eventid;
   
-  const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  const eventinfo = await asyncGet(`SELECT * FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
+  const eventinfo = await asyncGet(`SELECT * FROM Events WHERE business_id = ? AND id = ?`, [id, eventid]);
   response.send(eventinfo);
 });
 
