@@ -65,11 +65,12 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
   }
 }
 
-// Handles the authentication and authorization of the user
+// Handles the authentication (and authorization if requiredPriviledges is not false) of the user
 // @param businessid the id of the business to check access for
 // @param requiredPriviledges an object of which priviledges are required
-// @param requires 
+// @requires request and response are valid, businessid is a valid id if requiredPriviledges is not false
 // @return the uid of the user if auth succeeded, false otherwise
+// @effects sends response status error codes for failed auth
 async function handleAuth(request, response, businessid=false, requiredPriviledges=false) {
   if (!request.headers.idtoken) { 
     response.sendStatus(400); // no idToken
@@ -96,5 +97,5 @@ router.get("/isLoggedIn", async (request, response) => {
 });
 
 // ============================ AUTHENTICATION EXPORTS ============================
-exports.router = router;
+exports.authRouter = router;
 exports.handleAuth = handleAuth;
