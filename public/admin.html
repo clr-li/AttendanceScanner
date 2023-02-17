@@ -22,7 +22,8 @@
     <h1 id="header">
       Admin Page 
     </h1>
-    <h2 id="businessname"></h2>
+<!--     <h2 id="businessname"></h2> -->
+    <select id="businessname" />
     <h3>Join Info</h3>
     <div id="qrcode"></div>
     <a id="joinlink">Join Link</a><br><br>
@@ -78,7 +79,7 @@
     let events;
     async function updateEvents() {
       let options = [];
-      let res = await GET('/events');
+      let res = await GET('/events?businessId=' + );
       events = await res.json();
       events.forEach(event => {
         let option = {};
@@ -207,7 +208,14 @@
     }
       
     document.body.onload = async () => {
-      GET('/businesses').then((res) => { res.json().then((o) => document.getElementById("businessname").innerHTML += o[0].name) });
+      GET('/businesses').then((res) => { res.json().then((o) => {
+        let html = '';
+        o.forEach(business => {
+          if (business.role != 'user')
+            html += `<option data-id="${business.id}">${business.name}</option>`;
+        });
+        document.getElementById("businessname").innerHTML = html;
+      })});
       await updateEvents();
       
       function getEventData() {
