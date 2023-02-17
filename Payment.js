@@ -22,11 +22,15 @@ const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], key
 
 // ============================ PAYMENT FUNCTIONS ============================
 
+async function getCustomerID(uid) {
+  return (await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid])).customer_id;
+}
+
 // returns true if the user (specified by uid) subscribes at least once to the planId 
 // (allowtrial specifies whether trial subscriptions should count)
 // throws any error that's not a "notFoundError" (the user hasn't signed up as a customer yet)
 // returns false otherwise
-async function verifySubscription(uid, planId, allowtrial=true) {
+async function verifySubscription(uid, planId) {
   const user = await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid]);
   if (!user.Customer_id) return false;
   try {
@@ -38,8 +42,7 @@ async function verifySubscription(uid, planId, allowtrial=true) {
   customer.paymentMethods.forEach(paymentMethod => {
     paymentMethod.subscriptions.forEach(subscription => {
       if (subscription.status === "Active" 
-          && subscription.planId === planId 
-          && (allowtrial || !subscription.trialPeriod)) {
+          && subscription.planId === planId) {
           return true;
       }
     });
@@ -47,14 +50,9 @@ async function verifySubscription(uid, planId, allowtrial=true) {
   return false;
 }
 
-// ============================ PAYMENT ROUTES ============================
-
 // this token authorizes the client to access the payment portal and modify customer payment information
 // if the client is already a customer, we give them access to their braintree customer via the stored customer_id
-router.get("/clientToken", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
-
+async function getClientToken(uid) {
   const customerId = (await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid])).customer_id;
   const tokenOptions = {};
   console.log("CustomerId requested a client token: " + customerId)
@@ -68,8 +66,17 @@ router.get("/clientToken", async (request, response) => {
   }
 
   let res = await gateway.clientToken.generate(tokenOptions);
-  const clientToken = res.clientToken;
-  response.send(clientToken);
+  return res.clientToken;
+}
+
+// ============================ PAYMENT ROUTES ============================
+
+// @see getClientToken()
+router.get("/clientToken", async (request, response) => {
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+
+  response.send(await getClientToken(uid));
 });
 
 // we get the paymentNonce from the client (a secure way to communicate payment information)
@@ -144,81 +151,64 @@ router.post("/checkout", async (request, response) => {
 
 // get's the noncanceled subscriptions
 router.get("/subscriptions", async (request, response) => {
-  try {
-    const uid = await getUID(request.headers.idtoken);
-    if (!uid) {
-      response.sendStatus(403);
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+    
+  const customerId = (await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid])).customer_id;
+  if (!customerId) {
+      response.sendStatus(401);
       return;
-    }
-    
-    const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
-    if (!customerId) {
-        response.sendStatus(401);
-        return;
-    }
-    const customer = await gateway.customer.find("" + customerId);
-    let subscriptions = [];
-    
-    customer.paymentMethods.forEach(paymentMethod => {
-      subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
-    });
-    
-    subscriptions = subscriptions.filter(subscription => subscription.status != "Canceled");
-    
-    subscriptions = subscriptions.map(subscription => {
-      return {
-        plan: PLAN_NAME.get(subscription.planId),
-        nextBillingDate: subscription.nextBillingDate,
-        nextBillAmount: subscription.nextBillAmount,
-        status: subscription.status,
-        trialPeriod: subscription.trialPeriod,
-        id: subscription.id
-      };
-    });
-    
-    response.send(subscriptions);
-  } catch (err) {
-    console.error(err.message);
-    response.sendStatus(400);
   }
+  const customer = await gateway.customer.find("" + customerId);
+  let subscriptions = [];
+
+  customer.paymentMethods.forEach(paymentMethod => {
+    subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+  });
+
+  subscriptions = subscriptions.filter(subscription => subscription.status != "Canceled");
+
+  subscriptions = subscriptions.map(subscription => {
+    return {
+      plan: PLAN_NAME.get(subscription.planId),
+      nextBillingDate: subscription.nextBillingDate,
+      nextBillAmount: subscription.nextBillAmount,
+      status: subscription.status,
+      id: subscription.id
+    };
+  });
+
+  response.send(subscriptions);
 });
 
 router.get("/cancelSubscription", async (request, response) => {
-  try {
-    const uid = await getUID(request.headers.idtoken);
-    if (!uid) {
-      response.sendStatus(403);
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+    
+  const subscriptionId = request.query.id;
+
+  const customerId = (await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid])).customer_id;
+  if (!customerId) {
+      response.sendStatus(401);
       return;
-    }
-    
-    const subscriptionId = request.query.id;
-    
-    const customerId = (await asyncGet(`SELECT Customer_id FROM Users WHERE id = ?`, [uid])).Customer_id;
-    if (!customerId) {
-        response.sendStatus(401);
-        return;
-    }
-    const customer = await gateway.customer.find("" + customerId);
-    
-    let subscriptions = [];
-    customer.paymentMethods.forEach(paymentMethod => {
-      subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
-    });
-    
-    for (let i = 0; i < subscriptions.length; i++) {
-      let subscription = subscriptions[i];
-      if (subscription.id === subscriptionId) {
-        await gateway.subscription.cancel(subscriptionId);
-        response.sendStatus(200);
-        return
-      }
-    }
-    
-    response.sendStatus(403); // subscription is not owned by customer
-  } catch (err) {
-    console.error(err.message);
-    response.sendStatus(400);
   }
+  const customer = await gateway.customer.find("" + customerId);
+
+  let subscriptions = [];
+  customer.paymentMethods.forEach(paymentMethod => {
+    subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+  });
+
+  for (let i = 0; i < subscriptions.length; i++) {
+    let subscription = subscriptions[i];
+    if (subscription.id === subscriptionId) {
+      await gateway.subscription.cancel(subscriptionId);
+      response.sendStatus(200);
+      return
+    }
+  }
+
+  response.sendStatus(403); // subscription is not owned by customer
 });
 
 // ============================ PAYMENT EXPORTS ============================
