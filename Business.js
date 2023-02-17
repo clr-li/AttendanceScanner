@@ -46,10 +46,10 @@ router.get("/join", async (request, response) => {
 
   const businessId = request.query.businessId;
   const joincode = request.query.code;
-  // const email = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  const row = await asyncGet(`SELECT joincode, usertable, pendingemails FROM Businesses WHERE id = ?`, [businessId]);
+
+  const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [businessId]);
   if (row.joincode === joincode) {
-      await asyncRun(`INSERT OR IGNORE INTO "${row.usertable}" (userid, role) VALUES (?, 'user')`, [uid]);
+    await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
     response.sendStatus(200);
   } else {
     response.sendStatus(403);
@@ -57,14 +57,11 @@ router.get("/join", async (request, response) => {
 });
 
 router.get("/events", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {scanner: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-
-  const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM "${table.eventtable}"`);
-  response.status = 200;
+  const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM Events WHERE business_id = ?`, [request.query.businessId]);
+  
   response.send(events);
 });
 
@@ -84,7 +81,7 @@ router.get("/recordAttendance", async (request, response) => {
 });
 
 router.get("/attendancedata", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
@@ -128,7 +125,7 @@ router.get("/attendancedata", async function(request, response) {
 // });
 
 router.get("/makeEvent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
@@ -148,7 +145,7 @@ router.get("/makeEvent", async function(request, response) {
 });
 
 router.get("/updateevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
@@ -166,7 +163,7 @@ router.get("/updateevent", async function(request, response) {
 });
 
 router.get("/deleteevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
@@ -179,7 +176,7 @@ router.get("/deleteevent", async function(request, response) {
 });
 
 router.get("/eventdata", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
+  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
