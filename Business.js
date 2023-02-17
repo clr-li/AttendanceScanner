@@ -33,7 +33,7 @@ router.get("/businesses", async (request, response) => {
 });
 
 router.get("/joincode", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId);
+  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
 
   const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [request.query.businessId]);
@@ -57,7 +57,7 @@ router.get("/join", async (request, response) => {
 });
 
 router.get("/events", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
+  const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
   
   const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM Events WHERE business_id = ?`, [request.query.businessId]);
@@ -69,14 +69,12 @@ router.get("/recordAttendance", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, {scanner: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-
   const eventid = request.query.eventid;
+  const businessid = request.query.businessId;
   const userid = request.query.userid;
   const status = request.query.status;
 
-  const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  await asyncRun(`INSERT INTO "${table.AttendanceTable}" (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [eventid, userid, Date.now(), status]);
+  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessid, userid, Date.now(), status]);
   response.sendStatus(200);
 });
 
@@ -84,39 +82,10 @@ router.get("/attendancedata", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  
   const eventid = request.query.eventid;
   const userid = request.query.userid;
 
-  const table = await asyncGet(`SELECT AttendanceTable, usertable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  console.log(table)
-  let sql = `SELECT Users.firstname, Users.lastname, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
-  if (eventid == "*" && userid == "*") {
-    var attendanceinfo = await asyncAll(sql);
-  } else if (eventid == "*") {
-    var attendanceinfo = await asyncAll(sql + "WHERE userid = ?", [userid]);
-  } else if (userid == "*") {
-    var attendanceinfo = await asyncAll(sql + "WHERE eventid = ?", [eventid]);
-  } else {
-    var attendanceinfo = await asyncAll(sql + "WHERE eventid = ? AND userid = ?", [eventid, userid]);
-  }
-  if (userid == "*") {
-    let userids = new Set();
-    attendanceinfo.forEach((attendanceRecord) => {
-      userids.add(attendanceRecord.userid);
-    });
-    sql = `SELECT Users.firstname, Users.lastname, "${table.usertable}".userid FROM "${table.usertable}" LEFT JOIN Users ON "${table.usertable}".userid = Users.id WHERE `;
-    userids.forEach((uID) => {
-      sql += `"${uID}" != "${table.usertable}".userid AND `;
-    });
-    if (userids.size === 0) {
-      sql = sql.substr(0, sql.length - 7);
-    } else {
-      sql = sql.substr(0, sql.length - 5);
-    }
-    attendanceinfo = attendanceinfo.concat(await asyncAll(sql));
-  }
+  let sql = `SELECT Users.name, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
   response.send(attendanceinfo);
 });
 
