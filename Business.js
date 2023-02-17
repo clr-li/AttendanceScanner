@@ -35,8 +35,10 @@ router.get("/businesses", async (request, response) => {
 router.get("/joincode", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, {read: true});
   if (!uid) return;
+  
+  const businessId = request.query.businessId;
 
-  const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [request.query.businessId]);
+  const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [businessId]);
   response.send(row);
 });
 
@@ -60,7 +62,7 @@ router.get("/events", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
   
-  const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM Events WHERE business_id = ?`, [request.query.businessId]);
+  const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, description FROM Events WHERE business_id = ?`, [request.query.businessId]);
   
   response.send(events);
 });
@@ -84,8 +86,9 @@ router.get("/attendancedata", async function(request, response) {
   
   const eventid = request.query.eventid;
   const userid = request.query.userid;
+  const businessid = request.query.businessId;
 
-  let sql = `SELECT Users.name, "${table.AttendanceTable}".* FROM "${table.AttendanceTable}" LEFT JOIN Users ON "${table.AttendanceTable}".userid = Users.id GROUP BY Users.id, "${table.AttendanceTable}".eventid ORDER BY "${table.AttendanceTable}".timestamp DESC`;
+  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.userid = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
   response.send(attendanceinfo);
 });
 
