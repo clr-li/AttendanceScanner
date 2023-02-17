@@ -13,37 +13,26 @@ const uuid = require('uuid');
 
 // ============================ BUSINESS FUNCTIONS ============================
 async function createBusiness(uid, name) {
-  const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (user.BusinessIDs) return
-  
-  const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
-    name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
-  ]);
+  const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode) VALUES (?, ?)`, [name, uuid.v4()]);
+  await asyncRun(`INSERT INTO Members (business_id, user_id, role) VALUES (?, ?, ?)`, [businessId, uid, 'owner']);
   console.log('Created new business with id: ' + businessId);
-  await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
-  await asyncRun(`INSERT INTO "${userTableName}" (userid, role) VALUES (?, ?)`, [uid, 'admin']);
 }
 
-async function deleteBusiness(uids, businessID) {
-  await asyncRun(`UPDATE Users SET BusinessIDs = NULL WHERE id IN ('${uids.join("', '")}')`);
- 
-  const tables = await asyncGet(`SELECT AttendanceTable, usertable, eventtable FROM Businesses WHERE id = ?`, [businessID]);
-  await asyncRun(`DROP TABLE "${tables.AttendanceTable}"`);
-  await asyncRun(`DROP TABLE "${tables.usertable}"`);
-  await asyncRun(`DROP TABLE "${tables.eventtable}"`);
-  await asyncRun(`DELETE FROM Businesses WHERE id = ?`, [businessID]);
-  
-  console.log('Deleted the business with id: ' + businessID);
+async function deleteBusiness(uids, businessId) { 
+  await asyncRun(`DELETE FROM Businesses WHERE id = ?`, [businessId]);
+  await asyncRun(`DELETE FROM Members WHERE business_id = ?`, [businessId]);
+  await asyncRun(`DELETE FROM Events WHERE business_id = ?`, [businessId]);
+  await asyncRun(`DELETE FROM Records WHERE business_id = ?`, [businessId]);
+  console.log('Deleted the business with id: ' + businessId);
 }
 
 // ============================ BUSINESS ROUTES ============================
-router.get("/business", async (request, response) => {
+router.get("/businesses", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
 
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  const row = await asyncGet(`SELECT Name FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  response.send(row);
+  const rows = await asyncAll(`SELECT name FROM Businesses INNER JOIN Members on B.f = A.f WHERE user_id `, [uid]);
+  response.send(rows);
 });
 
 router.get("/joincode", async (request, response) => {
