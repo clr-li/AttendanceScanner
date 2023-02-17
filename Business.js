@@ -89,8 +89,7 @@ router.get("/attendancedata", async function(request, response) {
   const businessid = request.query.businessId;
 
   const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
-  attendanceinfo = attendanceinfo.concat(await asyncAll(`SELECT * FROM Members WHERE business_id = ?`, [businessid]));
-  response.send(attendanceinfo);
+  response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
 });
 
 // router.get("/getBusinesses", async function(request, response) {
