@@ -22,8 +22,7 @@
     <h1 id="header">
       Admin Page 
     </h1>
-<!--     <h2 id="businessname"></h2> -->
-    <select id="businessname" />
+    <select id="businessname"></select>
     <h3>Join Info</h3>
     <div id="qrcode"></div>
     <a id="joinlink">Join Link</a><br><br>
@@ -108,9 +107,7 @@
       const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
       const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
       
-      
-      const userids = "*";
-      GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&userids=${userids}`).then(async (res) => { 
+      GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
         console.log(res.status);
         let id = (await res.json())["last_insert_rowid()"];
         let option = {};
@@ -223,7 +220,7 @@
       
       function getEventData() {
         let eventid = selectizeControl.getValue();
-        GET(`/eventdata?eventid=${eventid}`).then((res) => res.json().then((eventinfo) => {
+        GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
           var startDate = new Date(eventinfo.starttimestamp*1000);
           var endDate = new Date(eventinfo.endtimestamp*1000);
           document.getElementById("eventdetails").innerHTML = `
@@ -241,10 +238,10 @@
           `;
           document.getElementById('scan').onclick = () => {
             let id = selectizeControl.getValue();
-            window.open(`scanner.html?eventid=${id}`)
+            window.open(`scanner.html?eventid=${id}&businessId=${getBusinessId()}`)
           };
           document.getElementById('delete').onclick = () => {
-            GET(`/deleteevent?eventid=${eventid}`).then((res) => {
+            GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => {
               console.log(res.status);
               selectizeControl.removeOption(eventid);
             })
@@ -260,7 +257,7 @@
             const endtime = document.getElementById('update-endtime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
-            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}`).then((res) => {
+            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then((res) => {
               document.getElementsByClassName('item')[0].innerHTML = name + " — " + "from " + (new Date(starttimestamp*1000)).toDateString() + " to " + (new Date(endtimestamp*1000)).toDateString();
               console.log(res.status);
               updateEvents();
@@ -270,7 +267,7 @@
       }
       
       selectizeControl.on('change', getEventData);
-      let attendancearr = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
+      let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
       let map = new Map();
       for (let i = 0; i < attendancearr.length; i++) {
         if(!map.has(attendancearr[i].userid)) {
