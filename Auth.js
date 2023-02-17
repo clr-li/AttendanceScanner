@@ -12,10 +12,11 @@ const express = require('express'),
 // ============================ AUTHENTICATION SETTINGS ============================
 const TOKEN_VERIFICATION = false; // true => verify idToken with firebase, false => just decode it for development purposes
 const ACCESS_TABLE = { // the various roles and their priviledges
-  owner:   { owner: true , admin: true , scanner: true  },
-  admin:   { owner: false, admin: true , scanner: true  },
-  scanner: { owner: false, admin: false, scanner: true  },
-  user:    { owner: false, admin: false, scanner: false }
+  owner:       { owner: true , admin: true , scanner: true  },
+  admin:       { owner: false, admin: true , scanner: true  },
+  moderator:   { owner: false, admin: true , scanner: false },
+  scanner:     { owner: false, admin: false, scanner: true  },
+  user:        { owner: false, admin: false, scanner: false }
 }
 
 // ============================ AUTHENTICATION LOGIC ============================

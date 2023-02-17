@@ -16,43 +16,10 @@ async function createBusiness(uid, name) {
   const user = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
   if (user.BusinessIDs) return
   
-  const rand = uuid.v4();
-  const attendanceTableName = "ATT" + rand;
-  const eventTableName = "EVT" + rand;
-  const userTableName = "USR" + rand;
-  await asyncRun(`
-    CREATE TABLE "${userTableName}" (
-        "userid"        TEXT NOT NULL UNIQUE,
-        "role"  TEXT,
-        FOREIGN KEY("userid") REFERENCES "Users"("id"),
-        PRIMARY KEY("userid")
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${eventTableName}" (
-        "id"    INTEGER NOT NULL UNIQUE,
-        "name"  TEXT,
-        "starttimestamp"        TEXT NOT NULL,
-        "userids"       TEXT,
-        "description"   TEXT,
-        "endtimestamp"  TEXT,
-        PRIMARY KEY("id" AUTOINCREMENT)
-    );
-  `);
-  await asyncRun(`
-    CREATE TABLE "${attendanceTableName}" (
-        "eventid"       INTEGER NOT NULL,
-        "userid"        INTEGER NOT NULL,
-        "timestamp"     TEXT NOT NULL,
-        "status"        TEXT NOT NULL,
-        FOREIGN KEY("userid") REFERENCES "${userTableName}"("userid"),
-        FOREIGN KEY("eventid") REFERENCES "${eventTableName}"("id")
-    );
-  `); 
   const businessID = await asyncRunWithID(`INSERT INTO Businesses (Name, AttendanceTable, usertable, eventtable, roleaccess, joincode) VALUES (?, ?, ?, ?, ?, ?) `, [
     name, attendanceTableName, userTableName, eventTableName, '{"admin":{"admin":true,"scanner":true}}', uuid.v4()
   ]);
-  console.log('Created new business with id: ' + businessID);
+  console.log('Created new business with id: ' + businessId);
   await asyncRun('UPDATE Users SET BusinessIDs = ? WHERE id = ?', [businessID, uid]);
   await asyncRun(`INSERT INTO "${userTableName}" (userid, role) VALUES (?, ?)`, [uid, 'admin']);
 }
@@ -69,7 +36,7 @@ async function deleteBusiness(uids, businessID) {
   console.log('Deleted the business with id: ' + businessID);
 }
 
-// ============================ ADMIN ROUTES ============================
+// ============================ BUSINESS ROUTES ============================
 router.get("/business", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
@@ -92,7 +59,7 @@ router.get("/join", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
 
-  const businessId = request.query.id;
+  const businessId = request.query.businessId;
   const joincode = request.query.code;
   // const email = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
   const row = await asyncGet(`SELECT joincode, usertable, pendingemails FROM Businesses WHERE id = ?`, [businessId]);
@@ -105,14 +72,10 @@ router.get("/join", async (request, response) => {
 });
 
 router.get("/events", async (request, response) => {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {scanner: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, false, true))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, userids, description FROM "${table.eventtable}"`);
@@ -121,19 +84,14 @@ router.get("/events", async (request, response) => {
 });
 
 router.get("/recordAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {scanner: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, false, true))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const eventid = request.query.eventid;
   const userid = request.query.userid;
   const status = request.query.status;
-  if (typeof status != "string" || typeof userid != "string" || (typeof eventid != "number" && typeof eventid != "string")) throw "Invalid input";
 
   const table = await asyncGet(`SELECT AttendanceTable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   await asyncRun(`INSERT INTO "${table.AttendanceTable}" (eventid, userid, timestamp, status) VALUES (?, ?, ?, ?)`, [eventid, userid, Date.now(), status]);
@@ -141,17 +99,13 @@ router.get("/recordAttendance", async (request, response) => {
 });
 
 router.get("/attendancedata", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
-    response.sendStatus(403);
-    return;
-  }
+  
   const eventid = request.query.eventid;
   const userid = request.query.userid;
-  if (typeof userid != "string") throw new Error("Invalid input");
 
   const table = await asyncGet(`SELECT AttendanceTable, usertable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   console.log(table)
@@ -189,21 +143,16 @@ router.get("/attendancedata", async function(request, response) {
 // });
 
 router.get("/makeEvent", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
   const userids = request.query.userids;
-  if (typeof name != "string" || typeof description != "string" || typeof userids != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
 
   const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   await asyncRun(`INSERT INTO "${table.eventtable}" (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
@@ -214,21 +163,16 @@ router.get("/makeEvent", async function(request, response) {
 });
 
 router.get("/updateevent", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
   const eventid = request.query.eventid;
-  if (typeof name != "string" || typeof description != "string" || (typeof starttimestamp != "number" && typeof starttimestamp != "string") || (typeof endtimestamp != "number" && typeof endtimestamp != "string")) throw "Invalid input";
 
   const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   await asyncRun(`UPDATE "${table.eventtable}" SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE id = ?`,
@@ -237,14 +181,10 @@ router.get("/updateevent", async function(request, response) {
 });
 
 router.get("/deleteevent", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const eventid = request.query.eventid;
 
@@ -254,21 +194,17 @@ router.get("/deleteevent", async function(request, response) {
 });
 
 router.get("/eventdata", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId, {admin: true});
   if (!uid) return;
   
   const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  if (!(await getAccess(id.BusinessIDs, uid, true, false))) {
-    response.sendStatus(403);
-    return;
-  }
 
   const eventid = request.query.eventid;
-  if (typeof eventid != "string" && typeof eventid != "number") throw "Invalid input";
-
+  
   const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
   const eventinfo = await asyncGet(`SELECT * FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
   response.send(eventinfo);
 });
 
 // ============================ BUSINESS EXPORTS ============================
+exports.businessRouter = router;
