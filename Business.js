@@ -8,9 +8,6 @@ const handleAuth = require('./Auth').handleAuth;
 // random universal unique ids for joincodes
 const uuid = require('uuid');
 
-// ============================ BUSINESS SETTINGS ============================
-
-
 // ============================ BUSINESS FUNCTIONS ============================
 async function createBusiness(uid, name) {
   const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode) VALUES (?, ?)`, [name, uuid.v4()]);
@@ -36,11 +33,10 @@ router.get("/businesses", async (request, response) => {
 });
 
 router.get("/joincode", async (request, response) => {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
 
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-  const row = await asyncGet(`SELECT id, joincode FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
+  const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [request.query.businessId]);
   response.send(row);
 });
 
@@ -197,3 +193,5 @@ router.get("/eventdata", async function(request, response) {
 
 // ============================ BUSINESS EXPORTS ============================
 exports.businessRouter = router;
+exports.createBusiness = createBusiness;
+exports.deleteBusiness = deleteBusiness;

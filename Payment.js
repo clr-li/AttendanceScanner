@@ -13,6 +13,8 @@ const gateway = new braintree.BraintreeGateway({
 const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
+// business creation and deletion 
+const {createBusiness, deleteBusiness} = require('./Business');
 
 // ============================ PAYMENT SETTINGS ============================
 const PLAN_IDS = { // subscription plans
