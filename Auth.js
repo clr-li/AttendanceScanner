@@ -50,18 +50,29 @@ async function getUID(idToken, registerIfNewUser=true) {
   };
 }
 
-async function getAccess(businessid, userid, requireadmin, requirescanner, requireuser=true) {
+async function getAccess(userid, businessid, requiredPriviledges={owner: false, admin: true, scanner: true}) {
   try {
-    if (!requireuser) {
-      return true;
-    }
-    const role = (await asyncGet(`SELECT role from "${table}" WHERE userid = ?`, [userid])).role;
+    const role = (await asyncGet(`SELECT role from Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
     const access = ACCESS_TABLE[role];
-    return (access['admin'] == requireadmin || !requireadmin) && (access['scanner'] == requirescanner || !requirescanner);
+    for (const [priviledge, isRequired] of Object.entries(requiredPriviledges)) {
+      if (isRequired && !access[priviledge]) return false;
+    }
+    return true;
   } catch (err) {
     console.error("getAccess error: " + err);
     return false;
+  }
+}
+
+async function handleAuth(request, response) {
+  if (!request.headers.idtoken) {
+    response.sendStatus(400);
+    return;
+  }
+  const uid = await getUID(request.headers.idtoken);
+  if (!uid) {
+    response.sendStatus = 403;
   }
 }
 
@@ -79,4 +90,5 @@ router.get("/isLoggedIn", (request, response) => {
 });
 
 // ============================ AUTHENTICATION EXPORTS ============================
-exports.router = router
+exports.router = router;
+exports.handleAuth = handleAuth;
