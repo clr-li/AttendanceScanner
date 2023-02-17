@@ -1,17 +1,21 @@
+const https = require('https');
+const uuid = require('uuid');
+
+// express.js framework
 const express = require("express");
-const bodyParser = require('body-parser');
 const app = express();
+
+// parsing post bodies
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// cors - make server endpoints available on firebase domain
 const cors = require('cors')
 let corsOptions = {
   origin: 'https://attendancescannerqr.web.app',
 }
 app.use(cors(corsOptions))
-const uuid = require('uuid');
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-const https = require('https');
 
 // ============================ PUBLIC (STATIC) FILES ============================
 // http://expressjs.com/en/starter/static-files.html
@@ -35,7 +39,8 @@ const {authRouter, handleAuth} = require('./Auth');
 app.use('/', authRouter);
 
 // ============================ PAYMENT ============================
-
+const {paymentRouter, verifySubscription, PLAN_IDS} = require('./Payment');
+app.use('/', paymentRouter);
 
 // ============================ ATTENDANCE ============================
 async function createBusiness(uid, name) {
