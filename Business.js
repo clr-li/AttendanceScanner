@@ -100,15 +100,14 @@ router.get("/makeEvent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-
+  const id = request.query.businessId;
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
   const userids = request.query.userids;
 
-  const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [id, name, description, start]);
+  const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [id, name, description, starttimestamp, endtimestamp]);
   response.status(200);
   response.send(eventid);
 });
@@ -135,12 +134,10 @@ router.get("/deleteevent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
-
+  const id = request.query.businessId;
   const eventid = request.query.eventid;
 
-  const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  await asyncRun(`DELETE FROM "${table.eventtable}" WHERE id = ?`, [eventid]);
+  await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [id, eventid]);
   response.sendStatus(200);
 });
 
