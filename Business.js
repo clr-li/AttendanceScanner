@@ -108,10 +108,7 @@ router.get("/makeEvent", async function(request, response) {
   const endtimestamp = request.query.endtimestamp;
   const userids = request.query.userids;
 
-  const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  await asyncRun(`INSERT INTO "${table.eventtable}" (name, starttimestamp, endtimestamp, userids, description) VALUES (?, ?, ?, ?, ?)`,
-                [name, starttimestamp, endtimestamp, userids, description]);
-  const eventid = await asyncGet(`SELECT last_insert_rowid() FROM "${table.eventtable}"`);
+  const eventid = await asyncRunWithID('INSERT INTO ');
   response.status(200);
   response.send(eventid);
 });
