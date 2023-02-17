@@ -31,7 +31,7 @@ router.get("/businesses", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
 
-  const rows = await asyncAll(`SELECT name FROM Businesses INNER JOIN Members on B.f = A.f WHERE user_id `, [uid]);
+  const rows = await asyncAll(`SELECT Businesses.id, Businesses.name, Members.role FROM Businesses INNER JOIN Members on Businesses.id = Members.business_id WHERE Members.user_id = ?`, [uid]);
   response.send(rows);
 });
 

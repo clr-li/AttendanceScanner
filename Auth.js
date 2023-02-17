@@ -66,13 +66,13 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
   }
 }
 
-// Handles the authentication (and authorization if requiredPriviledges is not false) of the user
-// @param businessid the id of the business to check access for
-// @param requiredPriviledges an object of which priviledges are required
-// @requires request and response are valid, businessid is a valid id if requiredPriviledges is not false
+// Handles the authentication and authorization of the user
+// @param businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid 
+// @param requiredPriviledges an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
+// @requires request and response are valid, businessid is a valid id if requiredPriviledges is not empty
 // @return the uid of the user if auth succeeded, false otherwise
 // @effects sends response status error codes for failed auth
-async function handleAuth(request, response, businessid=false, requiredPriviledges=false) {
+async function handleAuth(request, response, businessid=false, requiredPriviledges={}) {
   if (!request.headers.idtoken) { 
     response.sendStatus(400); // no idToken
     return false;
@@ -82,7 +82,7 @@ async function handleAuth(request, response, businessid=false, requiredPriviledg
     response.sendStatus(401); // invalid idToken
     return false;
   }
-  if (requiredPriviledges && !(await getAccess(uid, businessid, requiredPriviledges))) {
+  if (businessid && !(await getAccess(uid, businessid, requiredPriviledges))) {
     response.sendStatus(403); // don't have access
     return false;
   }
