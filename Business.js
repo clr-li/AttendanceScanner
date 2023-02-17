@@ -88,7 +88,8 @@ router.get("/attendancedata", async function(request, response) {
   const userid = request.query.userid;
   const businessid = request.query.businessId;
 
-  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.userid = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
+  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
+  attendanceinfo = attendanceinfo.concat(await asyncAll(`SELECT * FROM Members WHERE business_id = ?`, [businessid]));
   response.send(attendanceinfo);
 });
 
@@ -116,17 +117,16 @@ router.get("/updateevent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
   
-  const id = await asyncGet(`SELECT BusinessIDs FROM Users WHERE id = ?`, [uid]);
+  const id = request.query.businessId;
 
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
   const eventid = request.query.eventid;
-
-  const table = await asyncGet(`SELECT eventtable FROM Businesses WHERE id = ?`, [id.BusinessIDs]);
-  await asyncRun(`UPDATE "${table.eventtable}" SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE id = ?`,
-                [name, starttimestamp, endtimestamp, description, eventid]);
+  
+  await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
+                [name, starttimestamp, endtimestamp, description, id, eventid]);
   response.sendStatus(200);
 });
 
