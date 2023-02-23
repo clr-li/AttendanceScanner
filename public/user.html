@@ -40,7 +40,7 @@
         html5QrcodeScanner.pause();
         console.log(`Scan result: ${decodedText}`, decodedResult);
         if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
-          window.location = decodedText;
+          window.location.assign(decodedText);
         } else {
           html5QrcodeScanner.resume();
         }
@@ -60,8 +60,8 @@
         GET(`/join?id=${businessId}&code=${joincode}`);
       }
       
-      html = "<tr><th>";
-      let userBusinesses = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
+      // html = "<tr><th>";
+      // let userBusinesses = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
     </script>
   </body>
 </html>

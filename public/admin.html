@@ -211,8 +211,7 @@
       let res = await GET('/joincode?businessId=' + getBusinessId());
       let data = await res.json();
       let joincode = data.joincode;
-      let businessId = data.id;
-      let joinlink = "https://" + window.location.hostname + "/user.html?id=" + businessId + "&code=" + joincode;
+      let joinlink = "https://" + window.location.hostname + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
       new QRCode(document.getElementById("qrcode"), joinlink);
       document.getElementById("joinlink").href = joinlink;
       document.getElementById("joinlink").textContent = joinlink;
