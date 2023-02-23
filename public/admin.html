@@ -270,10 +270,10 @@
       let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
       let map = new Map();
       for (let i = 0; i < attendancearr.length; i++) {
-        if(!map.has(attendancearr[i].userid)) {
-          map.set(attendancearr[i].userid, []);
+        if(!map.has(attendancearr[i].id)) {
+          map.set(attendancearr[i].id, []);
         }
-        map.get(attendancearr[i].userid).push(attendancearr[i]);
+        map.get(attendancearr[i].id).push(attendancearr[i]);
       }
       let html = "<tr><th>Name (id)</th>"; 
       for (let i = 0; i < events.length; i++) {
@@ -285,7 +285,7 @@
       for (let i = 0; i < [...map.keys()].length; i++) {
         let userid = [...map.keys()][i];
         let records = map.get(userid);
-        html += `<tr><td>${records[0].FirstName} ${records[0].LastName} (${userid.substr(0,4)})</td>`;
+        html += `<tr><td>${records[0].name} (${userid.substr(0,4)})</td>`;
         for (let j = 0; j < events.length; j++) {   
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
