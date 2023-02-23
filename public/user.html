@@ -40,7 +40,14 @@
         html5QrcodeScanner.pause();
         console.log(`Scan result: ${decodedText}`, decodedResult);
         if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
-          window.location.assign(decodedText);
+          let url = new URL(decodedText);
+          let params = url.searchParams;
+          let businessId = params.get('id');
+          let joincode = params.get('code');
+          if (businessId && joincode) {
+            console.log("joined: " + businessId + "_" + joincode);
+            GET(`/join?id=${businessId}&code=${joincode}`);
+          }
         } else {
           html5QrcodeScanner.resume();
         }
