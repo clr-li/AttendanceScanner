@@ -8,8 +8,9 @@ function onScanSuccess(decodedText, decodedResult) {
   let url = new URL(window.location);
   let params = url.searchParams;
   let eventid = params.get('eventid');
+  let businessId = params.get('businessId');
   if (lastUserId != decodedText) {
-    GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT`).then((res) => { console.log(res.status) });
+    GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT&businessId=${businessId}`).then((res) => { console.log(res.status) });
     html5QrcodeScanner.resume();
     lastUserId = decodedText;
   } else {

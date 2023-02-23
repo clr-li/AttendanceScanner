@@ -270,6 +270,8 @@
       let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
       let map = new Map();
       for (let i = 0; i < attendancearr.length; i++) {
+        if (attendancearr[i].user_id)
+          attendancearr[i].id = attendancearr[i].user_id;
         if(!map.has(attendancearr[i].id)) {
           map.set(attendancearr[i].id, []);
         }
@@ -289,7 +291,7 @@
         for (let j = 0; j < events.length; j++) {   
           let statusupdate = false;
           for (let k = 0; k < records.length; k++) {
-            if (records[k].eventid == events[j].id) {
+            if (records[k].event_id == events[j].id) {
               html += `<td class="cell" data-time="${events[j].starttimestamp}">${records[k].status}</td>`;
               statusupdate = true;
               break;
