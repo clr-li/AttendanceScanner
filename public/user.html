@@ -31,6 +31,8 @@
     </div>
     <table id="businesses">
     </table>
+    <p id="">
+    </p>
     
     <script type="module">
       import {GET, POST} from './util.js';
@@ -75,7 +77,10 @@
       import('./util.js').then(util => GET = util.GET);
       async function handleBusinessClick(id) {
         const data = await (await GET(`/userdata?businessId=${id}`)).json();
-        console.log(data);
+        
+        data.forEach((business) => {
+          
+        });
       }
     </script>
   </body>

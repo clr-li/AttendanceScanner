@@ -97,7 +97,7 @@ router.get("/userdata", async function(request, response) {
   if (!uid) return;
   
   const businessId = request.query.businessId;
-  response.send(await asyncAll(`SELECT * FROM Records WHERE user_id = ? AND business_id = ?`, [uid, businessId]));
+  response.send(await asyncAll(`SELECT * FROM Records,  WHERE user_id = ? AND business_id = ?`, [uid, businessId]));
 })
 
 router.get("/makeEvent", async function(request, response) {
