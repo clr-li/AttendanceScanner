@@ -92,6 +92,58 @@ router.get("/attendancedata", async function(request, response) {
   response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.get("/userdata", async function(request, response) {
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+  
+  
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.get("/makeEvent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, {write: true});
   if (!uid) return;
