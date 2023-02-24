@@ -63,17 +63,20 @@
       
       joinFromUrl(window.location);
       
-      function handleBusinessClick(id) {
-        document.getElement.by("biomessomedpci,emt/getE;e,tmebuOd_od+
-        ]
-      }
-      
       let html = "<tr><th>Business Name</th></tr>";
       let userBusinesses = await (await GET(`/businesses`)).json();
       userBusinesses.forEach((business) => {
         html += `<td onclick="handleBusinessClick(${business.id})">${business.name}, ${business.role}</td>`;
       });
       document.getElementById("businesses").innerHTML = html;
+    </script>
+    <script>
+      let GET;
+      import('./util.js').then(util => GET = util.GET);
+      async function handleBusinessClick(id) {
+        const data = await (await GET(`/userdata?businessId=${id}`)).json();
+        console.log(data);
+      }
     </script>
   </body>
 </html>
