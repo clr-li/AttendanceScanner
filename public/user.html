@@ -63,8 +63,11 @@
       
       joinFromUrl(window.location);
       
-      // html = "<tr><th>";
-      // let userBusinesses = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();
+      let html = "<tr><th>Business Name</th><th>";
+      let userBusinesses = await (await GET(`/businesses`)).json();
+      userBusinesses.forEach((business) => {
+        html += `<`
+      });
     </script>
   </body>
 </html>
