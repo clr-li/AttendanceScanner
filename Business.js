@@ -117,7 +117,8 @@ router.get("/userdata", async function(request, response) {
   const uid = await handleAuth(request, response);
   if (!uid) return;
   
-  
+  const businessId = request.query.businessId;
+  reponse.send(await asyncAll(`SELECT * FROM Records WHERE user_id = ? AND business_id = ?`, [uid, businessId]);
 })
 
 
