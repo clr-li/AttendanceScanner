@@ -76,12 +76,14 @@
       let GET;
       import('./util.js').then(util => GET = util.GET);
       async function handleBusinessClick(id) {
-        const data = await (await GET(`/userdata?businessId=${id}`)).json();
-        console.log(data);
+        let html = "";
+        const records = await (await GET(`/userdata?businessId=${id}`)).json();
+        console.log(records);
         
-        data.forEach((business) => {
-          document.getElementById(events).innerHTML += `Events: ${business.id}`;
+        records.forEach((record) => {
+           html += `Event: ${record.name} Status: ${record.status} Logged: ${record.timestamp} Event start: ${record.starttimestamp} Event end: ${record.endtimestamp}<br>`;
         });
+        document.getElementById("events").innerHTML = html;
       }
     </script>
   </body>
