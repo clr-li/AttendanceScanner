@@ -34,20 +34,24 @@
     
     <script type="module">
       import {GET, POST} from './util.js';
+      
+      async function joinFromUrl(urlstr) {
+          let url = new URL(urlstr);
+          let params = url.searchParams;
+          let businessId = params.get('id');
+          let joincode = params.get('code');
+          if (businessId && joincode) {
+            console.log("joined: " + businessId + "_" + joincode);
+            GET(`/join?businessId=${businessId}&code=${joincode}`);
+          }
+      }
 
       function onScanSuccess(decodedText, decodedResult) {
         // Handle on success condition with the decoded text or result.
         html5QrcodeScanner.pause();
         console.log(`Scan result: ${decodedText}`, decodedResult);
         if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
-          let url = new URL(decodedText);
-          let params = url.searchParams;
-          let businessId = params.get('id');
-          let joincode = params.get('code');
-          if (businessId && joincode) {
-            console.log("joined: " + businessId + "_" + joincode);
-            GET(`/join?id=${businessId}&code=${joincode}`);
-          }
+          joinFromUrl(decodedText);
         } else {
           html5QrcodeScanner.resume();
         }
@@ -57,15 +61,7 @@
         "reader", { fps: 10, qrbox: 250 });
       html5QrcodeScanner.render(onScanSuccess);
       
-      
-      let url = new URL(window.location);
-      let params = url.searchParams;
-      let businessId = params.get('id');
-      let joincode = params.get('code');
-      if (businessId && joincode) {
-        console.log("joined: " + businessId + "_" + joincode);
-        GET(`/join?id=${businessId}&code=${joincode}`);
-      }
+      joinFromUrl(window.location);
       
       // html = "<tr><th>";
       // let userBusinesses = await (await GET(`/attendancedata?eventid=*&userid=*`)).json();

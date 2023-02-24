@@ -43,14 +43,11 @@ router.get("/joincode", async (request, response) => {
 });
 
 router.get("/join", async (request, response) => {
-  console.log('joining')
   const uid = await handleAuth(request, response);
-  console.log(uid);
   if (!uid) return;
 
   const businessId = request.query.businessId;
   const joincode = request.query.code;
-  console.log(businessId + " | " + joincode);
 
   const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [businessId]);
   if (row.joincode === joincode) {
