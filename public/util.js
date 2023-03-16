@@ -1,3 +1,5 @@
+const SERVER_URL = (location.origin === "https://attendancescannerqr.web.app") ? 'https://scanner2022.glitch.me' : ""; // find Glitch server using absolute URL in deployment
+
 export function setCookie(cname, cvalue, exhours) {
   const d = new Date();
   d.setTime(d.getTime() + (exhours*60*60*1000));
@@ -22,11 +24,11 @@ export function getCookie(cname) {
 }
 
 export async function GET(url) {
-  return await fetch('https://scanner2022.glitch.me' + url, {headers:{idtoken: getCookie('idtoken')}});
+  return await fetch(SERVER_URL + url, {headers:{idtoken: getCookie('idtoken')}});
 }
 
 export async function POST(url, data) {
-  return await fetch('https://scanner2022.glitch.me' + url, {
+  return await fetch(SERVER_URL + url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

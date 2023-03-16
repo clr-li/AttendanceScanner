@@ -1,3 +1,6 @@
 .glitchdotcom.json
 .node-gyp
 node_modules
+.data
+.DS_Store
+.env
