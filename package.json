@@ -1,11 +1,14 @@
 {
-  "name": "hello-sqlite",
+  "name": "attendance_scanner",
   "version": "0.1.0",
-  "description": "A Node app with SQLite database, instantly up and running.",
+  "description": "QR code based attendance with SQLite, Express, Firebase Auth, and Braintree",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node -r dotenv/config server.js"
+    "dev": "node -r dotenv/config server.js",
+    "fire": "node -r dotenv/config deploy.js",
+    "glitch": "git checkout master && git pull origin main && git push glitch",
+    "deploy": "npm glitch && npm fire"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
