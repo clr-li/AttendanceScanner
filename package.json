@@ -8,7 +8,7 @@
     "dev": "node -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main && git push glitch",
-    "deploy": "npm glitch && npm fire"
+    "deploy": "npm run glitch && npm run fire"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
