@@ -30,7 +30,7 @@ URL: https://attendancescannerqr.web.app
 2. Make changes and `git add` and `git commit` locally
 3. Either `git push origin main` if no conflicts, or `git push origin` and create a pull request
 
-&nbsp;&nbsp;Then to deploy to Glitch and Firebase:<br>
+&nbsp;&nbsp;Then to deploy Github `main` to Glitch and Firebase:<br>
 <span style="white-space: pre; font-size: 0.8rem">&#9;</span>4. `npm deploy`<br>
 <span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy to Glitch: `npm glitch`<br>
 <span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy static files to Firebase: `npm fire`
