@@ -31,9 +31,9 @@ URL: https://attendancescannerqr.web.app
 3. Either `git push origin main` if no conflicts, or `git push origin` and create a pull request
 
 &nbsp;&nbsp;Then to deploy to Glitch and Firebase:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. `npm deploy`
-- Or to only deploy to Glitch: `npm glitch`
-- Or to only deploy static files to Firebase `npm fire`
+<span style="white-space: pre; font-size: 0.8rem">&#9;</span>4. `npm deploy`<br>
+<span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy to Glitch: `npm glitch`<br>
+<span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy static files to Firebase: `npm fire`
 
 ## Glitch Development
 Preferably don't edit directly on Glitch except to change the production `.data` or `.env`. If necessary,
