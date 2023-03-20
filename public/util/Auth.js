@@ -66,10 +66,10 @@ export async function popUpLogin(handleLogin) {
  * @param {string} token the token to set manually
  */
 export async function devLogin(handleLogin, token) {
+    await auth.signOut();
     setCookie("idtoken", token, 24);
     handleLogin(true);
 }
-
 
 /**
  * Logs out of the current auth session.
