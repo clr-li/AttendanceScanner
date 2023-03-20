@@ -10,26 +10,26 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
 
      <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.9.2/firebase-app-compat.js"></script>
+    <!-- <script defer src="/__/firebase/9.9.2/firebase-app-compat.js"></script> -->
     <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.9.2/firebase-auth-compat.js"></script>
+    <!-- <script defer src="/__/firebase/9.9.2/firebase-auth-compat.js"></script> -->
     <!-- 
       initialize the SDK after all desired features are loaded, set useEmulator to false
       to avoid connecting the SDK to running emulators.
     -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <!-- <script defer src="/__/firebase/init.js?useEmulator=true"></script> -->
 
   </head>
   <body style="background-color: rgba(0,0,0,0.3);">
     <div style="position: absolute; margin: auto; width: fit-content; height: fit-content; top: 0; bottom: 0; right: 0; left: 0">
-      <form id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100vw; width: 500px; display: inline-block; text-align: center">
-        <p style="font-size: 1.2em; color: white">
-          Click below to sign in:
-        </p>
-        <button type="submit" id="signInWithGoogle" style="background-color: dodgerblue">Sign in with Google</button>
-        <button type="submit" id="signInAsClaire" style="background-color: dodgerblue">Dev Sign In - Claire</button>
-        <button type="submit" id="signInAsAlex" style="background-color: dodgerblue">Dev Sign In - Alex</button>
-      </form><br><br>
+        <div id="form" style="background-color: #8b01fd; padding: 20px; margin-top: 12px; border-radius: 10px; max-width: 100vw; width: 500px; display: inline-block; text-align: center">
+            <p style="font-size: 1.2em; color: white">
+                Click below to sign in:
+            </p>
+            <button type="submit" id="signInWithGoogle" style="background-color: dodgerblue">Sign in with Google</button>
+            <button type="submit" id="signInAsClaire" style="background-color: dodgerblue">Dev Sign In - Claire</button>
+            <button type="submit" id="signInAsAlex" style="background-color: dodgerblue">Dev Sign In - Alex</button>
+        </div><br><br>
     </div>
     
     <div id="loader" style="position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">

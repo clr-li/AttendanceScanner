@@ -1,5 +1,5 @@
 # Attendance Scanner 
-This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It implements Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. 
+This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. 
 URL: https://attendancescannerqr.web.app
 
 # Source Control and Workflow
@@ -14,8 +14,8 @@ URL: https://attendancescannerqr.web.app
 3. Add the `.data` directory and `.env` file (can be found on Glitch)
     - These are already `.gitignore`'d to avoid leaking API keys and secrets and user data
 4. `npm install --no-audit` the necessary dependencies
-5. `npm dev` (this will run the local server using the local .env file; `npm start` is only for Glitch)
-    - After running `npm dev`, use a browser to go to the localhost port printed
+5. `npm run dev` (this will run the local server using the local .env file; `npm start` is only for Glitch)
+    - After running `npm run dev`, use a browser to go to the localhost port printed
 
 ### Workflow
 0. Start with `git pull`, and make sure you are on the right branch, e.g. `git checkout main`
