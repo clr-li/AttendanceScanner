@@ -1,5 +1,5 @@
 # Attendance Scanner 
-This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It implements Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. 
+This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. 
 URL: https://attendancescannerqr.web.app
 
 # Source Control and Workflow

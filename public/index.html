@@ -13,16 +13,16 @@
   </head>
   <body>
     <h1>
-      Landing Page for the Attendance Scanner Company
+        Landing Page for the Attendance Scanner Company
     </h1>
     <button onclick="window.location = 'login.html?redirect=admin.html'">
-      Admin Login
+        Admin Login
     </button>
     <button onclick="window.location = 'login.html?redirect=user.html'">
-      User Login
+        User Login
     </button>
-    <button onclick="document.cookie = 'idtoken= ;-1;path=/'">
-      Logout
+    <button onclick="import('./util/auth.js').then(m => m.logout());">
+        Logout
     </button>
   </body>
 </html>
