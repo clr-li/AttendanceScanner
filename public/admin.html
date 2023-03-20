@@ -60,7 +60,8 @@
     <table id="displayattendance"></table>
     
     <script type="module">
-    import {GET, POST, calcSimilarity} from './util.js';
+    import { GET, POST } from './util/Client.js';
+    import { calcSimilarity } from './util/util.js';
       
     function getBusinessId() {
       return document.getElementById("businessname").options[document.getElementById("businessname").options.selectedIndex].dataset.id;

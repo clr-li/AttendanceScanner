@@ -1,4 +1,5 @@
-import { GET, setCookie } from '../util.js';
+import { setCookie } from './util.js';
+import { GET } from "./Client.js";
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
@@ -22,10 +23,11 @@ console.log("Initialized auth!");
 export async function login() {
     try {
         console.log("Logging in...");
+        if (!auth.currentUser) return false; // no one has logged in yet
         let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
         setCookie("idtoken", idToken, 1);
         let res = await GET('/isLoggedIn');
-        console.log(res.status == 200 ? "Server Approved" : "Server Did Not Approve");
+        console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
         return res.status === 200;
     } catch (error) {
         console.error(error);
@@ -68,7 +70,9 @@ export async function popUpLogin(handleLogin) {
 export async function devLogin(handleLogin, token) {
     await auth.signOut();
     setCookie("idtoken", token, 24);
-    handleLogin(true);
+    let res = await GET('/isLoggedIn');
+    console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
+    handleLogin(res.status === 200);
 }
 
 /**
