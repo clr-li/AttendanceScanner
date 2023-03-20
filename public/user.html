@@ -22,7 +22,7 @@
   <body>
     <div id="qrcode"></div>
     <script type="module">
-      import { parseJwt, getCookie } from './util.js';
+      import { parseJwt, getCookie } from './util/util.js';
       new QRCode(document.getElementById("qrcode"), parseJwt(getCookie('idtoken')).user_id);
     </script>
     
@@ -35,7 +35,7 @@
     </p>
     
     <script type="module">
-      import {GET, POST} from './util.js';
+      import {GET, POST} from './util/Client.js';
       
       async function joinFromUrl(urlstr) {
           let url = new URL(urlstr);
