@@ -10,11 +10,11 @@ const gateway = new braintree.BraintreeGateway({
   privateKey: process.env.MERCHANTPRIVATE
 });
 // database access
-const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
+const { asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
 // business creation and deletion 
-const {createBusiness, deleteBusiness} = require('./Business');
+const { createBusiness, deleteBusiness } = require('./Business');
 
 // ============================ PAYMENT SETTINGS ============================
 const PLAN_IDS = { // subscription plans
@@ -153,7 +153,7 @@ router.post("/checkout", async (request, response) => {
   response.sendStatus(200);
 });
 
-// get's the noncanceled subscriptions
+// gets the noncanceled subscriptions
 router.get("/subscriptions", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
@@ -217,5 +217,3 @@ router.get("/cancelSubscription", async (request, response) => {
 
 // ============================ PAYMENT EXPORTS ============================
 exports.paymentRouter = router;
-exports.verifySubscription = verifySubscription;
-exports.PLAN_IDS = PLAN_IDS;
