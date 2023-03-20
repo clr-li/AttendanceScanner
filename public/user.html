@@ -74,7 +74,7 @@
     </script>
     <script>
       let GET;
-      import('./util.js').then(util => GET = util.GET);
+      import('./util/Client.js').then(util => GET = util.GET);
       async function handleBusinessClick(id) {
         let html = "";
         const records = await (await GET(`/userdata?businessId=${id}`)).json();
