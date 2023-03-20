@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node -r dotenv/config server.js",
+    "dev": "DEVELOPMENT=true PORT=3000 node -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase && git push glitch --force",
     "deploy": "npm run glitch && npm run fire"
