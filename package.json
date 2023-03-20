@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "node -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
-    "glitch": "git checkout master && git pull origin main --no-rebase && git push glitch --no-rebase",
+    "glitch": "git checkout master && git pull origin main --no-rebase && git push glitch",
     "deploy": "npm run glitch && npm run fire"
   },
   "dependencies": {
