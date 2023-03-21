@@ -35,6 +35,11 @@ URL: https://attendancescannerqr.web.app
 <span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy to Glitch: `npm run glitch`<br>
 <span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy static files to Firebase: `npm run fire`
 
+### Update database
+ - To reset the database and its schema, change the `databaseSchema.sql` file accordingly, `npm run deploy` changes like normal, then delete the `.data/ATT.db` file on Glitch and restart the server. The database will automatically get reinitialized.
+ - To make updates while keeping the existing data, add an update script to the `migrations` folder with the version number and date in its name. Then run it on Glitch.
+ - To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
+
 ## Glitch Development
 Preferably don't edit directly on Glitch except to change the production `.data` or `.env`. If necessary,
 1. Make changes on Glitch

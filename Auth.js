@@ -4,13 +4,14 @@ admin.initializeApp({
   credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS)
 });
 // database access for user registration and roles
-const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
+const { asyncGet, asyncRun } = require('./Database');
 // express for routing
 const express = require('express'),
   router = express.Router();
 
 // ============================ AUTHENTICATION SETTINGS ============================
-const TOKEN_VERIFICATION = false; // true => verify idToken with firebase, false => just decode it for development purposes
+const TOKEN_VERIFICATION = process.env.DEVELOPMENT !== 'true'; // true => verify idToken with firebase, false => just decode it for development purposes
+console.log("TOKEN VERIFICATION: " + TOKEN_VERIFICATION);
 const ACCESS_TABLE = { // the various roles and their priviledges
   owner:       { owner: true , read: true , write: true , scanner: true  },
   admin:       { owner: false, read: true , write: true , scanner: true  },
@@ -69,23 +70,26 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
 }
 
 // Handles the authentication and authorization of the user
-// @param businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid 
-// @param requiredPriviledges an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
+// @params businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid 
+// @params requiredPriviledges an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
 // @requires request and response are valid, businessid is a valid id if requiredPriviledges is not empty
-// @return the uid of the user if auth succeeded, false otherwise
+// @returns the uid of the user if auth succeeded, false otherwise
 // @effects sends response status error codes for failed auth
 async function handleAuth(request, response, businessid=false, requiredPriviledges={}) {
   if (!request.headers.idtoken) { 
-    response.sendStatus(400); // no idToken
+    response.statusMessage = "no idtoken provided, user does not appear to be signed in";
+    response.sendStatus(400);
     return false;
   }
   const uid = await getUID(request.headers.idtoken);
   if (!uid) {
-    response.sendStatus(401); // invalid idToken
+    response.statusMessage = "idtoken is invalid, login has likely expired";
+    response.sendStatus(401);
     return false;
   }
   if (businessid && !(await getAccess(uid, businessid, requiredPriviledges))) {
-    response.sendStatus(403); // don't have access
+    response.statusMessage = "access denied, user does not have the necessary priviledges for this endpoint";
+    response.sendStatus(403);
     return false;
   }
   return uid;

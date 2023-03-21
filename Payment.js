@@ -10,11 +10,11 @@ const gateway = new braintree.BraintreeGateway({
   privateKey: process.env.MERCHANTPRIVATE
 });
 // database access
-const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
+const { asyncGet, asyncRun } = require('./Database');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
 // business creation and deletion 
-const {createBusiness, deleteBusiness} = require('./Business');
+const { createBusiness, deleteBusiness } = require('./Business');
 
 // ============================ PAYMENT SETTINGS ============================
 const PLAN_IDS = { // subscription plans
@@ -29,6 +29,16 @@ async function getCustomerId(uid) {
   const user = await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid]);
   if (!user) return false;
   return user.customer_id;
+}
+
+/**
+ * Gets the business name associated with a subscription.
+ * @param {string} subscriptionId 
+ * @returns name of the business paid for by the given subscriptionId.
+ */
+async function getBusinessName(subscriptionId) {
+    const business = await asyncGet("SELECT name FROM Businesses WHERE subscriptionId = ?", [subscriptionId]);
+    return business.name;
 }
 
 // returns true if the user (specified by uid) subscribes at least once to the planId 
@@ -89,133 +99,135 @@ router.get("/clientToken", async (request, response) => {
 // then we select the default payment method (as set by the client SDK) of the customer 
 // and use the corresponding paymentMethodToken to subscribe to the payment plan
 router.post("/checkout", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
 
-  const nonceFromTheClient = request.body.nonce;
-  const deviceData = request.body.deviceData;
-  const businessName = request.body.businessName;
+    const nonceFromTheClient = request.body.nonce;
+    const deviceData = request.body.deviceData;
+    const businessName = request.body.businessName;
 
-  const user = await asyncGet(`SELECT customer_id, name FROM Users WHERE id = ?`, [uid]);
+    const user = await asyncGet(`SELECT customer_id, name FROM Users WHERE id = ?`, [uid]);
 
-  let paymentToken;
-  if (user.customer_id) { // customer already exists in braintree vault
-    const result = await gateway.paymentMethod.create({
-      customerId: user.customer_id,
-      paymentMethodNonce: nonceFromTheClient,
-      options: {
-        failOnDuplicatePaymentMethod: true,
-        makeDefault: true,
-        verifyCard: true
-      }
+    let paymentToken;
+    if (user.customer_id) { // customer already exists in braintree vault
+        const result = await gateway.paymentMethod.create({
+        customerId: user.customer_id,
+        paymentMethodNonce: nonceFromTheClient,
+        options: {
+            failOnDuplicatePaymentMethod: true,
+            makeDefault: true,
+            verifyCard: true
+        }
+        });
+        if (!result.success) {
+            response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
+            response.sendStatus(401);
+            return;
+        }
+        paymentToken = result.paymentMethod.token;
+    } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
+        const spaceIX = user.name.indexOf(' ');
+        const result = await gateway.customer.create({
+        firstName: user.name.substring(0, spaceIX),
+        lastName: user.name.substring(spaceIX),
+        paymentMethodNonce: nonceFromTheClient,
+        deviceData: deviceData
+        });
+        if (!result.success) {
+            response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
+            response.sendStatus(401);
+            return;
+        }
+        const customer = result.customer;
+        const customerId = customer.id; // e.g 160923
+        paymentToken = customer.paymentMethods[0].token; // e.g f28wm
+
+        console.log("Created customer with id: " + customerId);
+
+        // save customer id in database so we can find their information in the braintree vault later
+        await asyncRun(`UPDATE Users SET customer_id = ? WHERE id = ?`, [customerId, uid]);
+    }
+
+    const subscriptionResult = await gateway.subscription.create({
+        paymentMethodToken: paymentToken,
+        planId: PLAN_IDS.STANDARD,
     });
-    if (!result.success) {
-        // customer validations, payment method validations or card verification is NOT in order
+    if (!subscriptionResult.success) {
+        response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
         response.sendStatus(401);
         return;
     }
-    paymentToken = result.paymentMethod.token;
-  } else { // customer doesn't exist, so we use the paymentMethodNonce to create them!
-    const spaceIX = user.name.indexOf(' ');
-    const result = await gateway.customer.create({
-      firstName: user.name.substring(0, spaceIX),
-      lastName: user.name.substring(spaceIX),
-      paymentMethodNonce: nonceFromTheClient,
-      deviceData: deviceData
-    });
-    if (!result.success) {
-        // customer validations, payment method validations or card verification is NOT in order
-        response.sendStatus(401);
-        return;
-    }
-    const customer = result.customer;
-    const customerId = customer.id; // e.g 160923
-    paymentToken = customer.paymentMethods[0].token; // e.g f28wm
+    console.log("Added subscription via paymentToken: " + paymentToken)
+    await createBusiness(uid, businessName, subscriptionResult.subscription.id);
 
-    console.log("Created customer with id: " + customerId);
-
-    // save customer id in database so we can find their information in the braintree vault later
-    await asyncRun(`UPDATE Users SET customer_id = ? WHERE id = ?`, [customerId, uid]);
-  }
-
-  const subscriptionResult = await gateway.subscription.create({
-    paymentMethodToken: paymentToken,
-    planId: PLAN_IDS.STANDARD,
-  });
-  if (!subscriptionResult.success) {
-      // customer validations, payment method validations or card verification is NOT in order
-      response.sendStatus(401);
-      return;
-  }
-  console.log("Added subscription via paymentToken: " + paymentToken)
-  await createBusiness(uid, businessName);
-
-  response.sendStatus(200);
+    response.sendStatus(200);
 });
 
-// get's the noncanceled subscriptions
+// gets the noncanceled subscriptions
 router.get("/subscriptions", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
-    
-  const customerId = await getCustomerId(uid);
-  if (!customerId) {
-      response.sendStatus(401);
-      return;
-  }
-  const customer = await gateway.customer.find("" + customerId);
-  let subscriptions = [];
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
+        
+    const customerId = await getCustomerId(uid);
+    if (!customerId) {
+        response.statusMessage = "customer not registered in database";
+        response.sendStatus(401);
+        return;
+    }
+    const customer = await gateway.customer.find("" + customerId);
+    let subscriptions = [];
 
-  customer.paymentMethods.forEach(paymentMethod => {
-    subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
-  });
+    customer.paymentMethods.forEach(paymentMethod => {
+        subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+    });
 
-  subscriptions = subscriptions.filter(subscription => subscription.status != "Canceled");
+    subscriptions = subscriptions.filter(subscription => subscription.status != "Canceled");
+    subscriptions = await Promise.all(subscriptions.map(async subscription => {
+        return {
+            plan: PLAN_NAME.get(subscription.planId),
+            nextBillingDate: subscription.nextBillingDate,
+            nextBillAmount: subscription.nextBillAmount,
+            status: subscription.status,
+            id: subscription.id,
+            businessName: await getBusinessName(subscription.id)
+        };
+    }));
 
-  subscriptions = subscriptions.map(subscription => {
-    return {
-      plan: PLAN_NAME.get(subscription.planId),
-      nextBillingDate: subscription.nextBillingDate,
-      nextBillAmount: subscription.nextBillAmount,
-      status: subscription.status,
-      id: subscription.id
-    };
-  });
-
-  response.send(subscriptions);
+    response.send(subscriptions);
 });
 
 router.get("/cancelSubscription", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
-    
-  const subscriptionId = request.query.id;
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
+        
+    const subscriptionId = request.query.id;
 
-  const customerId = await getCustomerId(uid);
-  if (!customerId) {
-      response.sendStatus(401);
-      return;
-  }
-  const customer = await gateway.customer.find("" + customerId);
-
-  let subscriptions = [];
-  customer.paymentMethods.forEach(paymentMethod => {
-    subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
-  });
-
-  for (let i = 0; i < subscriptions.length; i++) {
-    let subscription = subscriptions[i];
-    if (subscription.id === subscriptionId) {
-      await gateway.subscription.cancel(subscriptionId);
-      response.sendStatus(200);
-      return
+    const customerId = await getCustomerId(uid);
+    if (!customerId) {
+        response.statusMessage = "customer not registered in database";
+        response.sendStatus(401);
+        return;
     }
-  }
+    const customer = await gateway.customer.find("" + customerId);
 
-  response.sendStatus(403); // subscription is not owned by customer
+    let subscriptions = [];
+    customer.paymentMethods.forEach(paymentMethod => {
+        subscriptions = [...subscriptions, ...paymentMethod.subscriptions];
+    });
+
+    for (let i = 0; i < subscriptions.length; i++) {
+        let subscription = subscriptions[i];
+        if (subscription.id === subscriptionId) {
+            await gateway.subscription.cancel(subscriptionId);
+            const business = await asyncGet('SELECT id FROM Businesses WHERE subscriptionId = ?', [subscriptionId]);
+            deleteBusiness(business.id);
+            response.sendStatus(200);
+            return;
+        }
+    }
+
+    response.sendStatus(403); // subscription is not owned by customer
 });
 
 // ============================ PAYMENT EXPORTS ============================
 exports.paymentRouter = router;
-exports.verifySubscription = verifySubscription;
-exports.PLAN_IDS = PLAN_IDS;

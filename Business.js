@@ -2,20 +2,21 @@
 const express = require('express'),
   router = express.Router();
 // database access
-const {db, asyncGet, asyncAll, asyncRun, asyncRunWithID} = require('./Database');
+const { asyncGet, asyncAll, asyncRun, asyncRunWithID } = require('./Database');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
 // random universal unique ids for joincodes
 const uuid = require('uuid');
 
 // ============================ BUSINESS FUNCTIONS ============================
-async function createBusiness(uid, name) {
-  const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode) VALUES (?, ?)`, [name, uuid.v4()]);
+async function createBusiness(uid, name, subscriptionId) {
+  const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode, subscriptionId) VALUES (?, ?, ?)`, [name, uuid.v4(), subscriptionId]);
   await asyncRun(`INSERT INTO Members (business_id, user_id, role) VALUES (?, ?, ?)`, [businessId, uid, 'owner']);
   console.log('Created new business with id: ' + businessId);
+  return businessId;
 }
 
-async function deleteBusiness(uids, businessId) { 
+async function deleteBusiness(businessId) { 
   await asyncRun(`DELETE FROM Businesses WHERE id = ?`, [businessId]);
   await asyncRun(`DELETE FROM Members WHERE business_id = ?`, [businessId]);
   await asyncRun(`DELETE FROM Events WHERE business_id = ?`, [businessId]);
@@ -33,7 +34,7 @@ router.get("/businesses", async (request, response) => {
 });
 
 router.get("/joincode", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
   
   const businessId = request.query.businessId;
@@ -68,7 +69,7 @@ router.get("/events", async (request, response) => {
 });
 
 router.get("/recordAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {scanner: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
   if (!uid) return;
   
   const eventid = request.query.eventid;
@@ -81,11 +82,9 @@ router.get("/recordAttendance", async (request, response) => {
 });
 
 router.get("/attendancedata", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
   
-  const eventid = request.query.eventid;
-  const userid = request.query.userid;
   const businessid = request.query.businessId;
 
   const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
@@ -93,7 +92,7 @@ router.get("/attendancedata", async function(request, response) {
 });
 
 router.get("/userdata", async function(request, response) {
-  const uid = await handleAuth(request, response);
+  const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
   
   const businessId = request.query.businessId;
@@ -101,7 +100,7 @@ router.get("/userdata", async function(request, response) {
 })
 
 router.get("/makeEvent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
   const id = request.query.businessId;
@@ -109,7 +108,6 @@ router.get("/makeEvent", async function(request, response) {
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
-  const userids = request.query.userids;
 
   const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [id, name, description, starttimestamp, endtimestamp]);
   response.status(200);
@@ -117,7 +115,7 @@ router.get("/makeEvent", async function(request, response) {
 });
 
 router.get("/updateevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
   const id = request.query.businessId;
@@ -134,7 +132,7 @@ router.get("/updateevent", async function(request, response) {
 });
 
 router.get("/deleteevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {write: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
   const id = request.query.businessId;
@@ -145,7 +143,7 @@ router.get("/deleteevent", async function(request, response) {
 });
 
 router.get("/eventdata", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, {read: true});
+  const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
   
   const id = request.query.businessId;
