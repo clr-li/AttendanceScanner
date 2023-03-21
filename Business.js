@@ -9,10 +9,11 @@ const handleAuth = require('./Auth').handleAuth;
 const uuid = require('uuid');
 
 // ============================ BUSINESS FUNCTIONS ============================
-async function createBusiness(uid, name) {
-  const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode) VALUES (?, ?)`, [name, uuid.v4()]);
+async function createBusiness(uid, name, subscriptionId) {
+  const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode, subscriptionId) VALUES (?, ?, ?)`, [name, uuid.v4(), subscriptionId]);
   await asyncRun(`INSERT INTO Members (business_id, user_id, role) VALUES (?, ?, ?)`, [businessId, uid, 'owner']);
   console.log('Created new business with id: ' + businessId);
+  return businessId;
 }
 
 async function deleteBusiness(businessId) { 

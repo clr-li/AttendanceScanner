@@ -77,16 +77,19 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
 // @effects sends response status error codes for failed auth
 async function handleAuth(request, response, businessid=false, requiredPriviledges={}) {
   if (!request.headers.idtoken) { 
-    response.sendStatus(400); // no idToken
+    response.statusMessage = "no idtoken provided, user does not appear to be signed in";
+    response.sendStatus(400);
     return false;
   }
   const uid = await getUID(request.headers.idtoken);
   if (!uid) {
-    response.sendStatus(401); // invalid idToken
+    response.statusMessage = "idtoken is invalid, login has likely expired";
+    response.sendStatus(401);
     return false;
   }
   if (businessid && !(await getAccess(uid, businessid, requiredPriviledges))) {
-    response.sendStatus(403); // don't have access
+    response.statusMessage = "access denied, user does not have the necessary priviledges for this endpoint";
+    response.sendStatus(403);
     return false;
   }
   return uid;
