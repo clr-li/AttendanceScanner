@@ -1,3 +1,5 @@
+import 'https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js';
+
 export function parseJwt(token) {
     return JSON.parse(ethereumjs.Buffer.Buffer.from(token.split('.')[1], 'base64').toString());
 }

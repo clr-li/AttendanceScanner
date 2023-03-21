@@ -18,14 +18,15 @@ console.log("Initialized auth!");
 /**
  * Checks if the current auth session is logged in (either by a redirect or through previous browsing).
  * @returns true if the current session/user is logged in and the server approves, false otherwise.
- * @effects updates the idToken cookie if necessary
+ * @effects updates the idtoken session storage item if necessary
  */
 export async function login() {
     try {
         console.log("Logging in...");
-        if (!auth.currentUser) return sessionStorage.getItem("idtoken") !== null; // no one has logged in yet unless the idtoken has been set by the dev login
-        let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
-        sessionStorage.setItem("idtoken", idToken);
+        if (auth.currentUser) { // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
+            let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
+            sessionStorage.setItem("idtoken", idToken);
+        }
         let res = await GET('/isLoggedIn');
         console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
         return res.status === 200;
@@ -33,6 +34,14 @@ export async function login() {
         console.error(error);
         return false;
     }
+}
+
+/**
+ * Guarantees the user is logged in by redirecting to the login page if the user is not logged in.
+ * Should be called before using any features that require the user to be logged in.
+ */
+export async function requireLogin() {
+    if (!(await login())) location.assign('/login.html?redirect=' + location.href);
 }
 
 /**

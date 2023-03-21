@@ -1,5 +1,5 @@
 import { login, redirectLogin, popUpLogin, devLogin } from './util/Auth.js';
-import { IS_DEPLOYMENT } from './util/Client.js';
+import { IS_DEVELOPMENT } from './util/Client.js';
 
 function beforeLogin() {
     document.getElementById('loader').style.display = "block";
@@ -20,12 +20,12 @@ function redirect() {
 }
 
 afterLogin(await login(), false);
-if (IS_DEPLOYMENT) redirectLogin(); // if development, don't redirect automatically, show dev logins
+if (!IS_DEVELOPMENT) redirectLogin(); // if development, don't redirect automatically, show dev logins
 
 const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
 signInWithGoogleBtn.addEventListener('click', () => { beforeLogin(); popUpLogin(afterLogin); });
 
-if (!IS_DEPLOYMENT) {
+if (IS_DEVELOPMENT) {
     const devLogins = document.createElement('div');
     devLogins.innerHTML = `
         <button id="signInWithRedirect" style="background-color: dodgerblue">Dev Sign In - Redirect</button>

@@ -15,12 +15,12 @@
     <h1>
         Landing Page for the Attendance Scanner Company
     </h1>
-    <button onclick="window.location = 'login.html?redirect=admin.html'">
+    <a href="/admin.html">
         Admin Login
-    </button>
-    <button onclick="window.location = 'login.html?redirect=user.html'">
+    </a>
+    <a href="/user.html">
         User Login
-    </button>
+    </a>
     <button onclick="import('./util/Auth.js').then(m => m.logout());">
         Logout
     </button>
