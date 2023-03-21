@@ -20,7 +20,7 @@ function redirect() {
 }
 
 afterLogin(await login(), false);
-if (IS_DEPLOYMENT) redirectLogin(); // don't redirect automatically, show dev logins
+if (IS_DEPLOYMENT) redirectLogin(); // if development, don't redirect automatically, show dev logins
 
 const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
 signInWithGoogleBtn.addEventListener('click', () => { beforeLogin(); popUpLogin(afterLogin); });

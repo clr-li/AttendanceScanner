@@ -1,7 +1,6 @@
-import { setCookie } from './util.js';
 import { GET } from "./Client.js";
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
+import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
 // Initialize the current auth session and Firebase app
 const app = initializeApp({
@@ -12,6 +11,7 @@ const app = initializeApp({
 const auth = getAuth(app);
 auth.useDeviceLanguage();
 const googleProvider = new GoogleAuthProvider();
+await setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
 await getRedirectResult(auth); // initialize auth with redirect login results if available
 console.log("Initialized auth!");
 
@@ -23,9 +23,9 @@ console.log("Initialized auth!");
 export async function login() {
     try {
         console.log("Logging in...");
-        if (!auth.currentUser) return false; // no one has logged in yet
+        if (!auth.currentUser) return sessionStorage.getItem("idtoken") !== null; // no one has logged in yet unless the idtoken has been set by the dev login
         let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
-        setCookie("idtoken", idToken, 1);
+        sessionStorage.setItem("idtoken", idToken);
         let res = await GET('/isLoggedIn');
         console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
         return res.status === 200;
@@ -69,7 +69,7 @@ export async function popUpLogin(handleLogin) {
  */
 export async function devLogin(handleLogin, token) {
     await auth.signOut();
-    setCookie("idtoken", token, 24);
+    sessionStorage.setItem("idtoken", token);
     let res = await GET('/isLoggedIn');
     console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
     handleLogin(res.status === 200);
@@ -81,7 +81,7 @@ export async function devLogin(handleLogin, token) {
 export async function logout() {
     try {
         const signout = auth.signOut();
-        setCookie("idtoken", "", -1);
+        sessionStorage.removeItem("idtoken");
         await signout;
         console.log("Signed out!");
     } catch (e){

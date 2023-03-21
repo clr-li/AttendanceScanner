@@ -22,8 +22,8 @@
   <body>
     <div id="qrcode"></div>
     <script type="module">
-      import { parseJwt, getCookie } from './util/util.js';
-      new QRCode(document.getElementById("qrcode"), parseJwt(getCookie('idtoken')).user_id);
+      import { parseJwt } from './util/util.js';
+      new QRCode(document.getElementById("qrcode"), parseJwt(sessionStorage.getItem('idtoken')).user_id);
     </script>
     
     <div id="container">
