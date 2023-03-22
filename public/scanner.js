@@ -1,7 +1,9 @@
-import {GET, POST} from './util.js';
+import { GET } from './util.js';
+import { requireLogin } from './util/Auth.js';
+await requireLogin();
 
 let lastUserId = -1;
-function onScanSuccess(decodedText, decodedResult) {
+async function onScanSuccess(decodedText, decodedResult) {
   // Handle on success condition with the decoded text or result.
   html5QrcodeScanner.pause();
   console.log(`Scan result: ${decodedText}`, decodedResult);
@@ -10,7 +12,8 @@ function onScanSuccess(decodedText, decodedResult) {
   let eventid = params.get('eventid');
   let businessId = params.get('businessId');
   if (lastUserId != decodedText) {
-    GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT&businessId=${businessId}`).then((res) => { console.log(res.status) });
+    const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT&businessId=${businessId}`);
+    console.log(res.status);
     html5QrcodeScanner.resume();
     lastUserId = decodedText;
   } else {

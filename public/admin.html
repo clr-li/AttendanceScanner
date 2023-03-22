@@ -62,6 +62,8 @@
     <script type="module">
     import { GET, POST } from './util/Client.js';
     import { calcSimilarity } from './util/util.js';
+    import { requireLogin } from './util/Auth.js';
+    await requireLogin();
       
     function getBusinessId() {
       return document.getElementById("businessname").options[document.getElementById("businessname").options.selectedIndex].dataset.id;
@@ -198,56 +200,54 @@
       }
     }
       
-    document.body.onload = async () => {
-      let res2 = await GET('/businesses');
-      let o = await res2.json();
-      let html2 = '';
-      o.forEach(business => {
-        if (business.role != 'user')
-          html2 += `<option data-id="${business.id}">${business.name}</option>`;
-      });
-      document.getElementById("businessname").innerHTML = html2;
-      await updateEvents();
-      
-      let res = await GET('/joincode?businessId=' + getBusinessId());
-      let data = await res.json();
-      let joincode = data.joincode;
-      let joinlink = "https://" + window.location.hostname + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
-      new QRCode(document.getElementById("qrcode"), joinlink);
-      document.getElementById("joinlink").href = joinlink;
-      document.getElementById("joinlink").textContent = joinlink;
-      
-      
-      function getEventData() {
-        let eventid = selectizeControl.getValue();
-        GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
-          var startDate = new Date(eventinfo.starttimestamp*1000);
-          var endDate = new Date(eventinfo.endtimestamp*1000);
-          document.getElementById("eventdetails").innerHTML = `
-          Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
-          Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
-          Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
-          End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
-          End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
-          Description: <input type="text" value="${eventinfo.description}" id="update-description">
-          <br><button id="update">Update Event</button><br>
-          <button id="delete">Delete Event</button><br>
-          <button id="scan">
+    let res2 = await GET('/businesses');
+    let o = await res2.json();
+    let html2 = '';
+    o.forEach(business => {
+    if (business.role != 'user')
+        html2 += `<option data-id="${business.id}">${business.name}</option>`;
+    });
+    document.getElementById("businessname").innerHTML = html2;
+    await updateEvents();
+    
+    let res = await GET('/joincode?businessId=' + getBusinessId());
+    let data = await res.json();
+    let joincode = data.joincode;
+    let joinlink = "https://" + window.location.hostname + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
+    new QRCode(document.getElementById("qrcode"), joinlink);
+    document.getElementById("joinlink").href = joinlink;
+    document.getElementById("joinlink").textContent = joinlink;
+    
+    
+    function getEventData() {
+    let eventid = selectizeControl.getValue();
+    GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
+        var startDate = new Date(eventinfo.starttimestamp*1000);
+        var endDate = new Date(eventinfo.endtimestamp*1000);
+        document.getElementById("eventdetails").innerHTML = `
+            Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
+            Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
+            Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
+            End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
+            End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
+            Description: <input type="text" value="${eventinfo.description}" id="update-description">
+            <br><button id="update">Update Event</button><br>
+            <button id="delete">Delete Event</button><br>
+            <button id="scan">
             Scanner
-          </button><br><br>
-          `;
-          document.getElementById('scan').onclick = () => {
+            </button><br><br>
+        `;
+        document.getElementById('scan').onclick = () => {
             let id = selectizeControl.getValue();
             window.open(`scanner.html?eventid=${id}&businessId=${getBusinessId()}`)
-          };
-          document.getElementById('delete').onclick = () => {
+        };
+        document.getElementById('delete').onclick = () => {
             GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => {
-              console.log(res.status);
-              selectizeControl.removeOption(eventid);
+                console.log(res.status);
+                selectizeControl.removeOption(eventid);
             })
-            
-          };
-          document.getElementById('update').onclick = () => {
+        };
+        document.getElementById('update').onclick = () => {
             const name = document.getElementById('update-name').value;
             const description = document.getElementById('update-description').value;
 
@@ -258,53 +258,52 @@
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
             GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then((res) => {
-              document.getElementsByClassName('item')[0].innerHTML = name + " — " + "from " + (new Date(starttimestamp*1000)).toDateString() + " to " + (new Date(endtimestamp*1000)).toDateString();
-              console.log(res.status);
-              updateEvents();
-            })
-          }
-        }));
-      }
-      
-      selectizeControl.on('change', getEventData);
-      let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
-      let map = new Map();
-      for (let i = 0; i < attendancearr.length; i++) {
-        if (attendancearr[i].user_id)
-          attendancearr[i].id = attendancearr[i].user_id;
-        if(!map.has(attendancearr[i].id)) {
-          map.set(attendancearr[i].id, []);
+                document.getElementsByClassName('item')[0].innerHTML = name + " — " + "from " + (new Date(starttimestamp*1000)).toDateString() + " to " + (new Date(endtimestamp*1000)).toDateString();
+                console.log(res.status);
+                updateEvents();
+            });
         }
-        map.get(attendancearr[i].id).push(attendancearr[i]);
-      }
-      let html = "<tr><th>Name (id)</th>"; 
-      for (let i = 0; i < events.length; i++) {
+    }));
+    }
+    
+    selectizeControl.on('change', getEventData);
+    let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
+    let map = new Map();
+    for (let i = 0; i < attendancearr.length; i++) {
+    if (attendancearr[i].user_id)
+        attendancearr[i].id = attendancearr[i].user_id;
+    if(!map.has(attendancearr[i].id)) {
+        map.set(attendancearr[i].id, []);
+    }
+    map.get(attendancearr[i].id).push(attendancearr[i]);
+    }
+    let html = "<tr><th>Name (id)</th>"; 
+    for (let i = 0; i < events.length; i++) {
         var startDate = new Date(events[i].starttimestamp*1000);
         var endDate = new Date(events[i].endtimestamp*1000);
         html += `<th class="cell" data-time="${events[i].starttimestamp}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
-      }
-      html += "</tr>";
-      for (let i = 0; i < [...map.keys()].length; i++) {
+    }
+    html += "</tr>";
+    for (let i = 0; i < [...map.keys()].length; i++) {
         let userid = [...map.keys()][i];
         let records = map.get(userid);
         html += `<tr><td>${records[0].name} (${userid.substr(0,4)})</td>`;
         for (let j = 0; j < events.length; j++) {   
-          let statusupdate = false;
-          for (let k = 0; k < records.length; k++) {
-            if (records[k].event_id == events[j].id) {
-              html += `<td class="cell" data-time="${events[j].starttimestamp}">${records[k].status}</td>`;
-              statusupdate = true;
-              break;
+            let statusupdate = false;
+            for (let k = 0; k < records.length; k++) {
+                if (records[k].event_id == events[j].id) {
+                    html += `<td class="cell" data-time="${events[j].starttimestamp}">${records[k].status}</td>`;
+                    statusupdate = true;
+                    break;
+                }
             }
-          }
-          if (!statusupdate) {
-            html += `<td class="cell" data-time="${events[j].starttimestamp}">N/A</td>`;
-          }
+            if (!statusupdate) {
+                html += `<td class="cell" data-time="${events[j].starttimestamp}">N/A</td>`;
+            }
         }
         html += "</tr>";
-      }
-      document.getElementById("displayattendance").innerHTML = html;
-    };
+    }
+    document.getElementById("displayattendance").innerHTML = html;
     </script>
   </body>
 </html>

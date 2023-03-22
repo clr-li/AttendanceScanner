@@ -27,31 +27,37 @@ function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
+/**
+ * Gets the uid of the currently logged in user.
+ * @param {string} idToken Firebase access token from the client app to get the current user from
+ * @param {boolean} registerIfNewUser adds the user to the database if their uid is not in the database yet
+ * @returns the uid of the user represented by the idToken if the user is logged in and the token is valid, otherwise returns false.
+ */
 async function getUID(idToken, registerIfNewUser=true) {
-  if (typeof idToken != "string") throw 'Invalid idToken'; // idToken comes from the client app
-  try {
-    let truename;
-    let uid;
-    if (TOKEN_VERIFICATION) {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      uid = decodedToken.uid; 
-      truename = decodedToken.name;
-    } else {
-      const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-      uid = decodedToken.user_id;
-      truename = decodedToken.name;
-    }
-    if (registerIfNewUser) {
-      let name = await asyncGet(`SELECT name FROM Users WHERE id = ?`, [uid]);
-      if (!name) {
-        await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [uid, truename]);
-      }
-    }
-    return uid;
-  } catch(error) {
-    console.error("getUID error: " + error);
-    return false;
-  };
+    if (typeof idToken !== "string" || idToken === "null") return false;
+    try {
+        let truename;
+        let uid;
+        if (TOKEN_VERIFICATION) {
+            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            uid = decodedToken.uid; 
+            truename = decodedToken.name;
+        } else {
+            const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
+            uid = decodedToken.user_id;
+            truename = decodedToken.name;
+        }
+        if (registerIfNewUser) {
+            let name = await asyncGet(`SELECT name FROM Users WHERE id = ?`, [uid]);
+            if (!name) {
+                await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [uid, truename]);
+            }
+        }
+        return uid;
+    } catch(error) {
+        console.error("getUID error: " + error);
+        return false;
+    };
 }
 
 async function getAccess(userid, businessid, requiredPriviledges={admin: true}) {

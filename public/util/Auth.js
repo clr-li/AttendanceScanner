@@ -1,7 +1,7 @@
-import { setCookie } from './util.js';
 import { GET } from "./Client.js";
+import { parseJwt } from './util.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
+import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
 // Initialize the current auth session and Firebase app
 const app = initializeApp({
@@ -12,20 +12,22 @@ const app = initializeApp({
 const auth = getAuth(app);
 auth.useDeviceLanguage();
 const googleProvider = new GoogleAuthProvider();
+await setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
 await getRedirectResult(auth); // initialize auth with redirect login results if available
 console.log("Initialized auth!");
 
 /**
  * Checks if the current auth session is logged in (either by a redirect or through previous browsing).
  * @returns true if the current session/user is logged in and the server approves, false otherwise.
- * @effects updates the idToken cookie if necessary
+ * @effects updates the idtoken session storage item if necessary
  */
 export async function login() {
     try {
         console.log("Logging in...");
-        if (!auth.currentUser) return false; // no one has logged in yet
-        let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
-        setCookie("idtoken", idToken, 1);
+        if (auth.currentUser) { // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
+            let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
+            sessionStorage.setItem("idtoken", idToken);
+        }
         let res = await GET('/isLoggedIn');
         console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
         return res.status === 200;
@@ -33,6 +35,17 @@ export async function login() {
         console.error(error);
         return false;
     }
+}
+
+/**
+ * Guarantees the user is logged in by redirecting to the login page if the user is not logged in.
+ * Should be called before using any features that require the user to be logged in.
+ * 
+ * Automatically reruns itself when the token expires.
+ */
+export async function requireLogin() {
+    if (!(await login())) location.assign('/login.html?redirect=' + location.href);
+    else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
 }
 
 /**
@@ -69,7 +82,7 @@ export async function popUpLogin(handleLogin) {
  */
 export async function devLogin(handleLogin, token) {
     await auth.signOut();
-    setCookie("idtoken", token, 24);
+    sessionStorage.setItem("idtoken", token);
     let res = await GET('/isLoggedIn');
     console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
     handleLogin(res.status === 200);
@@ -81,7 +94,7 @@ export async function devLogin(handleLogin, token) {
 export async function logout() {
     try {
         const signout = auth.signOut();
-        setCookie("idtoken", "", -1);
+        sessionStorage.removeItem("idtoken");
         await signout;
         console.log("Signed out!");
     } catch (e){
