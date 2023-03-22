@@ -27,8 +27,8 @@ export async function login() {
         if (auth.currentUser) { // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
             let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
             sessionStorage.setItem("idtoken", idToken);
-        }
-        let res = await GET('/isLoggedIn');
+        } else if (!sessionStorage.getItem("idtoken")) return false;
+        const res = await GET('/isLoggedIn');
         console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
         return res.status === 200;
     } catch (error) {
