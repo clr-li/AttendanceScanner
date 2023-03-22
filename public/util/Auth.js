@@ -1,4 +1,5 @@
 import { GET } from "./Client.js";
+import { parseJwt } from './util.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
 import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
@@ -39,9 +40,12 @@ export async function login() {
 /**
  * Guarantees the user is logged in by redirecting to the login page if the user is not logged in.
  * Should be called before using any features that require the user to be logged in.
+ * 
+ * Automatically reruns itself when the token expires.
  */
 export async function requireLogin() {
     if (!(await login())) location.assign('/login.html?redirect=' + location.href);
+    else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
 }
 
 /**

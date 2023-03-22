@@ -4,7 +4,6 @@ await requireLogin();
 
 async function unsubscribe(id) {
     document.getElementById("loader").style.display = "block";
-    await requireLogin();
     await GET("/cancelSubscription?id=" + id);
     document.getElementById("subscriptions").removeChild(document.getElementById(id));
     document.getElementById("loader").style.display = "none";
@@ -74,7 +73,6 @@ form.addEventListener('submit', async event => {
     const payload = await dropinInstance.requestPaymentMethod();
     payload.deviceData = localStorage.getItem("device-data");
     payload.businessName = document.getElementById("businessName").value;
-    await requireLogin();
     await POST("/checkout", payload)
     showSubscriptions();
 });

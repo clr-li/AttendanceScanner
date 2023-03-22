@@ -12,7 +12,6 @@ async function onScanSuccess(decodedText, decodedResult) {
   let eventid = params.get('eventid');
   let businessId = params.get('businessId');
   if (lastUserId != decodedText) {
-    await requireLogin();
     const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=PRESENT&businessId=${businessId}`);
     console.log(res.status);
     html5QrcodeScanner.resume();

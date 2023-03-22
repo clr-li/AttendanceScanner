@@ -1,9 +1,9 @@
 import { parseJwt } from './util/util.js';
 import { requireLogin } from './util/Auth.js';
 import { GET } from './util/Client.js';
+await requireLogin();
       
 async function joinFromUrl(urlstr) {
-    await requireLogin();
     let url = new URL(urlstr);
     let params = url.searchParams;
     let businessId = params.get('id');
@@ -32,7 +32,6 @@ let html5QrcodeScanner = new Html5QrcodeScanner(
 html5QrcodeScanner.render(onScanSuccess);
 
 window.handleBusinessClick = async (id) => {
-    await requireLogin();
     let html = "";
     const records = await (await GET(`/userdata?businessId=${id}`)).json();
     console.log(records);
