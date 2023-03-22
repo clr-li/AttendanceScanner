@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "DEVELOPMENT=true PORT=3000 node -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
-    "glitch": "git checkout master && git pull origin main --no-rebase -m \"deployment merge\" && git push glitch --force && git push origin master",
+    "glitch": "git checkout master && git pull origin main --no-rebase -no-edit && git push glitch --force && git push origin master",
     "deploy": "npm run glitch && npm run fire"
   },
   "dependencies": {
