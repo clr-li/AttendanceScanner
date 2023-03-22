@@ -29,3 +29,13 @@ function LevenshteinDistance(str1, str2) {
   
   return matrix[str1.length][str2.length];
 }
+
+/**
+* @param {String} HTML representing any number of sibling elements
+* @return {NodeList} the sibling elements as nodes
+*/
+export function htmlToElements(html) {
+   var template = document.createElement('template');
+   template.innerHTML = html;
+   return template.content.childNodes;
+}

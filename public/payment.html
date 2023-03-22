@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Attendance Scanner</title>
-    <meta name="description" content="A program to automate attendance">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <title>Attendance Scanner</title>
+        <meta name="description" content="A program to automate attendance">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-    
-    <!-- Payment with Braintree -->
-    <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
-    <script src="https://js.braintreegateway.com/web/3.88.6/js/client.min.js"></script>
-    <script src="https://js.braintreegateway.com/web/3.88.6/js/data-collector.min.js"></script>
-  </head>
-  <body>
-    <section id="subscriptions">
-      <h1>Manage Subscriptions</h1>
-    </section>
-    
-    <section>
-      <h2>
-        Add Subscriptions
-      </h2>
-      <form id="payment-form">
-        <div id="dropin-container"></div>
-        <label for="businessName">Business Name:</label>
-        <input type="text" id="businessName" name="BusinessName"/>
-        <button type="submit">Purchase Standard Subscription</button>
-      </form>
-    </section>
-    
-    <div id="loader" style="z-index: 999999; position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-color: black; opacity: 0.3; display: flex; justify-content: center; align-items: center">
-        <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    </div>
+        <!-- import the webpage's stylesheet -->
+        <link rel="stylesheet" href="/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        
+        <!-- Payment with Braintree -->
+        <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
+        <script src="https://js.braintreegateway.com/web/3.88.6/js/client.min.js"></script>
+        <script src="https://js.braintreegateway.com/web/3.88.6/js/data-collector.min.js"></script>
 
-    <script type="module" src="/payment.js"></script>
-  </body>
+        <!-- Custom Components -->
+        <script type="module" src="/components/CircleLoader.js"></script>
+    </head>
+    <body>
+        <section id="subscriptions">
+        <h1>Manage Subscriptions</h1>
+        </section>
+        
+        <section>
+        <h2>
+            Add Subscriptions
+        </h2>
+        <form id="payment-form">
+            <div id="dropin-container"></div>
+            <label for="businessName">Business Name:</label>
+            <input type="text" id="businessName" name="BusinessName"/>
+            <button type="submit">Purchase Standard Subscription</button>
+        </form>
+        </section>
+        
+        <circle-loader id="loader"></circle-loader>
+
+        <script type="module" src="/payment.js"></script>
+    </body>
 </html>

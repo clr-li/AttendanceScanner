@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Attendance Scanner</title>
-    <meta name="description" content="A program to automate attendance">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <title>Attendance Scanner</title>
+        <meta name="description" content="A program to automate attendance">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-    
-    <!--   Import QR generating capabilities   -->
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-    
-    <!--   Import QR scanning capabilities   -->
-    <script src="/util/html5-qrcode.min.js"></script>
-  </head>
-  <body>
-    <div id="qrcode"></div>
-    
-    <div id="container">
-        <div id="reader"></div>
-    </div>
+        <!-- Import the webpage's stylesheet -->
+        <link rel="stylesheet" href="/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        
+        <!--   Import QR generating capabilities   -->
+        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+        
+        <!--   Import QR scanning capabilities   -->
+        <script src="/util/html5-qrcode.min.js"></script>
+    </head>
+    <body>
+        <div id="qrcode"></div>
+        
+        <div id="container">
+            <div id="reader"></div>
+        </div>
 
-    <table id="businesses"></table>
-    <p id="events"></p>
-    
-    <script type="module" src="/user.js"></script>
-  </body>
+        <table id="businesses"></table>
+        <p id="events"></p>
+        
+        <script type="module" src="/user.js"></script>
+    </body>
 </html>
