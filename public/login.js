@@ -20,7 +20,7 @@ function redirect() {
 }
 
 afterLogin(await login(), false);
-if (!IS_DEVELOPMENT) redirectLogin(); // if development, don't redirect automatically, show dev logins
+if (!IS_DEVELOPMENT && IS_FIREBASE_DOMAIN) redirectLogin(); // if development, don't redirect automatically, show dev logins; also only auto-redirect on Firebase Domain where it is supported
 
 const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
 signInWithGoogleBtn.addEventListener('click', () => { beforeLogin(); popUpLogin(afterLogin); });
