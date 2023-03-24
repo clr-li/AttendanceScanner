@@ -10,7 +10,7 @@ async function joinFromUrl(urlstr) {
     let joincode = params.get('code');
     if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
-        GET(`/join?businessId=${businessId}&code=${joincode}`);
+        await GET(`/join?businessId=${businessId}&code=${joincode}`);
     }
 }
 joinFromUrl(window.location.href);
