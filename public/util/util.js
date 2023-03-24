@@ -1,5 +1,5 @@
 export function parseJwt(token) {
-    return JSON.parse(window.atob(token.split('.')[1], 'base64'));
+    return JSON.parse(window.atob(token.split('.')[1]));
 }
 
 export function calcSimilarity(str1, str2) {
