@@ -9,19 +9,24 @@
 
         <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
+
+        <!-- Custom Components -->
+        <script type="module" src="/components/Navigation.js"></script>
     </head>
     <body>
-        <h1>
-            Landing Page for the Attendance Scanner Company
-        </h1>
-        <a href="/admin.html">
-            Admin Login
-        </a>
-        <a href="/user.html">
-            User Login
-        </a>
-        <button onclick="import('./util/Auth.js').then(m => m.logout());">
-            Logout
-        </button>
+        <navigation-manager>
+            <h1>
+                Landing Page for the Attendance Scanner Company
+            </h1>
+            <a href="/admin.html">
+                Admin Login
+            </a>
+            <a href="/user.html">
+                User Login
+            </a>
+            <button onclick="import('./util/Auth.js').then(m => m.logout());">
+                Logout
+            </button>
+        </navigation-manager>
     </body>
 </html>

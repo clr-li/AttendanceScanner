@@ -45,3 +45,35 @@ export function htmlToElements(html) {
    template.innerHTML = html;
    return template.content.childNodes;
 }
+
+/**
+ * Utility class to make Web Component creation simpler.
+ * @link Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#high-level_view
+ */
+export class Component extends HTMLElement {
+    /**
+     * Creates a basic web component.
+     * @param {string} mode "open" means the internal HTML is accessible outside the component, "closed" means it is not
+     */
+    constructor(mode="closed") {
+        super(); // initialize component (should always be called first)
+
+        // Create the shadow root (root of the shadow DOM representing the DOM nodes of this component)
+        const shadow = this.attachShadow({ mode: mode }); // sets (if mode is "open") and returns 'this.shadowRoot'
+        
+        // Create HTML for this component
+        const html = htmlToElements(this.initialHTML());
+
+        // attach the created elements to the shadow DOM
+        shadow.append(...html);
+    }
+
+    /**
+     * @returns a string representing the HTML that this component initialy has
+     */
+    initialHTML() {
+        return /* html */`
+            <p>Please override initialHTML() to change the default html of this component</p>
+        `;
+    }
+}

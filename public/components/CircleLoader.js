@@ -1,7 +1,10 @@
 import { htmlToElements } from "../util/util.js";
 
-// @see Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#high-level_view
-class CircleLoader extends HTMLElement {
+/**
+ * The CircleLoader component blocks the screen with a loading animation when visible.
+ * @link Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#high-level_view
+ */
+export class CircleLoader extends HTMLElement {
     constructor() {
         super(); // initialize component (should always be called first)
 

@@ -1,11 +1,21 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+/* Variables */
 :root {
-  --font-family: 'Raleway';
+    --font-family: 'Raleway';
+    --primary: #2196f3;
+    --secondary: #3f51b5;
+    --accent: rgb(30, 17, 144);
+    --error: #e91e63;
+    --warning: #ffc107;
+    --info: #00bcd4;
+    --success: #4caf50;
 }
 
 /* Basic page style resets */
 * {
-  box-sizing: border-box;
-  font-family: var(--font-family);
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
 }
