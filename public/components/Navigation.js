@@ -5,7 +5,9 @@ class Navbar extends Component {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
             <nav>
-                <p>Hello World<p>
+                <ul>
+
+                </ul>
             </nav>
             <style>
                 nav {
@@ -25,56 +27,57 @@ class Footer extends Component {
             <footer>
                 <div class="row">
                     <div class="colbig">
-                        <img src="/assets/logo.png">
+                        <img src="https://seattletutoringpartners.web.app/assets/logo.png">
                     </div>
                     <div class="colsmall">
-                        <h2>Col 1</h2>
+                        <h2>Get started</h2>
                         <ul>
-                            <li><a href="/">Link 1</a></li>
-                            <li><a href="/">Link 2</a></li>
-                            <li><a href="/">Link 3</a></li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/">Sign Up</a></li>
+                            <li><a href="/">Start a Group</a></li>
                         </ul>
                     </div>
                     <div class="colsmall">
-                        <h2>Col 2</h2>
+                        <h2>Attendance</h2>
                         <ul>
-                            <li><a href="/">Link 1</a></li>
-                            <li><a href="/">Link 2</a></li>
-                            <li><a href="/">Link 3</a></li>
+                            <li><a href="/">My Groups</a></li>
+                            <li><a href="/">My Attendance</a></li>
+                            <li><a href="/">Admin Dashboard</a></li>
                         </ul>
                     </div>
                     <div class="colsmall">
-                        <h2>Col 3</h2>
+                        <h2>About Us</h2>
                         <ul>
-                            <li><a href="/">Link 1</a></li>
-                            <li><a href="/">Link 2</a></li>
-                            <li><a href="/">Link 3</a></li>
+                            <li><a href="/">About Us</a></li>
+                            <li><a href="/">FAQ</a></li>
+                            <li><a href="/">Contact</a></li>
                         </ul>
                     </div>
                     <div class="colbig">
                         <div class="social-networks">
-                            <a href="/notimplemented.html?feature=No Social Media Yet"><i class="fa fa-instagram"></i></a>
+                            <a href="https://github.com/clr-li/AttendanceScanner"><i class="fa fa-github"></i></a>
                             <a href="tel:+1724383-6080"><i class="fa fa-phone"></i></a>
                             <a href="mailto:info.seattletutoring@gmail.com"><i class="fa fa-envelope"></i></a>
                         </div>
-                        <div style="text-align: center; margin-top: 8px; white-space: nowrap; width: fit-content; margin-left: -8px">
                         <h3>Attendance Scanner</h3>
-                        <p>[email]</p>
                         <p>Seattle, WA 98195</p>
                         <p>+1 (724) 383-6080</p>
-                        </div>
                     </div>
                     <div style="clear: both"></div>
                 </div>
                 <div class="copyright">
-                    <p>© 2022. All rights reserved. Images, logos, and content cannot be used without permission.</p>
+                    <p>© 2023. All rights reserved. Images, logos, and content cannot be used without permission.</p>
                 </div>
             </footer>
             <style>
+                * {
+                    color: white;
+                }
                 footer {
                     background-color: var(--secondary);
                     text-align: center;
-                    color: white;
+                    position: relative;
+                    margin-top: 50px;
                 }
                 .row {
                     max-width: 1000px; 
@@ -83,11 +86,10 @@ class Footer extends Component {
                     text-align: center;
                     margin-bottom: 20px;
                 }
-                img { width: 80%; }
-                ul { list-style-type: none; }
+                img { width: 60%; }
+                ul { list-style-type: none; margin-left: 1em; }
                 a { text-decoration: none; }
                 .fa {
-                    color: white;
                     font-size: 2em;
                     padding: 10px;
                 }
@@ -104,7 +106,6 @@ class Footer extends Component {
                     width: 20%;
                     min-width: 160px;
                     text-align: left;
-                    transform: translate(-1em,0);
                 }
                 .copyright {
                     clear: both;
@@ -144,11 +145,23 @@ export class NavigationManager extends Component {
     initialHTML() {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
-            <navigation-bar style="position: sticky; top: 0"></navigation-bar>
-            <main style="min-height: calc(100vh - 500px)">
-                <slot></slot>
-            </main>
-            <navigation-footer></navigation-footer>
+            <div class="wrapper">
+                <navigation-bar></navigation-bar>
+                <main>
+                    <slot></slot>
+                </main>
+                <navigation-footer></navigation-footer>
+            </div>
+            <style>
+                navigation-bar {
+                    position: sticky; top: 0
+                }
+                .wrapper {
+                    min-height: 100vh;
+                    display: grid;
+                    grid-template-rows: auto 1fr auto;
+                }
+            </style>
         `;
         // NOTE: <slot> is all the child-elements/innerHTML
     }
