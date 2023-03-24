@@ -4,15 +4,44 @@ class Navbar extends Component {
     initialHTML() {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
-            <nav>
-                <ul>
-
-                </ul>
-            </nav>
+            <header>
+                <img src="/assets/logo.png">
+                <nav>
+                    <a href="/" class="${location.pathname === '/' ? 'active' : ''}">Home</a>
+                    <a href="/">My Groups</a>
+                    <a href="/">About</a>
+                </nav>
+                <button>USER</button>
+            </header>
             <style>
-                nav {
+                header {
                     background-color: var(--primary);
+                    height: 100%;
+                    padding: 8px;
+                    display: grid;
+                    grid-template-columns: auto 1fr auto;
+                }
+                img {
+                    border-radius: 10px;
                     height: 80px;
+                }
+                nav {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 6px;
+                }
+                a {
+                    color: white;
+                    text-align: center;
+                    padding: 14px 16px;
+                    text-decoration: none;
+                }
+                a:hover:not(.active) {
+                    background-color: var(--secondary);
+                }
+                .active {
+                    background-color: var(--accent);
                 }
             </style>
         `;
@@ -27,7 +56,7 @@ class Footer extends Component {
             <footer>
                 <div class="row">
                     <div class="colbig">
-                        <img src="https://seattletutoringpartners.web.app/assets/logo.png">
+                        <img src="/assets/logo.png">
                     </div>
                     <div class="colsmall">
                         <h2>Get started</h2>
@@ -89,7 +118,7 @@ class Footer extends Component {
                     text-align: center;
                     margin-bottom: 20px;
                 }
-                img { width: 60%; }
+                img { width: 50%; border-radius: 10px; }
                 ul { list-style-type: none; margin-left: 1em; }
                 a { text-decoration: none; }
                 .fa {
@@ -162,7 +191,7 @@ export class NavigationManager extends Component {
                 navigation-bar {
                     position: sticky; top: 0
                 }
-                .wrapper {
+                .wrapper { /* makes sure the footer is always at the bottom */
                     min-height: 100vh;
                     display: grid;
                     grid-template-rows: auto 1fr auto;
