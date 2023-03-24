@@ -149,10 +149,13 @@ export class NavigationManager extends Component {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
             <div class="wrapper">
-                <navigation-bar></navigation-bar>
-                <main>
+                <a href="#main-content" class="skip">Skip to main content</a>
+                <navigation-bar id="#navigation"></navigation-bar>
+                <main id="main-content">
                     <slot></slot>
                 </main>
+                <a href="#main-content" class="skip">Skip back to main content</a>
+                <a href="#navigation" class="skip">Skip back to navigation</a>
                 <navigation-footer></navigation-footer>
             </div>
             <style>
