@@ -9,6 +9,13 @@ const handleAuth = require('./Auth').handleAuth;
 const uuid = require('uuid');
 
 // ============================ BUSINESS FUNCTIONS ============================
+/**
+ * Creates a new business by initializing all the necessary tables in the database.
+ * @param {string} uid owner of the business to create
+ * @param {string} name name of the business to create 
+ * @param {string} subscriptionId id of the subscription used to buy the business
+ * @returns the id of the business just created
+ */
 async function createBusiness(uid, name, subscriptionId) {
   const businessId = await asyncRunWithID(`INSERT INTO Businesses (name, joincode, subscriptionId) VALUES (?, ?, ?)`, [name, uuid.v4(), subscriptionId]);
   await asyncRun(`INSERT INTO Members (business_id, user_id, role) VALUES (?, ?, ?)`, [businessId, uid, 'owner']);
@@ -16,6 +23,10 @@ async function createBusiness(uid, name, subscriptionId) {
   return businessId;
 }
 
+/**
+ * Deletes a business and all related tables.
+ * @param {number} businessId the id of the business to delete
+ */
 async function deleteBusiness(businessId) { 
   await asyncRun(`DELETE FROM Businesses WHERE id = ?`, [businessId]);
   await asyncRun(`DELETE FROM Members WHERE business_id = ?`, [businessId]);
@@ -25,6 +36,9 @@ async function deleteBusiness(businessId) {
 }
 
 // ============================ BUSINESS ROUTES ============================
+/**
+ * Gets a list of businesses that the authenticated user is a member of.
+ */
 router.get("/businesses", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
@@ -33,6 +47,11 @@ router.get("/businesses", async (request, response) => {
   response.send(rows);
 });
 
+/**
+ * Gets the joincode of the specified business.
+ * @queryParams businessId - id of the business to get the joincode for
+ * @requiredPriviledges read access to the specified business
+ */
 router.get("/joincode", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
@@ -43,6 +62,12 @@ router.get("/joincode", async (request, response) => {
   response.send(row);
 });
 
+/**
+ * Joins the specified business if the specified joincode is correct.
+ * @queryParams businessId - id of the business to join
+ * @queryParams joincode - must be correct to join the business
+ * @response 200 OK - if successful, 403 Incorrect joincode - if joincode was incorrect for the specified business.
+ */
 router.get("/join", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
@@ -55,10 +80,17 @@ router.get("/join", async (request, response) => {
     await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
     response.sendStatus(200);
   } else {
+    response.statusMessage = "Incorrect joincode";
     response.sendStatus(403);
   }
 });
 
+/**
+ * Gets data for all the events for the user in the specified business.
+ * @queryParams businessId - id of the business to get events for
+ * @requiredPriviledges user must be a member of the specified business
+ * @response json list of event objects.
+ */
 router.get("/events", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
@@ -68,6 +100,15 @@ router.get("/events", async (request, response) => {
   response.send(events);
 });
 
+/**
+ * Records an attendance scan of a user for a specific business and event.
+ * @queryParams eventid - id of the event to record attendance for
+ * @queryParams businessId - id of the business to record attendance for
+ * @queryParams userid - the user to record attendance of
+ * @queryParams status - the attendance status to note down
+ * @requiredPriviledges scanner for the business
+ * @response 200 OK if successful
+ */
 router.get("/recordAttendance", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
   if (!uid) return;
@@ -81,6 +122,12 @@ router.get("/recordAttendance", async (request, response) => {
   response.sendStatus(200);
 });
 
+/**
+ * Returns all the attendance records for the specified business.
+ * @queryParams businessId - id of the business to get attendance records for
+ * @requiredPriviledges read for the business
+ * @response json list of records for all users in the business as well as empty records for users with no attendance records.
+ */
 router.get("/attendancedata", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
@@ -91,35 +138,61 @@ router.get("/attendancedata", async function(request, response) {
   response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
 });
 
+/**
+ * Gets all the attendance records for the current user within a business.
+ * @queryParams businessId - id of the business to get attendance records within
+ * @requiredPriviledges member of the business
+ * @response json list of records for the current user within the specified business.
+ */
 router.get("/userdata", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
   
   const businessId = request.query.businessId;
+
   response.send(await asyncAll(`SELECT Events.name, Events.starttimestamp, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id WHERE (Records.user_id = ? OR Records.user_id is NULL) AND Events.business_id = ?`, [uid, businessId]));
 })
 
+/**
+ * Creates a new event for the specified business.
+ * @queryParams businessId - id of the business to create an event for
+ * @queryParams name - name of the event to create
+ * @queryParams description - description of the event to create
+ * @queryParams starttimestamp - unix epoch timestamp in seconds for when the event is supposed to start
+ * @queryParams endtimestamp - unix epoch timestamp in seconds for when the event is supposed to end
+ * @requiredPriviledges write access for the business
+ * @response id of the newly created event.
+ */
 router.get("/makeEvent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
-  const id = request.query.businessId;
+  const businessId = request.query.businessId;
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
   const endtimestamp = request.query.endtimestamp;
 
-  const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [id, name, description, starttimestamp, endtimestamp]);
-  response.status(200);
+  const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId, name, description, starttimestamp, endtimestamp]);
   response.send(eventid);
 });
 
+/**
+ * Updates event info for the specified business and event.
+ * @queryParams businessId - id of the business to update event info for
+ * @queryParams eventid - id of the event to update
+ * @queryParams name - updated event name
+ * @queryParams description - updated event description
+ * @queryParams starttimestamp - unix epoch timestamp in seconds for when the updated event is supposed to start
+ * @queryParams endtimestamp - unix epoch timestamp in seconds for when the updated event is supposed to end
+ * @requiredPriviledges write access for the business
+ * @response 200 OK
+ */
 router.get("/updateevent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
-  const id = request.query.businessId;
-
+  const businessId = request.query.businessId;
   const name = request.query.name;
   const description = request.query.description;
   const starttimestamp = request.query.starttimestamp;
@@ -127,29 +200,43 @@ router.get("/updateevent", async function(request, response) {
   const eventid = request.query.eventid;
   
   await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
-                [name, starttimestamp, endtimestamp, description, id, eventid]);
+                [name, starttimestamp, endtimestamp, description, businessId, eventid]);
   response.sendStatus(200);
 });
 
+/**
+ * Deletes the specified event for the specified business.
+ * @queryParams businessId - id of the business to delete the event from
+ * @queryParams eventid - id of the event to delete
+ * @requiredPriviledges write access for the business
+ * @response 200 OK
+ */
 router.get("/deleteevent", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, { write: true });
   if (!uid) return;
   
-  const id = request.query.businessId;
+  const businessId = request.query.businessId;
   const eventid = request.query.eventid;
 
-  await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [id, eventid]);
+  await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
   response.sendStatus(200);
 });
 
+/**
+ * Gets all info associated with the specified event 
+ * @queryParams businessId - id of the business to get the event from
+ * @queryParams eventid - id of the event to get
+ * @requiredPriviledges read access for the business
+ * @response json object representing the event info
+ */
 router.get("/eventdata", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId, { read: true });
   if (!uid) return;
   
-  const id = request.query.businessId;
+  const businessId = request.query.businessId;
   const eventid = request.query.eventid;
   
-  const eventinfo = await asyncGet(`SELECT * FROM Events WHERE business_id = ? AND id = ?`, [id, eventid]);
+  const eventinfo = await asyncGet(`SELECT * FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
   response.send(eventinfo);
 });
 

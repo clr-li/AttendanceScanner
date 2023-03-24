@@ -9,7 +9,7 @@ const { asyncGet, asyncRun } = require('./Database');
 const express = require('express'),
   router = express.Router();
 
-// ============================ AUTHENTICATION SETTINGS ============================
+// ============================ AUTH SETTINGS ============================
 const TOKEN_VERIFICATION = process.env.DEVELOPMENT !== 'true'; // true => verify idToken with firebase, false => just decode it for development purposes
 console.log("TOKEN VERIFICATION: " + TOKEN_VERIFICATION);
 const ACCESS_TABLE = { // the various roles and their priviledges
@@ -22,7 +22,12 @@ const ACCESS_TABLE = { // the various roles and their priviledges
 // read: permission to read sensitive business data
 // write: permission to write sensitive (non-scanner) business data
 
-// ============================ AUTHENTICATION LOGIC ============================
+// ============================ AUTH LOGIC ============================
+/**
+ * Parses the main body of a JWT bearer token.
+ * @param {string} token the base64 encoded token to parse
+ * @returns the decoded and parsed token body as a JavaScript object.
+ */
 function parseJwt(token) {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
@@ -60,6 +65,13 @@ async function getUID(idToken, registerIfNewUser=true) {
     };
 }
 
+/**
+ * Checks that the given user has the specified priviledges for the given business.
+ * @param {string} userid the uid of the user to check access for
+ * @param {number} businessid the business to check access within
+ * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges the priviledges to check if they are allowed the users role
+ * @returns true if the user is a member of the specified business and has a role with at least the priviledges specified as true in requiredPriviledges, false otherwise.
+ */
 async function getAccess(userid, businessid, requiredPriviledges={admin: true}) {
   try {
     const role = (await asyncGet(`SELECT role from Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
@@ -75,12 +87,16 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
   }
 }
 
-// Handles the authentication and authorization of the user
-// @params businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid 
-// @params requiredPriviledges an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
-// @requires request and response are valid, businessid is a valid id if requiredPriviledges is not empty
-// @returns the uid of the user if auth succeeded, false otherwise
-// @effects sends response status error codes for failed auth
+/**
+ * Handles the authentication and authorization of the user.
+ * @param {Request} request the request object
+ * @param {Response} response the response object
+ * @param {number} businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid
+ * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges  an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
+ * @requires request and response are valid, businessid is a valid id if requiredPriviledges is not empty
+ * @returns the uid of the user if auth succeeded, false otherwise.
+ * @effects sends response status error codes for failed auth
+ */
 async function handleAuth(request, response, businessid=false, requiredPriviledges={}) {
   if (!request.headers.idtoken) { 
     response.statusMessage = "no idtoken provided, user does not appear to be signed in";
@@ -101,7 +117,10 @@ async function handleAuth(request, response, businessid=false, requiredPriviledg
   return uid;
 }
 
-// ============================ AUTHENTICATION ROUTES ============================
+// ============================ AUTH ROUTES ============================
+/**
+ * Endpoint to check if the client has a valid idtoken header set.
+ */
 router.get("/isLoggedIn", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
@@ -109,6 +128,6 @@ router.get("/isLoggedIn", async (request, response) => {
   response.send(uid);
 });
 
-// ============================ AUTHENTICATION EXPORTS ============================
+// ============================ AUTH EXPORTS ============================
 exports.authRouter = router;
 exports.handleAuth = handleAuth;

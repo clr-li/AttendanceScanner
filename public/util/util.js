@@ -1,11 +1,19 @@
-export function parseJwt(token) {
-    return JSON.parse(window.atob(token.split('.')[1]));
-}
-
+/**
+ * Calculates the similatity between two strings.
+ * @param {string} str1 the first sctring to compare
+ * @param {string} str2 the second string to compare
+ * @returns the negated Levenshtein Distance between the two strings but normalized for the string lengths.
+ */
 export function calcSimilarity(str1, str2) {
   return -LevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length);
 }
 
+/**
+ * Calculates the Levenshtein Distance between two strings using the iterative matrix algorithm.
+ * @param {string} str1 the first sctring to compare
+ * @param {string} str2 the second string to compare
+ * @returns the Levenshtein Distance between the two strings.
+ */
 function LevenshteinDistance(str1, str2) {
   let matrix = Array(str1.length + 1).fill().map(() => Array(str2.length + 1).fill(0));
   
@@ -29,7 +37,7 @@ function LevenshteinDistance(str1, str2) {
 }
 
 /**
-* @param {String} HTML representing any number of sibling elements
+* @param {string} HTML representing any number of sibling elements
 * @return {NodeList} the sibling elements as nodes
 */
 export function htmlToElements(html) {

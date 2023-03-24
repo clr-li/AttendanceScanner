@@ -6,21 +6,18 @@ class CircleLoader extends HTMLElement {
         super(); // initialize component (should always be called first)
 
         // Create the shadow root (root of the shadow DOM representing the DOM nodes of this component)
-        const shadow = this.attachShadow({ mode: "closed" }); // sets and returns 'this.shadowRoot'; mode: "open" means the internal HTML is accessible outside the component, "closed" means its not
+        const shadow = this.attachShadow({ mode: "closed" }); // sets and returns 'this.shadowRoot'; mode: "open" means the internal HTML is accessible outside the component, "closed" means it is not
         
         // Create HTML for this component
         const html = htmlToElements(/* html */`
             <div class="container">
-                <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="lds-default">${/* html */`<div></div>`.repeat(12)}</div>
             </div>
+            <style>${CSS}</style>
         `);
 
-        // Apply CSS to this shadow DOM
-        const style = document.createElement('style');
-        style.textContent = CSS;
-
         // attach the created elements to the shadow DOM
-        shadow.append(style, ...html);
+        shadow.append(...html);
     }
 }
 

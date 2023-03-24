@@ -20,7 +20,13 @@ if (!exists) {
 }
 
 // ============================ ASYNC DATABASE FUNCTIONS ============================
-const asyncGet = (sql, params=[]) => {
+/**
+ * Gets the first result of the sql query on the database.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @returns a Promise of an object representing the first result of the sql query.
+ */
+function asyncGet(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.get(sql, params, (err, result) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
@@ -29,7 +35,13 @@ const asyncGet = (sql, params=[]) => {
     });
 };
 
-const asyncAll = (sql, params=[]) => {
+/**
+ * Gets all the results of the sql query on the database.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @returns a Promise of an array representing all the results of the sql query.
+ */
+function asyncAll(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.all(sql, params, (err, result) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
@@ -38,7 +50,13 @@ const asyncAll = (sql, params=[]) => {
     });
 };
 
-const asyncRun = (sql, params=[]) => {
+/**
+ * Runs a sql query on the database.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @returns Promise<void>
+ */
+function asyncRun(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.run(sql, params, (err) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
@@ -47,7 +65,14 @@ const asyncRun = (sql, params=[]) => {
     });
 };
 
-const asyncRunWithID = (sql, params=[]) => {
+/**
+ * Runs a sql query on the database and gets the id of the last inserted row.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @requires sql should be an INSERT statement
+ * @returns a Promise of the id of the last inserted row (if the sql query was an INSERT statement!).
+ */
+function asyncRunWithID(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
             if (err) { console.log("sql error: " + sql); reject(err); }

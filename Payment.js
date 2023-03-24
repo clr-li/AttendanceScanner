@@ -17,14 +17,18 @@ const handleAuth = require('./Auth').handleAuth;
 const { createBusiness, deleteBusiness } = require('./Business');
 
 // ============================ PAYMENT SETTINGS ============================
-const PLAN_IDS = { // subscription plans
+// subscription plans
+const PLAN_IDS = {
   STANDARD: "n2wg"
 };
 const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]])); // reverse lookup plan name from plan id
 
 // ============================ PAYMENT FUNCTIONS ============================
-
-// returns customer_id of user with uid if it exists, otherwise returns false
+/**
+ * Gets custumer id of the specified user.
+ * @param {string} uid 
+ * @returns customer_id of user with uid if it exists, otherwise returns false.
+ */
 async function getCustomerId(uid) {
   const user = await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid]);
   if (!user) return false;

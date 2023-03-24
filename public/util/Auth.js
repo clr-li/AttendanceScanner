@@ -1,5 +1,4 @@
 import { GET } from "./Client.js";
-import { parseJwt } from './util.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
 import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
@@ -11,14 +10,22 @@ const app = initializeApp({
 });
 const auth = getAuth(app);
 auth.useDeviceLanguage();
-const googleProvider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider(); // sign in with Google, could easily replace (or add) other identity providers like Facebook
 await setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
 await getRedirectResult(auth); // initialize auth with redirect login results if available
 console.log("Initialized auth!");
 
 /**
+ * Parses the main body of a JWT bearer token.
+ * @param {string} token the base64 encoded token to parse
+ * @returns the decoded and parsed token body as a JavaScript object.
+ */
+function parseJwt(token) {
+    return JSON.parse(window.atob(token.split('.')[1]));
+}
+
+/**
  * Gets the current user profile.
- * 
  * @returns an object representing the currently logged in user or null if no user has logged in. 
  */
 export function getCurrentUser() {
@@ -58,7 +65,7 @@ export async function login() {
 export async function requireLogin() {
     if (!(await login())) location.assign('/login.html?redirect=' + location.href);
     else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
-    else console.log('using dev login');
+    else console.log('Using dev login');
 }
 
 /**
