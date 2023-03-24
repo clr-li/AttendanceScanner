@@ -73,6 +73,9 @@ class Footer extends Component {
                 * {
                     color: white;
                 }
+                a:hover, .fa:hover {
+                    color: var(--info);
+                }
                 footer {
                     background-color: var(--secondary);
                     text-align: center;
