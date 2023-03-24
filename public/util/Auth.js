@@ -17,6 +17,18 @@ await getRedirectResult(auth); // initialize auth with redirect login results if
 console.log("Initialized auth!");
 
 /**
+ * Gets the current user profile.
+ * 
+ * @returns an object representing the currently logged in user or null if no user has logged in. 
+ */
+export function getCurrentUser() {
+    const token = sessionStorage.getItem('idtoken');
+    if (!token) return null;
+    const decoded = parseJwt(token);
+    return { name: decoded.name, picture: decoded.picture, uid: decoded.user_id, email: decoded.email_verified ? decoded.email : null }
+}
+
+/**
  * Checks if the current auth session is logged in (either by a redirect or through previous browsing).
  * @returns true if the current session/user is logged in and the server approves, false otherwise.
  * @effects updates the idtoken session storage item if necessary
@@ -46,6 +58,7 @@ export async function login() {
 export async function requireLogin() {
     if (!(await login())) location.assign('/login.html?redirect=' + location.href);
     else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
+    else console.log('using dev login');
 }
 
 /**

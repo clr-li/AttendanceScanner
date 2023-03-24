@@ -1,7 +1,7 @@
-import { parseJwt } from './util/util.js';
-import { requireLogin } from './util/Auth.js';
+import { requireLogin, getCurrentUser } from './util/Auth.js';
 import { GET } from './util/Client.js';
 await requireLogin();
+const user = getCurrentUser();
       
 async function joinFromUrl(urlstr) {
     let url = new URL(urlstr);
@@ -15,7 +15,7 @@ async function joinFromUrl(urlstr) {
 }
 joinFromUrl(window.location.href);
 
-new QRCode(document.getElementById("qrcode"), parseJwt(sessionStorage.getItem('idtoken')).user_id);
+new QRCode(document.getElementById("qrcode"), user.uid);
 
 function onScanSuccess(decodedText, decodedResult) {
     // Handle on success condition with the decoded text or result.
