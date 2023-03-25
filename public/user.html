@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Attendance Scanner</title>
-        <meta name="description" content="A program to automate attendance">
+        <title>User</title>
+        <meta name="description" content="A service to automate attendance">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="/assets/logo.png"/>
 
         <!-- Import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
@@ -15,16 +16,21 @@
         
         <!--   Import QR scanning capabilities   -->
         <script src="https://unpkg.com/html5-qrcode"></script>
+
+        <!-- Custom Components -->
+        <script type="module" src="/components/Navigation.js"></script>
     </head>
     <body>
-        <div id="qrcode"></div>
+        <navigation-manager>
+            <div id="qrcode"></div>
         
-        <div id="container">
-            <div id="reader"></div>
-        </div>
+            <div id="container">
+                <div id="reader"></div>
+            </div>
 
-        <table id="businesses"></table>
-        <p id="events"></p>
+            <table id="businesses"></table>
+            <p id="events"></p>
+        </navigation-manager>
         
         <script type="module" src="/user.js"></script>
     </body>

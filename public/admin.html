@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Home</title>
-        <meta name="description" content="A program to automate attendance">
+        <title>Admin</title>
+        <meta name="description" content="A service to automate attendance">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="/assets/logo.png"/>
 
         <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
@@ -16,47 +17,52 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+    
+        <!-- Custom Components -->
+        <script type="module" src="/components/Navigation.js"></script>
     </head>
     <body>
-        <h1 id="header">
-        Admin Page 
-        </h1>
-        <select id="businessname"></select>
-        <h3>Join Info</h3>
-        <div id="qrcode"></div>
-        <a id="joinlink">Join Link</a><br><br>
-        <label for="events">Event: </label>
-        <select id="events" name="events"></select>
-        <br>
-        <div id="eventdetails"></div>
-        <button id="newevent"> 
-            New Event
-        </button>
-        <form id="eventform" style="display: none;">
-            <label for="name">Event Name: </label>
-            <input type="text" id="name" name="name">
-            <label for="description">Description: </label>
-            <input type="text" id="description" name="description"><br>
-            <label for="startdate">Start Date: </label>
-            <input type="date" id="startdate" name="startdate"><br>
-            <label for="starttime">Start Time: </label>
-            <input type="time" id="starttime" name="starttime"><br>
-            <label for="enddate">End Date: </label>
-            <input type="date" id="enddate" name="enddate"><br>
-            <label for="endtime">End Time: </label>
-            <input type="time" id="endtime" name="endtime"><br>
-            <input type="button" value="Submit" id="submitevent">
-        </form>
-        <form id="filterform" onsubmit="return false">
-            <label for="filtername">Filter by Name: </label>
-            <input type="text" id="filtername" name="filtername">
-            <label for="filterstart">Start Date: </label>
-            <input type="date" id="filterstart" name="filterstart"><br>
-            <label for="filterend">End Date: </label>
-            <input type="date" id="filterend" name="filterend"><br>
-            <button value="Submit" id="submitfilter">Submit</button>
-        </form>
-        <table id="displayattendance"></table>
+        <navigation-manager>
+            <h1 id="header">
+                Admin Page 
+            </h1>
+            <select id="businessname"></select>
+            <h3>Join Info</h3>
+            <div id="qrcode"></div>
+            <a id="joinlink">Join Link</a><br><br>
+            <label for="events">Event: </label>
+            <select id="events" name="events"></select>
+            <br>
+            <div id="eventdetails"></div>
+            <button id="newevent"> 
+                New Event
+            </button>
+            <form id="eventform" style="display: none;">
+                <label for="name">Event Name: </label>
+                <input type="text" id="name" name="name">
+                <label for="description">Description: </label>
+                <input type="text" id="description" name="description"><br>
+                <label for="startdate">Start Date: </label>
+                <input type="date" id="startdate" name="startdate"><br>
+                <label for="starttime">Start Time: </label>
+                <input type="time" id="starttime" name="starttime"><br>
+                <label for="enddate">End Date: </label>
+                <input type="date" id="enddate" name="enddate"><br>
+                <label for="endtime">End Time: </label>
+                <input type="time" id="endtime" name="endtime"><br>
+                <input type="button" value="Submit" id="submitevent">
+            </form>
+            <form id="filterform" onsubmit="return false">
+                <label for="filtername">Filter by Name: </label>
+                <input type="text" id="filtername" name="filtername">
+                <label for="filterstart">Start Date: </label>
+                <input type="date" id="filterstart" name="filterstart"><br>
+                <label for="filterend">End Date: </label>
+                <input type="date" id="filterend" name="filterend"><br>
+                <button value="Submit" id="submitfilter">Submit</button>
+            </form>
+            <table id="displayattendance"></table>
+        </navigation-manager>
         
         <script type="module">
         import { GET, POST } from './util/Client.js';

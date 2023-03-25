@@ -9,7 +9,7 @@ class Navbar extends Component {
                 <img src="/assets/logo.png">
                 <nav>
                     <a href="/" class="${location.pathname === '/' ? 'active' : ''}">Home</a>
-                    <a href="/">My Groups</a>
+                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">My Groups</a>
                     <a href="/">About</a>
                 </nav>
                 <user-icon></user-icon>
