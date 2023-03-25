@@ -1,4 +1,4 @@
-import { htmlToElements } from "../util/util.js";
+import { htmlToElements } from "../util/Component.js";
 
 /**
  * The CircleLoader component blocks the screen with a loading animation when visible.

@@ -1,4 +1,4 @@
-import { Component } from "../util/util.js";
+import { Component } from "../util/Component.js";
 import { getCurrentUser } from '../util/Auth.js';
 
 const user = getCurrentUser();

@@ -1,4 +1,4 @@
-import { Component } from "../util/util.js";
+import { Component } from "../util/Component.js";
 import './UserIcon.js';
 
 class Navbar extends Component {
@@ -180,21 +180,19 @@ export class NavigationManager extends Component {
     initialHTML() {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
-            <div class="wrapper">
-                <a href="#main-content" class="skip">Skip to main content</a>
-                <navigation-bar id="#navigation"></navigation-bar>
-                <main id="main-content">
-                    <slot></slot>
-                </main>
-                <a href="#main-content" class="skip">Skip back to main content</a>
-                <a href="#navigation" class="skip">Skip back to navigation</a>
-                <navigation-footer></navigation-footer>
-            </div>
+            <a href="#main-content" class="skip">Skip to main content</a>
+            <navigation-bar id="#navigation"></navigation-bar>
+            <main id="main-content">
+                <slot></slot>
+            </main>
+            <a href="#main-content" class="skip">Skip back to main content</a>
+            <a href="#navigation" class="skip">Skip back to navigation</a>
+            <navigation-footer></navigation-footer>
             <style>
                 navigation-bar {
                     position: sticky; top: 0
                 }
-                .wrapper { /* makes sure the footer is always at the bottom */
+                :host { /* makes sure the footer is always at the bottom, :host refers to the shadowRoot of this component @see https://stackoverflow.com/questions/42627939/css-selector-for-shadow-root-or-all-top-level-elements-in-shadow-root */
                     min-height: 100vh;
                     display: grid;
                     grid-template-rows: auto 1fr auto;
