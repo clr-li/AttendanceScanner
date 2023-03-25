@@ -1,5 +1,5 @@
 import { login, redirectLogin, popUpLogin, devLogin } from './util/Auth.js';
-import { IS_DEVELOPMENT } from './util/Client.js';
+import { IS_DEVELOPMENT, IS_FIREBASE_DOMAIN } from './util/Client.js';
 
 function beforeLogin() {
     document.getElementById('loader').style.display = "block";
