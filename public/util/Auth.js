@@ -29,7 +29,7 @@ function parseJwt(token) {
  * @returns an object representing the currently logged in user or null if no user has logged in. 
  */
 export function getCurrentUser() {
-    const token = sessionStorage.getItem('idtoken');
+    const token = auth.currentUser ? auth.currentUser.accessToken : sessionStorage.getItem('idtoken');
     if (!token) return null;
     const decoded = parseJwt(token);
     return { name: decoded.name, picture: decoded.picture, uid: decoded.user_id, email: decoded.email_verified ? decoded.email : null }

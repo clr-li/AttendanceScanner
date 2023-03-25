@@ -1,4 +1,5 @@
 import { Component } from "../util/util.js";
+import './UserIcon.js';
 
 class Navbar extends Component {
     initialHTML() {
@@ -11,7 +12,7 @@ class Navbar extends Component {
                     <a href="/">My Groups</a>
                     <a href="/">About</a>
                 </nav>
-                <button>USER</button>
+                <user-icon></user-icon>
             </header>
             <style>
                 header {
@@ -23,6 +24,9 @@ class Navbar extends Component {
                 }
                 img {
                     border-radius: 10px;
+                    height: 80px;
+                }
+                user-icon {
                     height: 80px;
                 }
                 nav {
@@ -62,16 +66,16 @@ class Footer extends Component {
                         <h2>Get started</h2>
                         <ul>
                             <li><a href="/">Home</a></li>
-                            <li><a href="/">Sign Up</a></li>
-                            <li><a href="/">Start a Group</a></li>
+                            <li><a href="/login.html?redirect=/">Sign Up</a></li>
+                            <li><a href="/payment.html">Start a Group</a></li>
                         </ul>
                     </div>
                     <div class="colsmall">
                         <h2>Attendance</h2>
                         <ul>
-                            <li><a href="/">My Groups</a></li>
-                            <li><a href="/">My Attendance</a></li>
-                            <li><a href="/">Admin Dashboard</a></li>
+                            <li><a href="/user.html">My Groups</a></li>
+                            <li><a href="/user.html">My Calendar</a></li>
+                            <li><a href="/admin.html">Admin Dashboard</a></li>
                         </ul>
                     </div>
                     <div class="colsmall">

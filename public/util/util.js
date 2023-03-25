@@ -64,8 +64,11 @@ export class Component extends HTMLElement {
         // Create HTML for this component
         const html = htmlToElements(this.initialHTML());
 
-        // attach the created elements to the shadow DOM
+        // Attach the created elements to the shadow DOM
         shadow.append(...html);
+
+        // Apply JS
+        this.initialJS(shadow);
     }
 
     /**
@@ -76,4 +79,10 @@ export class Component extends HTMLElement {
             <p>Please override initialHTML() to change the default html of this component</p>
         `;
     }
+
+    /**
+     * Applies JS to the shadow root of this component
+     * @param {ShadowRoot} shadowRoot the root of the shadow DOM associated with this component
+     */
+    initialJS(shadowRoot) {} 
 }
