@@ -8,6 +8,16 @@ const user = getCurrentUser();
  */
  export class UserIcon extends Component {
     initialHTML() {
+        if (!user) return /* html */`
+            <link rel="stylesheet" href="/style.css">
+            <a href="/login.html?redirect=${location.href}" class="button">Sign In</a>
+            <style>
+                :host {
+                    display: flex;
+                    align-items: center;
+                }
+            </style>
+        `;
         return /* html */`
             <link rel="stylesheet" href="/style.css">
             <div class="container">
