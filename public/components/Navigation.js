@@ -8,9 +8,9 @@ class Navbar extends Component {
             <header>
                 <img src="/assets/logo.png">
                 <nav>
-                    <a href="/" class="${location.pathname === '/' ? 'active' : ''}">Home</a>
-                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">My Groups</a>
-                    <a href="/">About</a>
+                    <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${window.innerWidth > 360 ? 'Home' : '<i class="fa fa-home"></i>'}</a>
+                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > 360 ? 'My Groups' : '<i class="fa fa-group"></i>'}</a>
+                    <a href="/">${window.innerWidth > 360 ? 'About' : '<i class="fa fa-info"></i>'}</a>
                 </nav>
                 <user-icon></user-icon>
             </header>
@@ -21,18 +21,20 @@ class Navbar extends Component {
                 header {
                     background-color: var(--primary);
                     height: 100%;
+                    width: 100vw;
                     padding: 8px;
-                    display: grid;
-                    grid-template-columns: auto 1fr auto;
+                    display: flex;
+                    justify-content: space-between;
                 }
                 img {
                     border-radius: 10px;
-                    height: 80px;
+                    max-width: 80px;
                 }
                 user-icon {
-                    height: 80px;
+                    max-width: 80px;
                 }
                 nav {
+                    flex-grow: 3;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -41,8 +43,16 @@ class Navbar extends Component {
                 a {
                     color: white;
                     text-align: center;
-                    padding: 14px 16px;
+                    height: 42px;
+                    padding: 0 clamp(6px, 4%, 16px);
                     text-decoration: none;
+                    display: flex;
+                    align-items: center;
+                }
+                @media (max-width: 360px) {
+                    a {
+                        padding: 0 clamp(6px, 10%, 16px);
+                    }
                 }
                 a:hover:not(.active) {
                     background-color: var(--secondary);
@@ -193,7 +203,7 @@ export class NavigationManager extends Component {
             <navigation-footer></navigation-footer>
             <style>
                 navigation-bar {
-                    position: sticky; top: 0
+                    position: sticky; top: 0;
                 }
                 :host { /* makes sure the footer is always at the bottom, :host refers to the shadowRoot of this component @see https://stackoverflow.com/questions/42627939/css-selector-for-shadow-root-or-all-top-level-elements-in-shadow-root */
                     min-height: 100vh;
