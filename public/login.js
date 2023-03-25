@@ -27,10 +27,10 @@ signInWithGoogleBtn.addEventListener('click', () => { beforeLogin(); popUpLogin(
 
 if (IS_DEVELOPMENT) {
     const devLogins = document.createElement('div');
-    devLogins.innerHTML = `
-        <button id="signInWithRedirect" style="background-color: dodgerblue">Dev Sign In - Redirect</button>
-        <button id="signInAsClaire" style="background-color: dodgerblue">Dev Sign In - Claire</button>
-        <button id="signInAsAlex" style="background-color: dodgerblue">Dev Sign In - Alex</button>    
+    devLogins.innerHTML = /* html */`
+        <button class="button" style="width:80%" id="signInWithRedirect">Dev Sign In - Redirect</button>
+        <button class="button" style="width:80%" id="signInAsClaire">Dev Sign In - Claire</button>
+        <button class="button" style="width:80%" id="signInAsAlex">Dev Sign In - Alex</button>    
     `;
     document.getElementById('form').appendChild(devLogins);
     document.getElementById('signInWithRedirect').addEventListener('click', () => { beforeLogin(); redirectLogin(); });

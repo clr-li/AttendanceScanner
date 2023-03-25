@@ -113,7 +113,6 @@ class Footer extends Component {
                     background-color: var(--secondary);
                     text-align: center;
                     position: relative;
-                    margin-top: 50px;
                 }
                 .row {
                     max-width: 1000px; 
