@@ -1,4 +1,4 @@
-import { GET, IS_FIREBASE_DOMAIN } from "./Client.js";
+import { GET } from "./Client.js";
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
 import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
@@ -6,7 +6,7 @@ import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider,
 const app = initializeApp({
     apiKey: "AIzaSyBwrJdz4Ht-QMAzWQ3q3Eb02l69QQAIR9c",  // Auth / General Use (see https://stackoverflow.com/questions/37482366/is-it-safe-to-expose-firebase-apikey-to-the-public#:~:text=The%20apiKey%20in%20this%20configuration,interact%20with%20your%20Firebase%20project.)
     projectId: "attendancescannerqr",                   // General Use
-    authDomain: IS_FIREBASE_DOMAIN ? location.hostname : 'attendancescannerqr.firebaseapp.com',  // Auth with
+    authDomain: "attendancescannerqr.firebaseapp.com",  // Auth with
 });
 const auth = getAuth(app);
 auth.useDeviceLanguage();
