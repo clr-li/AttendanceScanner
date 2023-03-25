@@ -10,7 +10,7 @@ const user = getCurrentUser();
     initialHTML() {
         return /* html */`
             <link rel="stylesheet" href="/style.css">
-            <div id="container" class="container">
+            <div class="container">
                 <img src="${user.picture}">
                 <span id="profile" class="popup">
                     <p>Hi ${user.name}!</p>
@@ -25,11 +25,23 @@ const user = getCurrentUser();
             <style>${CSS}</style>
         `;
     }
-    initialJS(shadow) {
-        // toggle locking the popup in show mode when clicked
-        shadow.getElementById('container').addEventListener('click', () => {
-            shadow.getElementById('profile').classList.toggle('show');
-        });
+    /**
+     * Toggle locking the popup in show mode when clicked
+     */
+    onClick() {
+        this.shadowRoot.getElementById('profile').classList.toggle('show');
+    }
+    /**
+     * Called when this component is attached to the DOM. Has access to attributes and properties of this component and can be used to attach event listeners.
+     */
+    connectedCallback() {
+        this.addEventListener('click', this.onClick);
+    }
+    /**
+     * Called when this component is removed from the DOM. Should be used to clean up resources such as event listeners.
+     */
+    disconnectedCallback() {
+        this.removeEventListener("click", this.onClick);
     }
 }
 
