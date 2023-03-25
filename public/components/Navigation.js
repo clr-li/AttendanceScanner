@@ -15,6 +15,9 @@ class Navbar extends Component {
                 <user-icon></user-icon>
             </header>
             <style>
+                :host {
+                    z-index: 99999999;
+                }
                 header {
                     background-color: var(--primary);
                     height: 100%;
