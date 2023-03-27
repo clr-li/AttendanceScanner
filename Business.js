@@ -174,7 +174,7 @@ router.get("/makeEvent", async function(request, response) {
   const endtimestamp = request.query.endtimestamp;
 
   const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId, name, description, starttimestamp, endtimestamp]);
-  response.send(eventid);
+  response.send("" + eventid);
 });
 
 /**

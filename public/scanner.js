@@ -1,4 +1,4 @@
-import { GET } from './util.js';
+import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 await requireLogin();
 
