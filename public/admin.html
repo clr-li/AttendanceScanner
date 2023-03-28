@@ -303,7 +303,8 @@
                     }
                 }
                 if (!statusupdate) {
-                    html += `<td class="cell" data-time="${events[j].starttimestamp}">N/A</td>`;
+                    const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
+                    html += `<td class="cell" data-time="${events[j].starttimestamp}">${status}</td>`;
                 }
             }
             html += "</tr>";
