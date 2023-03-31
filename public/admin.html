@@ -50,6 +50,30 @@
                 <input type="date" id="enddate" name="enddate"><br>
                 <label for="endtime">End Time: </label>
                 <input type="time" id="endtime" name="endtime"><br>
+                <input id="repeat" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
+                <label for="repeat">Repeat</label>
+                <div id="repeatform" style="display: none;">
+                    <select id="frequency">
+                        <option>Daily</option>
+                        <option>Weekly</option>
+                        <option>Monthly</option>
+                    </select>
+                    <input type="number" id="interval">
+                    <input type="checkbox" id="sunday" name="sunday" value="sunday">
+                    <label for="sunday">Sunday</label>
+                    <input type="checkbox" id="monday" name="monday" value="monday">
+                    <label for="monday">Monday</label>
+                    <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
+                    <label for="tuesday">Tuesday</label>
+                    <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
+                    <label for="wednesday">Wednesday</label>
+                    <input type="checkbox" id="thursday" name="thursday" value="thursday">
+                    <label for="thursday">Thursday</label>
+                    <input type="checkbox" id="friday" name="friday" value="friday">
+                    <label for="friday">Friday</label>
+                    <input type="checkbox" id="saturday" name="saturday" value="saturday">
+                    <label for="saturday">Saturday</label>
+                </div>
                 <input type="button" value="Submit" id="submitevent">
             </form>
             <form id="filterform" onsubmit="return false">
@@ -133,14 +157,9 @@
         document.getElementById('submitfilter').onclick = () => {
             [...document.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach ((row) => {
                 if (row.firstChild.nodeName == 'TD' && document.getElementById('filtername').value != "") {
-                // if (row.firstChild.innerHTML != document.getElementById('filtername').value) {
-                //   row.style.display = "none";
-                // } else {
-                //   row.style.display = "table-row";
-                // }
-                sortStudents(document.getElementById('filtername').value);
+                    sortStudents(document.getElementById('filtername').value);
                 } else {
-                row.style.display = "table-row";
+                    row.style.display = "table-row";
                 }
             });
             [...document.getElementsByClassName('cell')].forEach((cell) => {
@@ -148,15 +167,15 @@
                 let showend = document.getElementById("filterend").value != "";
                 let showCell = true;
                 if (showstart) {
-                showCell = showCell && (new Date(document.getElementById("filterstart").value + 'T00:00')).getTime() / 1000 < cell.dataset.time;
+                    showCell = showCell && (new Date(document.getElementById("filterstart").value + 'T00:00')).getTime() / 1000 < cell.dataset.time;
                 }
                 if (showend) {
-                showCell = showCell && (new Date(document.getElementById("filterend").value + 'T23:59')).getTime() / 1000 > cell.dataset.time;
+                    showCell = showCell && (new Date(document.getElementById("filterend").value + 'T23:59')).getTime() / 1000 > cell.dataset.time;
                 }
                 if (showCell) {
-                cell.style.display = "table-cell";
+                    cell.style.display = "table-cell";
                 } else {
-                cell.style.display = "none";
+                    cell.style.display = "none";
                 }
             });
         }
@@ -229,7 +248,7 @@
             GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
                 var startDate = new Date(eventinfo.starttimestamp*1000);
                 var endDate = new Date(eventinfo.endtimestamp*1000);
-                document.getElementById("eventdetails").innerHTML = `
+                document.getElementById("eventdetails").innerHTML = /* html */`
                     Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
                     Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
                     Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>

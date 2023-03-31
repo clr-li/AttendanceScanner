@@ -21,7 +21,7 @@ const user = getCurrentUser();
         return /* html */`
             <link rel="stylesheet" href="/style.css">
             <div class="container">
-                <img src="${user.picture}">
+                <img src="${user.picture}" referrerpolicy="no-referrer">
                 <span id="profile" class="popup">
                     <p>Hi ${user.name}!</p>
                     <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout(); location.href = '/login.html?redirect=/';});">
