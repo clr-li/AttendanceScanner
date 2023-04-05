@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "DEVELOPMENT=true PORT=3000 node --inspect -r dotenv/config server.js",
+    "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master",
     "deploy": "npm run glitch && npm run fire"
@@ -32,6 +32,7 @@
     "glitch"
   ],
   "devDependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.22"
   }
 }
