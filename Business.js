@@ -177,6 +177,65 @@ router.get("/makeEvent", async function(request, response) {
   response.send("" + eventid);
 });
 
+function createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval) {
+    let current = startDate;
+    while (current < endDate) {
+        const currentEndDate = new Date(endDate);
+        if (frequency === "monthly")
+            currentEndDate.setMonth(current.getMonth());
+        currentEndDate.setDate(current.getDate());
+        asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
+            [businessId, name, description, current.getTime() / 1000, currentEndDate.getTime() / 1000, repeatId]);
+        if (frequency === "daily")
+            current.setDate(current.getDate() + interval);
+        else if (frequency === "weekly")
+            current.setDate(current.getDate() + 7 * interval);
+        else if (frequency === "monthly")
+            current.setMonth(current.getMonth() + interval);
+    }
+}
+
+/**
+ * Creates a bunch of events for the specified business.
+ * @queryParams businessId - id of the business to create an event for
+ * @queryParams name - name of the event to create
+ * @queryParams description - description of the event to create
+ * @queryParams starttimestamp - unix epoch timestamp in seconds for when the event is supposed to start
+ * @queryParams endtimestamp - unix epoch timestamp in seconds for when the event is supposed to end
+ * @queryParams frequency - the unit of time to repeat (daily, weekly, monthly)
+ * @queryParams interval - the number of frequency units between events
+ * @queryParams daysoftheweek - comma-separated values from 0-6 indicating the day of the week starting from Sunday
+ * @requiredPriviledges write access for the business
+ * @response id of the newly created event.
+ */
+router.get("/makeRecurringEvent", async function(request, response) {
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
+    
+    const businessId = request.query.businessId;
+    const name = request.query.name;
+    const description = request.query.description;
+    const startDate = new Date(parseInt(request.query.starttimestamp)*1000);
+    const endDate = new Date(parseInt(request.query.endtimestamp)*1000);
+    const frequency = request.query.frequency;
+    const interval = parseInt(request.query.interval);
+    const daysoftheweek = request.query.daysoftheweek;
+    const repeatId = uuid.v4();
+
+    if (frequency == "weekly" && daysoftheweek.length > 0) {
+        for (const day of daysoftheweek.split(",")) {
+            const newStartDate = new Date(startDate);
+            const daysToAdd = (7 + parseInt(day) - newStartDate.getDay()) % 7;
+            newStartDate.setDate(newStartDate.getDate() + daysToAdd);
+            createEventSequence(newStartDate, endDate, businessId, name, description, repeatId, frequency, interval);
+        }
+    } else {
+        createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval);
+    }
+
+    response.sendStatus(200);
+});
+
 /**
  * Updates event info for the specified business and event.
  * @queryParams businessId - id of the business to update event info for

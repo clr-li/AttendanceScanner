@@ -58,21 +58,23 @@
                         <option>Weekly</option>
                         <option>Monthly</option>
                     </select>
-                    <input type="number" id="interval">
-                    <input type="checkbox" id="sunday" name="sunday" value="sunday">
-                    <label for="sunday">Sunday</label>
-                    <input type="checkbox" id="monday" name="monday" value="monday">
-                    <label for="monday">Monday</label>
-                    <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
-                    <label for="tuesday">Tuesday</label>
-                    <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
-                    <label for="wednesday">Wednesday</label>
-                    <input type="checkbox" id="thursday" name="thursday" value="thursday">
-                    <label for="thursday">Thursday</label>
-                    <input type="checkbox" id="friday" name="friday" value="friday">
-                    <label for="friday">Friday</label>
-                    <input type="checkbox" id="saturday" name="saturday" value="saturday">
-                    <label for="saturday">Saturday</label>
+                    <input type="number" id="interval" value="1">
+                    <div id="daysoftheweek">
+                        <input type="checkbox" id="sunday" name="sunday" value="sunday">
+                        <label for="sunday">Sunday</label>
+                        <input type="checkbox" id="monday" name="monday" value="monday">
+                        <label for="monday">Monday</label>
+                        <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
+                        <label for="tuesday">Tuesday</label>
+                        <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
+                        <label for="wednesday">Wednesday</label>
+                        <input type="checkbox" id="thursday" name="thursday" value="thursday">
+                        <label for="thursday">Thursday</label>
+                        <input type="checkbox" id="friday" name="friday" value="friday">
+                        <label for="friday">Friday</label>
+                        <input type="checkbox" id="saturday" name="saturday" value="saturday">
+                        <label for="saturday">Saturday</label>
+                    </div>
                 </div>
                 <input type="button" value="Submit" id="submitevent">
             </form>
@@ -139,19 +141,33 @@
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
             
-            GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
-                console.log(res.status);
-                let id = (await res.json())["last_insert_rowid()"];
-                let option = {};
-                var startDate = new Date(starttimestamp*1000);
-                var endDate = new Date(endtimestamp*1000);
-                option.title = name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
-                option["data-id"] = id;
-                console.log(option)
-                selectizeControl.addOption(option);
-                selectizeControl.refreshOptions();
-                selectizeControl.addItem(id);
-            });
+            if (document.getElementById("repeat").checked) {
+                const frequency = document.getElementById("frequency").value.toLowerCase();
+                const interval = document.getElementById("interval").value;
+                let daysoftheweek = [];
+                let counter = 0;
+                for (const dayElement of [...document.getElementById("daysoftheweek").getElementsByTagName('input')]) {
+                    if (dayElement.checked) {
+                        daysoftheweek.push(counter);
+                    }
+                    counter++;
+                }
+                GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}`);
+            } else {
+                GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
+                    console.log(res.status);
+                    let id = (await res.json())["last_insert_rowid()"];
+                    let option = {};
+                    var startDate = new Date(starttimestamp*1000);
+                    var endDate = new Date(endtimestamp*1000);
+                    option.title = name + " — " + "from " + startDate.toDateString() + " to " + endDate.toDateString();
+                    option["data-id"] = id;
+                    console.log(option)
+                    selectizeControl.addOption(option);
+                    selectizeControl.refreshOptions();
+                    selectizeControl.addItem(id);
+                });
+            }
         });
             
         document.getElementById('submitfilter').onclick = () => {

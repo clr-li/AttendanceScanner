@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS "Events" (
         "description"   TEXT NOT NULL,
         "starttimestamp"        TEXT NOT NULL,
         "endtimestamp"  TEXT NOT NULL,
+        "repeat_id"     TEXT,
         PRIMARY KEY("id" AUTOINCREMENT),
         FOREIGN KEY("business_id") REFERENCES "Businesses"("id")
 );
