@@ -11,6 +11,7 @@
     --warning: #ffc107;
     --info: #00bcd4;
     --success: #4caf50;
+    --max-width: 1000px;
 }
 
 /* ====================== Basic page style resets ====================== */
@@ -48,7 +49,7 @@
     border-radius: 6px;
     box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
     color: #fff;
-    padding: 6px;
+    padding: 10px;
     cursor: pointer;
     display: inline-flex;
     justify-content: center;
@@ -95,4 +96,25 @@
 .selector:required:valid {
     background-color: lightgreen;
     border-color: var(--success);
+}
+
+/* ====================== Sections ====================== */
+section {
+    padding-top: 2.5em;
+    text-align: center;
+}
+
+section > h1 {
+    font-size: 3rem;
+    padding: 5px;
+}
+
+section > p {
+    font-size: 1.5rem;
+    padding: 5px;
+}
+
+section > .button {
+    padding: 15px;
+    font-size: 1.5rem;
 }

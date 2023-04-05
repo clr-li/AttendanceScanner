@@ -17,12 +17,14 @@ class Navbar extends Component {
             <style>
                 :host {
                     z-index: 99999999;
+                    width: 100vw;
+                    background-color: var(--primary);
                 }
                 header {
-                    background-color: var(--primary);
                     height: 100%;
-                    width: 100vw;
+                    max-width: var(--max-width);
                     padding: 8px;
+                    margin: auto;
                     display: flex;
                     justify-content: space-between;
                 }
@@ -128,7 +130,7 @@ class Footer extends Component {
                     position: relative;
                 }
                 .row {
-                    max-width: 1000px; 
+                    max-width: var(--max-width); 
                     margin-left: auto;
                     margin-right: auto;
                     text-align: center;
