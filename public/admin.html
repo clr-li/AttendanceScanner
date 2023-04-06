@@ -23,71 +23,78 @@
     </head>
     <body>
         <navigation-manager>
-            <h1 id="header">
-                Admin Page 
-            </h1>
-            <select id="businessname"></select>
-            <h3>Join Info</h3>
-            <div id="qrcode"></div>
-            <a id="joinlink">Join Link</a><br><br>
-            <label for="events">Event: </label>
-            <select id="events" name="events"></select>
-            <br>
-            <div id="eventdetails"></div>
-            <button id="newevent"> 
-                New Event
-            </button>
-            <form id="eventform" style="display: none;">
-                <label for="name">Event Name: </label>
-                <input type="text" id="name" name="name">
-                <label for="description">Description: </label>
-                <input type="text" id="description" name="description"><br>
-                <label for="startdate">Start Date: </label>
-                <input type="date" id="startdate" name="startdate"><br>
-                <label for="starttime">Start Time: </label>
-                <input type="time" id="starttime" name="starttime"><br>
-                <label for="enddate">End Date: </label>
-                <input type="date" id="enddate" name="enddate"><br>
-                <label for="endtime">End Time: </label>
-                <input type="time" id="endtime" name="endtime"><br>
-                <input id="repeat" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
-                <label for="repeat">Repeat</label>
-                <div id="repeatform" style="display: none;">
-                    <select id="frequency">
-                        <option>Daily</option>
-                        <option>Weekly</option>
-                        <option>Monthly</option>
-                    </select>
-                    <input type="number" id="interval" value="1">
-                    <div id="daysoftheweek">
-                        <input type="checkbox" id="sunday" name="sunday" value="sunday">
-                        <label for="sunday">Sunday</label>
-                        <input type="checkbox" id="monday" name="monday" value="monday">
-                        <label for="monday">Monday</label>
-                        <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
-                        <label for="tuesday">Tuesday</label>
-                        <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
-                        <label for="wednesday">Wednesday</label>
-                        <input type="checkbox" id="thursday" name="thursday" value="thursday">
-                        <label for="thursday">Thursday</label>
-                        <input type="checkbox" id="friday" name="friday" value="friday">
-                        <label for="friday">Friday</label>
-                        <input type="checkbox" id="saturday" name="saturday" value="saturday">
-                        <label for="saturday">Saturday</label>
+            <section>
+                <h1>
+                    Admin Page 
+                </h1>
+                <select id="businessname"></select>
+                <h3>Join Info</h3>
+                <div id="qrcode" style="width: 256px; display: inline-block; overflow: hidden;"></div>
+                <br>
+                <a id="joinlink">Join Link</a><br><br>
+            </section>
+            <section>
+                <h1>Events</h1>
+                <select id="events" name="events"></select>
+                <form id="eventdetails" class="form"></form>
+                <button id="newevent" class="button"> 
+                    New Event
+                </button>
+                <form class="form" id="eventform" style="display: none;">
+                    <label for="name">Event Name: </label>
+                    <input type="text" id="name" name="name">
+                    <label for="description">Description: </label>
+                    <input type="textarea" id="description" name="description"><br>
+                    <label for="startdate">Start Date: </label>
+                    <input type="date" id="startdate" name="startdate">
+                    <label for="starttime">Start Time: </label>
+                    <input type="time" id="starttime" name="starttime"><br>
+                    <label for="enddate">End Date: </label>
+                    <input type="date" id="enddate" name="enddate">
+                    <label for="endtime">End Time: </label>
+                    <input type="time" id="endtime" name="endtime"><br>
+                    <input id="repeat" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
+                    <label for="repeat">Repeat</label><br>
+                    <div id="repeatform" class="form" style="display: none;">
+                        <select id="frequency">
+                            <option>Daily</option>
+                            <option>Weekly</option>
+                            <option>Monthly</option>
+                        </select>
+                        <input type="number" id="interval" value="1">
+                        <div id="daysoftheweek">
+                            <input type="checkbox" id="sunday" name="sunday" value="sunday">
+                            <label for="sunday">Sunday</label>
+                            <input type="checkbox" id="monday" name="monday" value="monday">
+                            <label for="monday">Monday</label>
+                            <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
+                            <label for="tuesday">Tuesday</label>
+                            <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
+                            <label for="wednesday">Wednesday</label>
+                            <input type="checkbox" id="thursday" name="thursday" value="thursday">
+                            <label for="thursday">Thursday</label>
+                            <input type="checkbox" id="friday" name="friday" value="friday">
+                            <label for="friday">Friday</label>
+                            <input type="checkbox" id="saturday" name="saturday" value="saturday">
+                            <label for="saturday">Saturday</label>
+                        </div>
                     </div>
-                </div>
-                <input type="button" value="Submit" id="submitevent">
-            </form>
-            <form id="filterform" onsubmit="return false">
-                <label for="filtername">Filter by Name: </label>
-                <input type="text" id="filtername" name="filtername">
-                <label for="filterstart">Start Date: </label>
-                <input type="date" id="filterstart" name="filterstart"><br>
-                <label for="filterend">End Date: </label>
-                <input type="date" id="filterend" name="filterend"><br>
-                <button value="Submit" id="submitfilter">Submit</button>
-            </form>
-            <table id="displayattendance"></table>
+                    <button type="button" id="submitevent" class="button">Submit</button>
+                </form>
+            </section>
+            <section>
+                <h1>Calendar</h1>
+                <form id="filterform" class="form" onsubmit="return false">
+                    <label for="filtername">Filter by Name: </label>
+                    <input type="text" id="filtername" name="filtername"><br>
+                    <label for="filterstart">Start Date: </label>
+                    <input type="date" id="filterstart" name="filterstart">
+                    <label for="filterend">End Date: </label>
+                    <input type="date" id="filterend" name="filterend"><br>
+                    <button value="Submit" id="submitfilter" class="button">Submit</button>
+                </form>
+                <table id="displayattendance" class="calendar"></table>
+            </section>
         </navigation-manager>
         
         <script type="module">
@@ -253,10 +260,9 @@
         let res = await GET('/joincode?businessId=' + getBusinessId());
         let data = await res.json();
         let joincode = data.joincode;
-        let joinlink = "https://" + window.location.hostname + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
+        let joinlink = window.location.origin + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
         new QRCode(document.getElementById("qrcode"), joinlink);
         document.getElementById("joinlink").href = joinlink;
-        document.getElementById("joinlink").textContent = joinlink;
         
         
         function getEventData() {
@@ -265,15 +271,21 @@
                 var startDate = new Date(eventinfo.starttimestamp*1000);
                 var endDate = new Date(eventinfo.endtimestamp*1000);
                 document.getElementById("eventdetails").innerHTML = /* html */`
-                    Name: <input type="text" value="${eventinfo.name}" id="update-name"><br>
-                    Start Date: <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
-                    Start Time: <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
-                    End Date: <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
-                    End Time: <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
-                    Description: <input type="text" value="${eventinfo.description}" id="update-description">
-                    <br><button id="update">Update Event</button><br>
-                    <button id="delete">Delete Event</button><br>
-                    <button id="scan">
+                    <label for="update-name">Name:</label>
+                    <input type="text" value="${eventinfo.name}" id="update-name"><br>
+                    <label for="update-startdate">Start Date:</label>
+                    <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
+                    <label for="update-starttime">Start Time:</label>
+                    <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
+                    <label for="update-enddate">End Date:</label>
+                    <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
+                    <label for="update-endtime">End Time:</label>
+                    <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
+                    <label for="update-description">Description: </label>
+                    <input type="text" value="${eventinfo.description}" id="update-description">
+                    <br><button id="update" class="button" type="button">Update Event</button>
+                    <button id="delete" class="button" type="button">Delete Event</button>
+                    <button id="scan" class="button" type="button">
                     Scanner
                     </button><br><br>
                 `;

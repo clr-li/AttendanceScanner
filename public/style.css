@@ -100,7 +100,7 @@
 
 /* ====================== Sections ====================== */
 section {
-    padding-top: 2.5em;
+    padding-top: 2em;
     text-align: center;
 }
 
@@ -114,7 +114,35 @@ section > p {
     padding: 5px;
 }
 
-section > .button {
+.big-button {
     padding: 15px;
     font-size: 1.5rem;
+}
+
+/* ====================== Form ====================== */
+.form > label {
+    font-size: 1.5rem;
+    padding: 0.2rem;
+}
+
+.form > input[type=text], input[type=textarea] {
+    width: 30ch;
+}
+
+.form > input[type=date], input[type=time], input[type=text], input[type=textarea] { 
+    padding: 0.5rem;
+    font-size: 1.2em;
+    border-radius: 10px;
+    margin-bottom: 0.5em;
+}
+
+/* ====================== Calendar ====================== */
+.calendar > table, th, td {
+    border: 1px solid;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+}
+
+table {
+    border-collapse: collapse;
 }
