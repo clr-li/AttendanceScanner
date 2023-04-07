@@ -38,8 +38,9 @@ export class Component extends HTMLElement {
 
     /**
      * Creates a basic web component.
+     * @params sharedTemplate true if all instances should share the same HTML template (default), false otherwise)
      */
-    constructor() {
+    constructor(sharedTemplate = true) {
         super(); // initialize component (should always be called first)
 
         // Makes sure the Component class can't be initialized, only subclasses can (i.e. this is an abstract class)
@@ -51,7 +52,8 @@ export class Component extends HTMLElement {
         this.attachShadow({ mode: "open" }); // returns the shadowRoot and, if mode is "open", sets 'this.shadowRoot' (@see https://blog.revillweb.com/open-vs-closed-shadow-dom-9f3d7427d1af)
 
         // Attach the template elements to the shadow DOM
-        this.shadowRoot.appendChild(this.constructor.template(this).content.cloneNode(true));
+        if (sharedTemplate) this.shadowRoot.appendChild(this.constructor.template(this).content.cloneNode(true));
+        else this.shadowRoot.append(...htmlToElements(this.initialHTML()));
     }
 
     /**
