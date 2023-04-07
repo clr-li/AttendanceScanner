@@ -20,6 +20,7 @@
     
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
+        <script type="module" src="/components/TypeSelect.js"></script>
     </head>
     <body>
         <navigation-manager>
@@ -27,7 +28,7 @@
                 <h1>
                     Admin Page 
                 </h1>
-                <select id="businessname"></select>
+                <type-select id="businessname"></type-select>
                 <br>
                 <div id="qrcode" class="img"></div>
                 <br>
@@ -35,7 +36,7 @@
             </section>
             <section class="sub-section">
                 <h1>Events</h1>
-                <select id="events" name="events"></select>
+                <type-select id="events" name="events"></type-select>
                 <form id="eventdetails" class="form">
                     <label for="update-name">Name:</label>
                     <input type="text" placeholder="No Events Chosen" id="update-name"><br>
@@ -122,14 +123,25 @@
         import { calcSimilarity } from './util/util.js';
         import { requireLogin } from './util/Auth.js';
         await requireLogin();
+
+        const bussinessSelector = document.getElementById("businessname");
+        let selectedBussiness = null;
+        bussinessSelector.addEventListener("select", (e) => {
+            selectedBussiness = e.select;
+        })
         
         function getBusinessId() {
-            return document.getElementById("businessname").options[document.getElementById("businessname").options.selectedIndex].dataset.id;
+            return selectedBussiness.dataset.id;
         }
         
         let selectizeControl;
         let select;
         let events;
+        const eventSelector = document.getElementById("events");
+        let selectedEvent = null;
+        eventSelector.addEventListener("select", (e) => {
+            selectedEvent = e.select;
+        })
         async function updateEvents() {
             let options = [];
             let res = await GET('/events?businessId=' + getBusinessId());
@@ -269,12 +281,13 @@
         
         let res2 = await GET('/businesses');
         let o = await res2.json();
-        let html2 = '';
         o.forEach(business => {
-            if (business.role != 'user')
-                html2 += `<option data-id="${business.id}">${business.name}</option>`;
+            if (business.role != 'user') {
+                bussinessSelector.addOption(business.name, business.role, {"data-id": business.id});
+            }
         });
-        document.getElementById("businessname").innerHTML = html2;
+        bussinessSelector.setAttribute("value", bussinessSelector.firstElementChild.value);
+        selectedBussiness = bussinessSelector.firstElementChild;
         await updateEvents();
         
         let res = await GET('/joincode?businessId=' + getBusinessId());
