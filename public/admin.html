@@ -28,15 +28,33 @@
                     Admin Page 
                 </h1>
                 <select id="businessname"></select>
-                <h3>Join Info</h3>
-                <div id="qrcode" style="width: 256px; display: inline-block; overflow: hidden;"></div>
                 <br>
-                <a id="joinlink">Join Link</a><br><br>
+                <div id="qrcode" class="img"></div>
+                <br>
+                <button id="joinlink" class="button">Copy Join Link</button><br><br>
             </section>
-            <section>
+            <section class="sub-section">
                 <h1>Events</h1>
                 <select id="events" name="events"></select>
-                <form id="eventdetails" class="form"></form>
+                <form id="eventdetails" class="form">
+                    <label for="update-name">Name:</label>
+                    <input type="text" placeholder="No Events Chosen" id="update-name"><br>
+                    <label for="update-startdate">Start Date:</label>
+                    <input type="date" value="" id="update-startdate">
+                    <label for="update-starttime">Start Time:</label>
+                    <input type="time" value="" id="update-starttime"><br>
+                    <label for="update-enddate">End Date:</label>
+                    <input type="date" value="" id="update-enddate">
+                    <label for="update-endtime">End Time:</label>
+                    <input type="time" value="" id="update-endtime"><br>
+                    <label for="update-description">Description: </label>
+                    <input type="text" placeholder="Please choose an event" id="update-description">
+                    <br><button id="update" class="button" type="button">Update Event</button>
+                    <button id="delete" class="button delete" type="button">Delete Event</button>
+                    <button id="scan" class="button" type="button">
+                    Scanner
+                    </button><br><br>
+                </form>
                 <button id="newevent" class="button"> 
                     New Event
                 </button>
@@ -55,14 +73,14 @@
                     <input type="time" id="endtime" name="endtime"><br>
                     <input id="repeat" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
                     <label for="repeat">Repeat</label><br>
-                    <div id="repeatform" class="form" style="display: none;">
+                    <div id="repeatform" style="display: none;">
                         <select id="frequency">
                             <option>Daily</option>
                             <option>Weekly</option>
                             <option>Monthly</option>
                         </select>
                         <input type="number" id="interval" value="1">
-                        <div id="daysoftheweek">
+                        <div id="daysoftheweek" class="form">
                             <input type="checkbox" id="sunday" name="sunday" value="sunday">
                             <label for="sunday">Sunday</label>
                             <input type="checkbox" id="monday" name="monday" value="monday">
@@ -82,7 +100,7 @@
                     <button type="button" id="submitevent" class="button">Submit</button>
                 </form>
             </section>
-            <section>
+            <section class="main">
                 <h1>Calendar</h1>
                 <form id="filterform" class="form" onsubmit="return false">
                     <label for="filtername">Filter by Name: </label>
@@ -93,7 +111,9 @@
                     <input type="date" id="filterend" name="filterend"><br>
                     <button value="Submit" id="submitfilter" class="button">Submit</button>
                 </form>
-                <table id="displayattendance" class="calendar"></table>
+                <div class="scroll">
+                    <table id="displayattendance" class="calendar"></table>
+                </div>
             </section>
         </navigation-manager>
         
@@ -262,8 +282,13 @@
         let joincode = data.joincode;
         let joinlink = window.location.origin + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
         new QRCode(document.getElementById("qrcode"), joinlink);
-        document.getElementById("joinlink").href = joinlink;
         
+        document.getElementById("joinlink").onclick = () => {
+            setTimeout(() => {
+                window.navigator.clipboard.writeText(joinlink);
+            }, 3000);
+            document.getElementById("joinlink").classList.add("success");
+        };
         
         function getEventData() {
             let eventid = selectizeControl.getValue();
@@ -284,7 +309,7 @@
                     <label for="update-description">Description: </label>
                     <input type="text" value="${eventinfo.description}" id="update-description">
                     <br><button id="update" class="button" type="button">Update Event</button>
-                    <button id="delete" class="button" type="button">Delete Event</button>
+                    <button id="delete" class="button delete" type="button">Delete Event</button>
                     <button id="scan" class="button" type="button">
                     Scanner
                     </button><br><br>
