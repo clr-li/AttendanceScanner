@@ -107,23 +107,6 @@ body {
     box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--success-darker) 0 -3px 0 inset;
 }
 
-/* Fancy select input with color highlighting */
-.selector {
-    padding: 6px;
-    min-width: 40ch;
-    border: solid 2px;
-    border-radius: 5px;
-}
-.selector:required:invalid,
-.selector:focus:invalid {
-    background-color: lightcoral;
-    border-color: var(--error);
-}
-.selector:required:valid {
-    background-color: lightgreen;
-    border-color: var(--success);
-}
-
 /* ====================== Sections ====================== */
 section {
     padding-top: 1em;
