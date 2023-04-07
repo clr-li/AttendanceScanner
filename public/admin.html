@@ -288,6 +288,9 @@
                 window.navigator.clipboard.writeText(joinlink);
             }, 3000);
             document.getElementById("joinlink").classList.add("success");
+            setTimeout(() => {
+                document.getElementById("joinlink").classList.remove("success");
+            }, 5000);
         };
         
         function getEventData() {
