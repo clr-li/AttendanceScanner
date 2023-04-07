@@ -35,3 +35,23 @@ function LevenshteinDistance(str1, str2) {
   
   return matrix[str1.length][str2.length];
 }
+
+/**
+ * Escapes characters with special meaning in RegEx.
+ *
+ * @param {string} str the string to escape characters from
+ * @returns the escaped version of str
+ */
+ export function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/**
+ * Returns a string representation of a RegEx that will match any of the provided values.
+ *
+ * @param {any[]} values the values to match
+ * @returns a string representation of a RegEx that will match any of the provided values.
+ */
+export function getPattern(values) {
+    return values.map(s => escapeRegExp(s)).join('|');
+}
