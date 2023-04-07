@@ -40,7 +40,6 @@ import { getPattern } from "../util/util.js";
                     border-color: var(--error);
                 }
                 input:valid:not(:placeholder-shown) {
-                    background-color: lightgreen;
                     border-color: var(--success);
                 }
             </style>
@@ -107,7 +106,7 @@ import { getPattern } from "../util/util.js";
      */
     addOption(value, textContent, attributes={}) {
         const option = document.createElement('option');
-        for (const [attribute, val] of attributes) {
+        for (const [attribute, val] of Object.entries(attributes)) {
             option.setAttribute(attribute, val);
         }
         option.value = value;
