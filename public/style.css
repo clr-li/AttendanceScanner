@@ -119,12 +119,12 @@ section {
 
 section > h1 {
     font-size: 3rem;
-    padding: 5px;
+    padding: 0.2em;
 }
 
 section > p {
     font-size: 1.5rem;
-    padding: 5px;
+    padding: 0.2em;
 }
 
 .big-button {
