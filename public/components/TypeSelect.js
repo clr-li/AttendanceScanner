@@ -20,13 +20,15 @@ import { getPattern } from "../util/util.js";
         const value = this.getAttribute("value") ?? "";
         return /* html */`
             <link rel="stylesheet" href="/style.css">
-            <label for="select">${labelText}</label>
-            <input
-                type="list" list="options" 
-                id="select" name="${name}" 
-                placeholder="${placeholder}"
-                value="${value}" pattern=""
-            >
+            <div class="form">
+                <label for="select">${labelText}</label>
+                <input
+                    type="list" list="options" 
+                    id="select" name="${name}" 
+                    placeholder="${placeholder}"
+                    value="${value}" pattern=""
+                >
+            </div>
             <datalist id="options"></datalist>
             <style>
                 input {
@@ -68,7 +70,7 @@ import { getPattern } from "../util/util.js";
      */
     _onChange(e) {
         if (e.target.validity.patternMismatch) return;
-        const event = new CustomEvent('select', { selected: (!e.target.value) ? null : this.querySelector(`option[value="${e.target.value}"]`) });
+        const event = new CustomEvent('select', { detail: (!e.target.value) ? null : this.querySelector(`option[value="${e.target.value}"]`) });
         this.dispatchEvent(event);
     }
     connectedCallback() {
@@ -82,7 +84,7 @@ import { getPattern } from "../util/util.js";
         this.observer = new MutationObserver((mutationsRecords, observer) => {
             for (const mutationRecord of mutationsRecords) {
                 for (const nodeToRemove of mutationRecord.removedNodes) {
-                    this.shadowRoot.getElementById('options').removeChild(nodeToRemove);
+                    this.shadowRoot.querySelector('option[value="' + nodeToRemove.value + '"]').remove();
                 }
                 this.shadowRoot.getElementById("options").append(...Array.from(mutationRecord.addedNodes, elem => elem.cloneNode(true)));
             }
