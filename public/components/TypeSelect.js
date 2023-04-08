@@ -38,8 +38,8 @@ import { getPattern } from "../util/util.js";
                     border-radius: 5px;
                 }
                 input:invalid:not(:focus) {
-                    background-color: lightcoral;
-                    border-color: var(--error);
+                    background-color: var(--delete-lighter);
+                    border-color: var(--delete);
                 }
                 input:valid:not(:placeholder-shown) {
                     border-color: var(--success);
