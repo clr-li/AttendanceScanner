@@ -169,9 +169,12 @@ o.forEach(business => {
 bussinessSelector.setAttribute("value", bussinessSelector.firstElementChild.value);
 selectedBussiness = bussinessSelector.firstElementChild;
 await updateEvents();
-eventSelector.setAttribute("value", eventSelector.firstElementChild.value);
-selectedEvent = eventSelector.firstElementChild;
-getEventData();
+
+if (eventSelector.firstElementChild) {
+    eventSelector.setAttribute("value", eventSelector.firstElementChild.value);
+    selectedEvent = eventSelector.firstElementChild;
+    getEventData();
+}
 
 let res = await GET('/joincode?businessId=' + getBusinessId());
 let data = await res.json();

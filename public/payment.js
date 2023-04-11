@@ -70,11 +70,14 @@ form.addEventListener('submit', async event => {
     event.preventDefault();
 
     document.getElementById("loader").style.display = "block";
-    const payload = await dropinInstance.requestPaymentMethod();
-    payload.deviceData = localStorage.getItem("device-data");
-    payload.businessName = document.getElementById("businessName").value;
-    await POST("/checkout", payload)
-    showSubscriptions();
+    try {
+        const payload = await dropinInstance.requestPaymentMethod();
+        payload.deviceData = localStorage.getItem("device-data");
+        payload.businessName = document.getElementById("businessName").value;
+        await POST("/checkout", payload)
+    } finally {
+        showSubscriptions();
+    }
 });
 
 showSubscriptions();

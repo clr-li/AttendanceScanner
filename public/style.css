@@ -132,11 +132,11 @@ section > p {
     font-size: 1.5rem;
 }
 
-.main {
+.medium-section {
     background-color: var(--medium-section);
 }
 
-.sub-section {
+.light-section {
     background-color: var(--light-section);
 }
 
