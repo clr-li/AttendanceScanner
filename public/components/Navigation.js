@@ -121,7 +121,7 @@ class Footer extends Component {
                 * {
                     color: white;
                 }
-                a:hover, .fa:hover {
+                a:hover, .fa:hover, .fa-brands:hover {
                     color: var(--info);
                 }
                 footer {
