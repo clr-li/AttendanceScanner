@@ -22,6 +22,11 @@
 .cols {
     display: inline-block;
     word-wrap: break-word;
+    max-width: 400px;
+    flex-wrap: wrap;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    vertical-align: top;
 }
 .rows {
     padding-top: 10px;
