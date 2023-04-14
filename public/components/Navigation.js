@@ -9,7 +9,7 @@ class Navbar extends Component {
                 <img src="/assets/logo.png">
                 <nav>
                     <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${window.innerWidth > 360 ? 'Home' : '<i class="fa fa-home"></i>'}</a>
-                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > 360 ? 'My Groups' : '<i class="fa fa-group"></i>'}</a>
+                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > 360 ? 'My Groups' : '<i class="fa fa-users"></i>'}</a>
                     <a href="/">${window.innerWidth > 360 ? 'About' : '<i class="fa fa-info"></i>'}</a>
                 </nav>
                 <user-icon></user-icon>
@@ -103,7 +103,7 @@ class Footer extends Component {
                     </div>
                     <div class="colbig">
                         <div class="social-networks">
-                            <a href="https://github.com/clr-li/AttendanceScanner"><i class="fa fa-github"></i></a>
+                            <a href="https://github.com/clr-li/AttendanceScanner"><i class="fa-brands fa-github"></i></a>
                             <a href="tel:+1724383-6080"><i class="fa fa-phone"></i></a>
                             <a href="mailto:info.seattletutoring@gmail.com"><i class="fa fa-envelope"></i></a>
                         </div>
@@ -121,7 +121,7 @@ class Footer extends Component {
                 * {
                     color: white;
                 }
-                a:hover, .fa:hover {
+                a:hover, .fa:hover, .fa-brands:hover {
                     color: var(--info);
                 }
                 footer {
@@ -139,7 +139,7 @@ class Footer extends Component {
                 img { width: 50%; border-radius: 10px; }
                 ul { list-style-type: none; margin-left: 1em; }
                 a { text-decoration: none; }
-                .fa {
+                .fa, .fa-brands {
                     font-size: 2em;
                     padding: 10px;
                 }

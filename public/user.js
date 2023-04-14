@@ -16,6 +16,26 @@ async function joinFromUrl(urlstr) {
 joinFromUrl(window.location.href);
 
 new QRCode(document.getElementById("qrcode"), user.uid);
+document.getElementById("qrcode").getElementsByTagName('img')[0].onload = () => {
+    document.getElementById('downloadqr').download = user.name + '.png';
+    document.getElementById('downloadqr').href = document.getElementById("qrcode").getElementsByTagName('img')[0].src;
+};
+document.getElementById('fullscreenToggle').addEventListener('click', (e) => {
+    if (document.fullscreenElement) { 
+        document.exitFullscreen(); 
+        e.target.innerHTML = 'Full Screen &nbsp;<i class="fa fa-expand"></i>' 
+    } else { 
+        document.getElementById('myqr').requestFullscreen(); 
+        e.target.innerHTML = 'Collapse &nbsp;<i class="fa-solid fa-compress"></i>';
+    }
+});
+document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement) {
+        document.getElementById('fullscreenToggle').innerHTML = 'Collapse &nbsp;<i class="fa-solid fa-compress"></i>';
+    } else {
+        document.getElementById('fullscreenToggle').innerHTML = 'Full Screen &nbsp;<i class="fa fa-expand"></i>' 
+    }
+});
 
 function onScanSuccess(decodedText, decodedResult) {
     // Handle on success condition with the decoded text or result.
