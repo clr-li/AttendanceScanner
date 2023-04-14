@@ -4,7 +4,7 @@ import './UserIcon.js';
 class Navbar extends Component {
     initialHTML() {
         return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
             <header>
                 <img src="/assets/logo.png">
                 <nav>
@@ -71,7 +71,7 @@ window.customElements.define('navigation-bar', Navbar); // define custom <naviga
 class Footer extends Component {
     initialHTML() {
         return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
             <footer>
                 <div class="row">
                     <div class="colbig">
@@ -194,7 +194,8 @@ window.customElements.define('navigation-footer', Footer); // define custom <nav
 export class NavigationManager extends Component {
     initialHTML() {
         return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
+            <link rel="stylesheet" href="/styles/navigation.css">
             <a href="#main-content" class="skip">Skip to main content</a>
             <navigation-bar id="#navigation"></navigation-bar>
             <main id="main-content">

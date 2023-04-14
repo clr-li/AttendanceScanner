@@ -1,0 +1,19 @@
+.calendar > table, th, td {
+    border: 2px solid;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    background-color: white;
+    color: black;
+}
+
+.scroll {
+    overflow-x: auto; 
+    max-width: var(--max-width);
+    width: 100vw;
+    margin: auto;
+}
+
+.calendar {
+    border-collapse: collapse;
+    margin: 0 auto;
+}

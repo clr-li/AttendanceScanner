@@ -1,0 +1,16 @@
+/* Skip/hidden navigation link */
+.skip {
+    width:1px;
+    height:1px;
+    position: absolute;
+    top: -1000px; left: 0;
+    z-index: 999999;
+    color: var(--accent);
+    background-color: var(--info);
+    padding: 10px;
+}
+.skip:focus {
+    top: 0;
+    width: auto;
+    height: auto;
+}

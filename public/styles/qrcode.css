@@ -1,0 +1,7 @@
+.img {
+    border: 8px ridge var(--accent);
+    padding: 5px;
+    display: inline-block; 
+    overflow: hidden;
+    background-color: white;
+}

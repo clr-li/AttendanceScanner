@@ -1,0 +1,23 @@
+section {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: center;
+}
+
+section > h1 {
+    font-size: 3rem;
+    padding: 0.2em;
+}
+
+section > p {
+    font-size: 1.5rem;
+    padding: 0.2em;
+}
+
+.medium-section {
+    background-color: var(--medium-section);
+}
+
+.light-section {
+    background-color: var(--light-section);
+}

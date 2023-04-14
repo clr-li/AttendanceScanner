@@ -1,0 +1,60 @@
+/* Fancy button with background gradient and animation */
+.button {
+    align-items: center;
+    appearance: none;
+    background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+    border: 0;
+    border-radius: 6px;
+    box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    text-decoration: none;
+    transition: box-shadow .15s, transform .15s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    will-change: box-shadow,transform;
+    margin: 5px;
+    min-width: 15ch;
+    font-size: 0.8rem;
+}
+
+.button:hover:not(:active) {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+    transform: translateY(-2px);
+}
+.button:active {
+    transform: translateY(2px);
+}
+.button:any-link {
+    color: white;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.delete {
+    background-image: radial-gradient(100% 100% at 100% 0, var(--delete-lighter) 0, var(--delete) 100%);
+}
+.delete:hover:not(:active) {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--delete-darker) 0 -3px 0 inset;
+}
+
+.success {
+    background-image: radial-gradient(100% 100% at 100% 0, var(--success-lighter) 0, var(--success) 100%);
+}
+.success:hover:not(:active) {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--success-darker) 0 -3px 0 inset;
+}
+
+.big-button {
+    padding: 15px;
+    font-size: 1.5rem;
+}

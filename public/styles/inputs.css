@@ -1,0 +1,15 @@
+.form > label {
+    font-size: 1.5rem;
+    padding: 0.2rem;
+}
+
+.form > input[type="text"], input[type="textarea"], input[type="list"] {
+    min-width: 30ch;
+}
+
+.form > input[type="date"], input[type="time"], input[type="text"], input[type="textarea"], input[type="list"] { 
+    padding: 0.5rem;
+    font-size: 1.2em;
+    border-radius: 10px;
+    margin-bottom: 0.5em;
+}
