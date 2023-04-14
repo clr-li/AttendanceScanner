@@ -5,3 +5,28 @@
     overflow: hidden;
     background-color: white;
 }
+
+@media all and (display-mode: fullscreen) {
+    #qrcode > img, #qrcode > canvas {
+        width: min(80vw, 80vh);
+        height: min(80vw, 80vh);
+    }
+    #qrcode {
+        padding: 20px;
+    }
+}
+section:fullscreen {
+    background-color: var(--medium-section);
+    padding-top: 2px;
+}
+section:fullscreen > p {
+    display: none;
+}
+
+/* ================ Scanner ================ */
+#qr-container {
+    max-width: var(--max-width); margin: auto; width: 100%;
+}
+#qr-reader button {
+    text-align: center;
+}

@@ -24,30 +24,17 @@
         <navigation-manager>
             <section id="myqr">
                 <h1>My QR Code</h1>
+                <p>You'll be scanning this to take your attendance at events!</p>
                 <div class="img" id="qrcode"></div>
                 <br>
                 <button class="button" id="fullscreenToggle">Full Screen &nbsp;<i class="fa fa-expand"></i></button>
                 <a id="downloadqr" class="button">Download &nbsp;<i class="fa fa-download"></i></a>
-                <style>
-                    @media all and (display-mode: fullscreen) {
-                        #qrcode > img, #qrcode > canvas {
-                            width: min(80vw, 80vh);
-                            height: min(80vw, 80vh);
-                        }
-                        #qrcode {
-                            padding: 20px;
-                        }
-                    }
-                    section:fullscreen {
-                        background-color: var(--medium-section);
-                    }
-                </style>
             </section>
             <section>
                 <h1>My Groups</h1>
-                <button class="button" onclick="document.getElementById('container').style.display = 'block'">Join</button>
-                <div id="container" style="display: none; max-width: var(--max-width); margin: auto; width: 100%;">
-                    <div id="reader"></div>
+                <button class="button" id="join">Scan QR Code to Join</button>
+                <div id="qr-container">
+                    <div id="qr-reader" class="buttonize"></div>
                 </div>
                 <br>
                 <table id="businesses"></table>
