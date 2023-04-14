@@ -4,7 +4,7 @@
 }
 
 .form > input[type="text"], input[type="textarea"], input[type="list"] {
-    min-width: 30ch;
+    min-width: min(30ch, 100%);
 }
 
 .form > input[type="date"], input[type="time"], input[type="text"], input[type="textarea"], input[type="list"] { 
