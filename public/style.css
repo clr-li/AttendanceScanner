@@ -110,6 +110,23 @@ body {
     box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--success-darker) 0 -3px 0 inset;
 }
 
+/* Columns */
+.cols {
+    display: inline-block;
+    word-wrap: break-word;
+}
+.rows {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    font-size: 1.5em;
+}
+@media (max-width: 400px) {
+    .cols {
+        display: block;
+    }
+}
+
 /* ====================== Sections ====================== */
 section {
     padding-top: 1em;
