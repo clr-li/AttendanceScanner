@@ -3,6 +3,7 @@ import { GET } from './util/Client.js';
 await requireLogin();
 const user = getCurrentUser();
       
+// ================== Join Logic ==================
 async function joinFromUrl(urlstr) {
     let url = new URL(urlstr);
     let params = url.searchParams;
@@ -15,6 +16,34 @@ async function joinFromUrl(urlstr) {
 }
 joinFromUrl(window.location.href);
 
+function onScanSuccess(decodedText, decodedResult) {
+    // Handle on success condition with the decoded text or result.
+    html5QrcodeScanner.pause();
+    console.log(`Scan result: ${decodedText}`, decodedResult);
+    if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
+        joinFromUrl(decodedText);
+    } else {
+        html5QrcodeScanner.resume();
+    }
+}
+let html5QrcodeScanner = new Html5QrcodeScanner(
+    "qr-reader", { 
+        fps: 10, 
+        qrbox: Math.min(window.innerWidth, 1000) / 2,
+        formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
+    });
+document.getElementById('join').addEventListener('click', (e) => {
+    if (e.target.classList.contains('scanning')) {
+        html5QrcodeScanner.clear();
+        e.target.textContent = "Scan QR Code to Join";
+    } else {
+        html5QrcodeScanner.render(onScanSuccess);
+        e.target.textContent = "Hide QR Join Code Scanner";
+    }
+    e.target.classList.toggle('scanning');
+});
+
+// ================== Identity QR Code ==================
 new QRCode(document.getElementById("qrcode"), user.uid);
 document.getElementById("qrcode").getElementsByTagName('img')[0].onload = () => {
     document.getElementById('downloadqr').download = user.name + '.png';
@@ -37,20 +66,7 @@ document.addEventListener("fullscreenchange", () => {
     }
 });
 
-function onScanSuccess(decodedText, decodedResult) {
-    // Handle on success condition with the decoded text or result.
-    html5QrcodeScanner.pause();
-    console.log(`Scan result: ${decodedText}`, decodedResult);
-    if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
-        joinFromUrl(decodedText);
-    } else {
-        html5QrcodeScanner.resume();
-    }
-}
-let html5QrcodeScanner = new Html5QrcodeScanner(
-"reader", { fps: 10, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
-
+// ================== Display Groups ==================
 window.handleBusinessClick = async (id) => {
     let html = "";
     const records = await (await GET(`/userdata?businessId=${id}`)).json();

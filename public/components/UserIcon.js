@@ -92,7 +92,7 @@ button {
     content: "";
     position: absolute;
     bottom: 100%;
-    left: 75%;
+    left: 78%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
