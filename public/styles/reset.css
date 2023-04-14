@@ -1,0 +1,13 @@
+@import url('variables.css');
+
+/* ====================== Basic page style resets ====================== */
+* {
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden;
+}

@@ -9,7 +9,8 @@ const user = getCurrentUser();
  export class UserIcon extends Component {
     initialHTML() {
         if (!user) return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
+            <link rel="stylesheet" href="/styles/button.css">
             <a href="/login.html?redirect=${location.href}" class="button">Sign In</a>
             <style>
                 :host {
@@ -19,7 +20,8 @@ const user = getCurrentUser();
             </style>
         `;
         return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
+            <link rel="stylesheet" href="/styles/button.css">
             <div class="container">
                 <img src="${user.picture}" referrerpolicy="no-referrer">
                 <span id="profile" class="popup">

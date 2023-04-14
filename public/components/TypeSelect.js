@@ -19,7 +19,8 @@ import { getPattern } from "../util/util.js";
         const placeholder = this.getAttribute("placeholder") ?? "Type to search/Click to select";
         const value = this.getAttribute("value") ?? "";
         return /* html */`
-            <link rel="stylesheet" href="/style.css">
+            <link rel="stylesheet" href="/styles/reset.css">
+            <link rel="stylesheet" href="/styles/inputs.css">
             <div class="form">
                 <label for="select">${labelText}</label>
                 <input
