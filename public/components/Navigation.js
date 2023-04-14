@@ -16,7 +16,7 @@ class Navbar extends Component {
             </header>
             <style>
                 :host {
-                    z-index: 99999999;
+                    z-index: 10;
                     width: 100vw;
                     background-color: var(--primary);
                 }
