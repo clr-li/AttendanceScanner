@@ -173,10 +173,11 @@ section > p {
     margin: auto;
 }
 
-table {
+.calendar {
     border-collapse: collapse;
     margin: 0 auto;
 }
+
 
 /* ====================== Image ====================== */
 .img {
