@@ -1,9 +1,15 @@
+/* ================ QR Code ================ */
 .img {
     border: 8px ridge var(--accent);
     padding: 5px;
     display: inline-block; 
     overflow: hidden;
     background-color: white;
+}
+
+#qrcode > img {
+    border: 0;
+    border-radius: 0;
 }
 
 @media all and (display-mode: fullscreen) {
@@ -15,11 +21,15 @@
         padding: 20px;
     }
 }
-section:fullscreen {
-    background-color: var(--medium-section);
+#myqr:fullscreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     padding-top: 2px;
 }
-section:fullscreen > p {
+#myqr:fullscreen > p,
+#myqr:fullscreen > #downloadqr {
     display: none;
 }
 
@@ -29,4 +39,8 @@ section:fullscreen > p {
 }
 #qr-reader button {
     text-align: center;
+}
+#qr-reader {
+    border-radius: 10px;
+    overflow: hidden;
 }

@@ -5,10 +5,10 @@ const user = getCurrentUser();
       
 // ================== Join Logic ==================
 async function joinFromUrl(urlstr) {
-    let url = new URL(urlstr);
-    let params = url.searchParams;
-    let businessId = params.get('id');
-    let joincode = params.get('code');
+    const url = new URL(urlstr);
+    const params = url.searchParams;
+    const businessId = params.get('id');
+    const joincode = params.get('code');
     if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
         await GET(`/join?businessId=${businessId}&code=${joincode}`);
@@ -38,7 +38,7 @@ document.getElementById('join').addEventListener('click', (e) => {
         e.target.textContent = "Scan QR Code to Join";
     } else {
         html5QrcodeScanner.render(onScanSuccess);
-        e.target.textContent = "Hide QR Join Code Scanner";
+        e.target.textContent = "Stop Join Code Scanner";
     }
     e.target.classList.toggle('scanning');
 });
@@ -67,20 +67,49 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 // ================== Display Groups ==================
-window.handleBusinessClick = async (id) => {
+async function handleBusinessLoad(id) {
     let html = "";
     const records = await (await GET(`/userdata?businessId=${id}`)).json();
     console.log(records);
     
-    records.forEach((record) => {
-       html += `Event: ${record.name} Status: ${record.status} Logged: ${record.timestamp} Event start: ${record.starttimestamp} Event end: ${record.endtimestamp}<br>`;
-    });
-    document.getElementById("events").innerHTML = html;
+    // records.forEach((record) => {
+    //    html += `Event: ${record.name} Status: ${record.status} Logged: ${record.timestamp} Event start: ${record.starttimestamp} Event end: ${record.endtimestamp}<br>`;
+    // });
+    // document.getElementById("events").innerHTML = html;
 }
 
-let html = "<tr><th>Business Name</th></tr>";
-let userBusinesses = await (await GET(`/businesses`)).json();
+const userBusinesses = await (await GET(`/businesses`)).json();
+let businessHTML = '';
 userBusinesses.forEach((business) => {
-    html += `<td onclick="handleBusinessClick(${business.id})">${business.name}, ${business.role}</td>`;
-});
-document.getElementById("businesses").innerHTML = html;
+    businessHTML += /* html */ `
+        <div class="business-card">
+            <button class="button delete" style="position: absolute; right: 6px; top: 6px">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
+            <h1>
+                ${business.name}
+                <span>(${
+                    (business.role !== 'user') ?
+                        '<a href="/admin.html?businessId=' + business.id + '">' + business.role + '</a>'
+                    : 
+                        business.role
+                })</span>
+            </h1>
+            <hr>
+            <div style="height: 2rem;" class="load-wraper">
+                <div class="activity"></div>
+            </div>
+            <div style="display: flex">
+                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+                    <div class="activity"></div>
+                </div>
+                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+                    <div class="activity"></div>
+                </div>
+                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+                    <div class="activity"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    handleBusinessLoad(business.id);
+})
+document.getElementById("businesses").innerHTML = businessHTML;
