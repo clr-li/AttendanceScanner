@@ -86,6 +86,23 @@ router.get("/join", async (request, response) => {
 });
 
 /**
+ * Leaves the specified business if user is not the owner.
+ * @queryParams businessId - id of the business to leave
+ * @requiredPriviledges member but not owner of the specified business
+ * @response 200 - OK; or 403 - [access denied]
+ */
+router.get('/leave', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { owner: false });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+
+    await asyncRun(`DELETE FROM Members WHERE business_id = ? AND user_id = ?`, [businessId, uid]);
+
+    response.sendStatus(200);
+});
+
+/**
  * Gets data for all the events for the user in the specified business.
  * @queryParams businessId - id of the business to get events for
  * @requiredPriviledges user must be a member of the specified business
