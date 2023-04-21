@@ -1,18 +1,21 @@
 import { Component } from "../util/Component.js";
 
-class Popup extends Component {
+export class Popup extends Component {
     initialHTML() {
         return /* html */`
         <link rel="stylesheet" href="/styles/reset.css">
-        <div>
+        <div id="popup">
             <i class="fa fa-circle-xmark" id="cross"></i>
-            <slot></slot>
+            <div>
+                <slot></slot>
+            </div>
         </div>
         <style>
-            ::slotted(*) {
+            
+            ::slotted(p) {
                 font-size: 1.2rem;
             }
-            div {
+            #popup {
                 position: fixed;
                 left: 0;
                 right: 0;
@@ -55,15 +58,57 @@ class Popup extends Component {
         `;
     }
 
+    close() {
+        if (this.handleCancel) this.handleCancel();
+        else this.remove();
+    }
+
     connectedCallback() {
         this.shadowRoot.getElementById('cross').addEventListener('click', () => {
-            this.remove();
+            this.close();
         });
     }
 
     disconnectedCallback() {
         this.shadowRoot.getElementById("cross").removeEventListener("click", () => {
-            this.remove();
+            this.close();
+        });
+    }
+
+    static alert(message) {
+        const popup = document.createElement('pop-up');
+        popup.textContent = message;
+        document.body.appendChild(popup);
+    }
+
+    static confirm(message) {
+        return new Promise((resolve, reject) => {
+            const popup = document.createElement('pop-up');
+            const messageP = document.createElement('p');
+            messageP.textContent = message
+            const cancelBtn = document.createElement('button');
+            cancelBtn.classList.add('button');
+            cancelBtn.textContent = "CANCEL";
+            const confirmBtn = document.createElement('button');
+            confirmBtn.classList.add('button');
+            confirmBtn.textContent = "CONFIRM";
+            const handleCancel = () => {
+                cancelBtn.removeEventListener('click', handleCancel);
+                confirmBtn.removeEventListener('click', handleConfirm);
+                popup.remove();
+                resolve(false);
+            }
+            const handleConfirm = () => {
+                cancelBtn.removeEventListener('click', handleCancel);
+                confirmBtn.removeEventListener('click', handleConfirm);
+                popup.remove();
+                resolve(true);
+            }
+            cancelBtn.addEventListener('click', handleCancel);
+            confirmBtn.addEventListener('click', handleConfirm);
+            popup.handleCancel = handleCancel;
+            popup.append(messageP, cancelBtn, confirmBtn);
+            document.body.appendChild(popup);
         });
     }
 }
