@@ -1,3 +1,5 @@
+import "./components/Popup.js";
+
 function submitGoogleForm(url) {
     let iframe = document.createElement('iframe');
     iframe.src = url;
@@ -19,6 +21,9 @@ function validate(e) { // called when submit is pressed
     let message = document.getElementById('message').value;
     let url = getGoogleFormURL(name, email, message);
     submitGoogleForm(url);
+    const popup = document.createElement("pop-up");
+    popup.innerHTML = "<p>Form submitted. We will reach out to you by email.</p>";
+    document.body.appendChild(popup);
 }
 
 const contactForm = document.getElementById('contactform');
