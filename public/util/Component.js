@@ -28,7 +28,7 @@ export class Component extends HTMLElement {
     /**
      * Returns the template of this component (each subclass should only have one singleton template).
      * @param {*} self an instance of this component
-     * @returns the template of this component if it has already been set, or uses 
+     * @returns the template of this component if it has already been set, otherwise sets it with self.initialHTML()
      */
     static template(self) {
         if (this.hasOwnProperty('_template')) return this._template;

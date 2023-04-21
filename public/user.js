@@ -81,9 +81,10 @@ async function handleBusinessLoad(id) {
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
 userBusinesses.forEach((business) => {
+    console.log(business.role)
     businessHTML += /* html */ `
         <div class="business-card">
-            <button class="button delete" style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
+            <button class="button delete" ${business.role === 'owner' ? 'disabled' : ''} style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
             <h1>
                 ${business.name}
                 <span>(${
