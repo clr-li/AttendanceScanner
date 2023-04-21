@@ -1,5 +1,6 @@
 import { requireLogin, getCurrentUser } from './util/Auth.js';
 import { GET } from './util/Client.js';
+import { Popup } from './components/Popup.js';
 await requireLogin();
 const user = getCurrentUser();
       
@@ -68,7 +69,11 @@ document.addEventListener("fullscreenchange", () => {
 
 // ================== Display Groups ==================
 async function handleBusinessLoad(id) {
-    let html = "";
+    document.getElementById('leave-' + id).addEventListener('click', async () => {
+        const shouldLeave = await Popup.confirm("Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.");
+        console.log(shouldLeave);
+    });
+
     const records = await (await GET(`/userdata?businessId=${id}`)).json();
     console.log(records);
     
@@ -81,10 +86,9 @@ async function handleBusinessLoad(id) {
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
 userBusinesses.forEach((business) => {
-    console.log(business.role)
     businessHTML += /* html */ `
         <div class="business-card">
-            <button class="button delete" ${business.role === 'owner' ? 'disabled' : ''} style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
+            <button id="leave-${business.id}" class="button delete" style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
             <h1>
                 ${business.name}
                 <span>(${
@@ -111,6 +115,8 @@ userBusinesses.forEach((business) => {
             </div>
         </div>
     `;
-    handleBusinessLoad(business.id);
+    setTimeout(() => {
+        handleBusinessLoad(business.id);
+    });
 })
 document.getElementById("businesses").innerHTML = businessHTML;
