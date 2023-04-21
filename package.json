@@ -8,7 +8,7 @@
     "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master",
-    "deploy": "npm run glitch && npm run fire"
+    "deploy": "npm run glitch && npm run fire && git checkout main"
   },
   "dependencies": {
     "body-parser": "^1.20.1",

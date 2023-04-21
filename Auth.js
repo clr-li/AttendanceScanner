@@ -70,7 +70,7 @@ async function getUID(idToken, registerIfNewUser=true) {
  * @param {string} userid the uid of the user to check access for
  * @param {number} businessid the business to check access within
  * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges the priviledges to check if they are allowed the users role
- * @returns true if the user is a member of the specified business and has a role with at least the priviledges specified as true in requiredPriviledges, false otherwise.
+ * @returns true if the user is a member of the specified business and has a role with at least the priviledges specified as true in requiredPriviledges (and none of the priveledges specified as false), false otherwise.
  */
 async function getAccess(userid, businessid, requiredPriviledges={admin: true}) {
   try {
@@ -78,7 +78,7 @@ async function getAccess(userid, businessid, requiredPriviledges={admin: true}) 
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
     const access = ACCESS_TABLE[role];
     for (const [priviledge, isRequired] of Object.entries(requiredPriviledges)) {
-      if (isRequired && !access[priviledge]) return false;
+      if (isRequired != access[priviledge]) return false;
     }
     return true;
   } catch (err) {
