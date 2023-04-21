@@ -1,5 +1,5 @@
 import { Component } from "../util/Component.js";
-import "./Popup.js";
+import { Popup } from "./Popup.js";
 
 class ContactForm extends Component {
     initialHTML() {
@@ -36,9 +36,7 @@ class ContactForm extends Component {
         let message = this.shadowRoot.getElementById('message').value;
         let url = getGoogleFormURL(name, email, message);
         submitGoogleForm(url);
-        const popup = document.createElement("pop-up");
-        popup.innerHTML = "<p>Form submitted. We will reach out to you by email.</p>";
-        document.body.appendChild(popup);
+        Popup.alert('Form submitted. We will reach out to you by email.');
     }
 
     connectedCallback() {
