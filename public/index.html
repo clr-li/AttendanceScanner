@@ -13,6 +13,7 @@
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
+        <script type="module" src="/components/ContactForm.js"></script>
     </head>
     <body>
         <navigation-manager>
@@ -68,21 +69,8 @@
                 <img src="/assets/syso.png" style="max-width:350px; background-color: black; padding: 15px">
             </section>
             <section class="light-section">
-                <h1>
-                    Contact Us
-                </h1>
-                <form class="form" id="contactform">
-                    <label for="name">Name</label>
-                    <input id="name" type="text" required>
-                    <label for="email">Email</label>
-                    <input id="email" type="email" required><br>
-                    <label for="message">What would you like to say to us?</label><br>
-                    <textarea id="message" rows="3" required></textarea><br>
-                    <button class="button">Submit</button>
-                </form>
+                <contact-form></contact-form>
             </section>
         </navigation-manager>
-
-        <script type="module" src="/contactform.js"></script>
     </body>
 </html>
