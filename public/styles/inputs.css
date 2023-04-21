@@ -3,7 +3,7 @@
     padding: 0.2rem;
 }
 
-.form input[type="text"], input[type="list"] {
+.form input[type="text"], input[type="list"], input[type="email"] {
     min-width: min(30ch, 100%);
 }
 
@@ -13,7 +13,7 @@
     resize: none;
 }
 
-.form > input[type="date"], input[type="time"], input[type="text"], input[type="list"], textarea { 
+.form > input[type="date"], input[type="time"], input[type="text"], input[type="list"], input[type="email"], textarea { 
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;

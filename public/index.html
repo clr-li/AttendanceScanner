@@ -24,7 +24,7 @@
                     <div>
                         <img src="/assets/phoneqr.jpg" style="max-width:350px; margin-right: 0.2em;">
                     </div>
-                    <div style="width: 400px; text-align: left;">
+                    <div style="max-width: 400px; text-align: left;">
                         <p>No need for role call or filling out a form. Instead, just scan the attendee's unique QR code to take their attendance.</p>
                         <a class="button big-button" style="margin-top: 5%;" role="button" href="/payment.html">Get Started</a>
                     </div>
@@ -71,16 +71,18 @@
                 <h1>
                     Contact Us
                 </h1>
-                <form class="form">
+                <form class="form" id="contactform">
                     <label for="name">Name</label>
                     <input id="name" type="text">
                     <label for="email">Email</label>
-                    <input id="email" type="text"><br>
-                    <label for="message">What woul you like to say to us?</label><br>
+                    <input id="email" type="email"><br>
+                    <label for="message">What would you like to say to us?</label><br>
                     <textarea id="message" rows="3"></textarea><br>
-                    <button type="button" id="submitquestion" class="button">Submit</button>
+                    <button class="button">Submit</button>
                 </form>
             </section>
         </navigation-manager>
+
+        <script type="module" src="/contactform.js"></script>
     </body>
 </html>
