@@ -3,13 +3,20 @@
     padding: 0.2rem;
 }
 
-.form > input[type="text"], input[type="textarea"], input[type="list"] {
+.form input[type="text"], input[type="list"] {
     min-width: min(30ch, 100%);
 }
 
-.form > input[type="date"], input[type="time"], input[type="text"], input[type="textarea"], input[type="list"] { 
+.form textarea {
+    min-width: min(50ch, 100%);
+    border: 2px solid var(--accent);
+    resize: none;
+}
+
+.form > input[type="date"], input[type="time"], input[type="text"], input[type="list"], textarea { 
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
     margin-bottom: 0.5em;
+    border: 2px solid var(--accent);
 }
