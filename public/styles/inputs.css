@@ -7,6 +7,13 @@
     min-width: min(30ch, 100%);
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 .form textarea {
     min-width: min(50ch, 100%);
     border: 2px solid var(--accent);
