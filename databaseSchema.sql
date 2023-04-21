@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS "Members" (
         "business_id"   INTEGER NOT NULL,
         "user_id"       TEXT NOT NULL,
         "role"  TEXT NOT NULL,
+        UNIQUE("business_id", "user_id") ON CONFLICT REPLACE,
         FOREIGN KEY("business_id") REFERENCES "Businesses"("id"),
         FOREIGN KEY("user_id") REFERENCES "Events"("id")
 );

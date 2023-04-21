@@ -89,7 +89,7 @@ class Footer extends Component {
                         <h2>Attendance</h2>
                         <ul>
                             <li><a href="/user.html">My Groups</a></li>
-                            <li><a href="/user.html">My Calendar</a></li>
+                            <li><a href="/calendar.html">My Calendar</a></li>
                             <li><a href="/admin.html">Admin Dashboard</a></li>
                         </ul>
                     </div>
