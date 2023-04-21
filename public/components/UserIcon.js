@@ -17,6 +17,9 @@ const user = getCurrentUser();
                     display: flex;
                     align-items: center;
                 }
+                .button {
+                    min-width: 0;
+                }
             </style>
         `;
         return /* html */`
@@ -72,7 +75,7 @@ img {
 button {
     display: block;
     margin: auto;
-    width: 80%;
+    max-width: 80%;
 }
 .popup {
     visibility: hidden;
