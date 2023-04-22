@@ -215,6 +215,10 @@ export class NavigationManager extends Component {
                     min-height: 100vh;
                     display: grid;
                     grid-template-rows: auto 1fr auto;
+                    align-items: stretch;
+                }
+                #main-content {
+                    position: relative;
                 }
             </style>
         `;
