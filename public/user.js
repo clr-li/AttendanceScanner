@@ -116,13 +116,13 @@ async function handleBusinessLoad(business) {
         type: 'doughnut',
         data: {
             labels: [
-                'ABSENT',
                 'PRESENT',
+                'ABSENT',
                 'LATE'
             ],
             datasets: [{
                 label: 'Events',
-                data: [absentCount, presentCount, lateCount],
+                data: [presentCount, absentCount, lateCount],
             }]
         },
         options: {
