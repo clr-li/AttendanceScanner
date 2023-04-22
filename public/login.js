@@ -1,5 +1,5 @@
 import { login, redirectLogin, popUpLogin, devLogin } from './util/Auth.js';
-import { IS_DEVELOPMENT, IS_FIREBASE_DOMAIN } from './util/Client.js';
+import { IS_DEVELOPMENT, IS_FIREBASE_DOMAIN, IS_SAFARI } from './util/Client.js';
 
 function beforeLogin() {
     document.getElementById('loader').style.display = "block";
@@ -20,7 +20,7 @@ function redirect() {
 }
 
 afterLogin(await login(), false);
-if (!IS_DEVELOPMENT && IS_FIREBASE_DOMAIN) redirectLogin(); // if development, don't redirect automatically, show dev logins; also only auto-redirect on Firebase Domain where it is supported
+if (!IS_DEVELOPMENT && IS_FIREBASE_DOMAIN && !IS_SAFARI) redirectLogin(); // if development, don't redirect automatically, show dev logins; also only auto-redirect on Firebase Domain where it is supported
 
 const signInWithGoogleBtn = document.getElementById('signInWithGoogle');
 signInWithGoogleBtn.addEventListener('click', () => { beforeLogin(); popUpLogin(afterLogin); });
