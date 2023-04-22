@@ -13,9 +13,7 @@ const colors = ["blue", "red", "purple", "green", "orange", "hotpink", "yellow",
 for (const [i, business] of Object.entries(businesses)) {
     let resEvent = await GET('/userEvents?businessId=' + business.id);
     events = await resEvent.json();
-    console.log(events);
     events.forEach(event => {
-        console.log(event);
         const date = new Date(event.starttimestamp*1000);
         const endDate = new Date(event.endtimestamp*1000);
         const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -24,25 +22,27 @@ for (const [i, business] of Object.entries(businesses)) {
         const year = date.getFullYear();
         let starttime = 0;
         let endtime = 0;
-        if (date.getMinutes() < 10) {
+        let status = event.status;
+        if (date.getMinutes() < 10)
             starttime = date.getHours() + ":0" + date.getMinutes(); 
-        } else {
+        else
             starttime = date.getHours() + ":" + date.getMinutes(); 
-        }
-        if (endDate.getMinutes() < 10) {
+        if (endDate.getMinutes() < 10)
             endtime = endDate.getHours() + ":0" + endDate.getMinutes();
-        } else {
+        else
             endtime = endDate.getHours() + ":" + endDate.getMinutes();
-        }
         let eventColor = colors[i%colors.length];
+        if (event.status == null && Date.now() > event.endtimestamp * 1000) {
+            status = "ABSENT";
+        }
         $("#calendar").evoCalendar('addCalendarEvent', [
             {
               id: event.id,
-              name: event.name,
+              name: starttime + "-" + endtime,
               date: month+"/"+day+"/"+year,
-              badge: starttime + "-" + endtime,
+              badge: status,
               color: eventColor,
-              description: event.description,
+              description: '<h3 style="margin-top:0.1em;margin-bottom:0.5em;">' + event.name + "</h3>" + "Event Description: " + event.description,
               everyYear: false
             }
           ]);

@@ -212,7 +212,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
     while (current < endDate) {
         const currentEndDate = new Date(endDate);
         if (frequency === "monthly")
-            currentEndDate.setMonth(current.getMonth());
+          currentEndDate.setMonth(current.getMonth());
         currentEndDate.setDate(current.getDate());
         asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
             [businessId, name, description, current.getTime() / 1000, currentEndDate.getTime() / 1000, repeatId]);
@@ -220,7 +220,11 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
             current.setDate(current.getDate() + interval);
         else if (frequency === "weekly")
             current.setDate(current.getDate() + 7 * interval);
-        else if (frequency === "monthly")
+        // if (frequency === "daily")
+        //     current.setDate(current.getDate() + interval);
+        // else if (frequency === "weekly")
+        //     current.setDate(current.getDate() + 7 * interval);
+        if (frequency === "monthly")
             current.setMonth(current.getMonth() + interval);
     }
 }
