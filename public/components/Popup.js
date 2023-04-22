@@ -5,6 +5,7 @@ import { Component } from "../util/Component.js";
  */
 export class Popup extends Component {
     initialHTML() {
+        const borderColor = this.getAttribute("color") ?? "var(--accent)";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <div id="popup">
@@ -39,7 +40,7 @@ export class Popup extends Component {
                     background-color: white;
                     text-align: center;
                     padding: 5px;
-                    border: 8px solid var(--accent);
+                    border: 8px solid ${borderColor};
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -66,6 +67,14 @@ export class Popup extends Component {
             </style>
         `;
     }
+    static get observedAttributes() {
+        return ['color'];
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "color") {
+            this.shadowRoot.getElementById("popup").style.borderColor = newValue;
+        };
+    }
 
     /**
      * Closes this popup and removes it from the DOM.
@@ -91,8 +100,11 @@ export class Popup extends Component {
      * Creates a popup with the given message and appends it to the DOM.
      * @param {string} message 
      */
-    static alert(message) {
+    static alert(message, color) {
         const popup = document.createElement('pop-up');
+        if (color) {
+            popup.setAttribute('color', color);
+        }
         popup.innerHTML = message;
         document.body.appendChild(popup);
     }

@@ -9,14 +9,14 @@ eventFilterSelector.addEventListener("select", (e) => {
     filteringEvent = e.detail;
 })
 
-const bussinessSelector = document.getElementById("businessname");
-let selectedBussiness = null;
-bussinessSelector.addEventListener("select", (e) => {
-    selectedBussiness = e.select;
+const businessSelector = document.getElementById("businessname");
+let selectedBusiness = null;
+businessSelector.addEventListener("select", (e) => {
+    selectedBusiness = e.select;
 })
 
 function getBusinessId() {
-    return selectedBussiness.dataset.id;
+    return selectedBusiness.dataset.id;
 }
 
 const eventSelector = document.getElementById("events");
@@ -163,11 +163,11 @@ let res2 = await GET('/businesses');
 let o = await res2.json();
 o.forEach(business => {
     if (business.role != 'user') {
-        bussinessSelector.addOption(business.name, business.role, {"data-id": business.id});
+        businessSelector.addOption(business.name, business.role, {"data-id": business.id});
     }
 });
-bussinessSelector.setAttribute("value", bussinessSelector.firstElementChild.value);
-selectedBussiness = bussinessSelector.firstElementChild;
+businessSelector.setAttribute("value", businessSelector.firstElementChild.value);
+selectedBusiness = businessSelector.firstElementChild;
 await updateEvents();
 
 if (eventSelector.firstElementChild) {
