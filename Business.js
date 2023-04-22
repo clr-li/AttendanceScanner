@@ -163,7 +163,7 @@ router.get("/userdata", async function(request, response) {
 
     const numUsers = await asyncGet('SELECT COUNT() FROM Members WHERE business_id = ?', [businessId]);
     const ownerName = await asyncGet("SELECT Users.name FROM Members INNER JOIN Users on Members.user_id = Users.id WHERE Members.business_id = ? AND Members.role = 'owner'", [businessId]);
-    const userEvents = await asyncAll(`SELECT Events.name, Events.starttimestamp, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id AND (Records.user_id = ? OR Records.user_id is NULL) AND Events.business_id = ?`, [uid, businessId]);
+    const userEvents = await asyncAll(`SELECT Events.name, Events.starttimestamp, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id AND (Records.user_id = ? OR Records.user_id is NULL) WHERE Events.business_id = ?`, [uid, businessId]);
 
     response.send({ numUsers: numUsers['COUNT()'], ownerName: ownerName.name, userEvents: userEvents });
 });
@@ -180,7 +180,7 @@ router.get("/userEvents", async function(request, response) {
   
   const businessId = request.query.businessId;
 
-  response.send(await asyncAll(`SELECT Events.name, Events.id, Events.starttimestamp, Events.description, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id AND (Records.user_id = ? OR Records.user_id is NULL) AND Events.business_id = ?`, [uid, businessId]));
+  response.send(await asyncAll(`SELECT Events.name, Events.id, Events.starttimestamp, Events.description, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id AND (Records.user_id = ? OR Records.user_id is NULL) WHERE Events.business_id = ?`, [uid, businessId]));
 });
 
 /**
