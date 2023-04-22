@@ -84,7 +84,6 @@ async function handleBusinessLoad(business) {
     });
 
     const userdata = await (await GET(`/userdata?businessId=${business.id}`)).json();
-    console.log(userdata);
     
     const description = document.getElementById('description-' + business.id);
     description.classList.remove('load-wrapper');
