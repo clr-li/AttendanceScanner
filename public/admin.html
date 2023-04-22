@@ -14,10 +14,6 @@
         <!--   Import QR generating capabilities   -->
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
-    
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/TypeSelect.js"></script>
@@ -26,7 +22,7 @@
         <navigation-manager>
             <section>
                 <h1>
-                    Admin Page 
+                    Admin Dashboard 
                 </h1>
                 <br>
                 <type-select id="businessname" name="businesses" label="Group:"></type-select>
@@ -86,9 +82,9 @@
                     <button type="button" id="submitevent" class="button">Submit</button>
                 </form>
             </section>
-            <section class="medium-section" style="height: 60%;">
-                <h1>Calendar</h1>
-                <button class="button" onclick="window.location.href='/calendar.html';">Full View</button><br><br>
+            <section class="medium-section" style="min-height: 50%;">
+                <h1>Event Table</h1>
+                <button class="button" onclick="window.location.href='/calendar.html';">Calendar View</button><br><br>
                 <form id="filterform" class="form">
                     <label for="filtername">Name: </label>
                     <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
