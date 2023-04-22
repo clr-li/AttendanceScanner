@@ -43,7 +43,7 @@ router.get("/businesses", async (request, response) => {
   const uid = await handleAuth(request, response);
   if (!uid) return;
 
-  const rows = await asyncAll(`SELECT Businesses.id, Businesses.name, Members.role FROM Businesses INNER JOIN Members on Businesses.id = Members.business_id WHERE Members.user_id = ?`, [uid]);
+  const rows = await asyncAll(`SELECT Businesses.id, Businesses.name, Members.role FROM Businesses INNER JOIN Members on Businesses.id = Members.business_id AND Members.user_id = ?`, [uid]);
   response.send(rows);
 });
 
@@ -151,8 +151,8 @@ router.get("/attendancedata", async function(request, response) {
   
   const businessid = request.query.businessId;
 
-  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
-  response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
+  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id AND Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
+  response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id AND business_id = ?`, [businessid])));
 });
 
 router.get("/userdata", async function(request, response) {
