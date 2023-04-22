@@ -12,10 +12,14 @@ eventFilterSelector.addEventListener("select", (e) => {
 const businessSelector = document.getElementById("businessname");
 let selectedBusiness = null;
 businessSelector.addEventListener("select", (e) => {
-    selectedBusiness = e.select;
+    selectedBusiness = e.detail;
+    updateEvents();
+    updateTable();
+    getEventData();
 })
 
 function getBusinessId() {
+    console.log(selectedBusiness.dataset.id);
     return selectedBusiness.dataset.id;
 }
 
@@ -244,44 +248,48 @@ function getEventData() {
     }));
 }
 
-let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
-let map = new Map();
-for (let i = 0; i < attendancearr.length; i++) {
-    if (attendancearr[i].user_id)
-        attendancearr[i].id = attendancearr[i].user_id;
-    if(!map.has(attendancearr[i].id)) {
-        map.set(attendancearr[i].id, []);
+Window.onload = updateTable();
+
+async function updateTable() {
+    let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
+    let map = new Map();
+    for (let i = 0; i < attendancearr.length; i++) {
+        if (attendancearr[i].user_id)
+            attendancearr[i].id = attendancearr[i].user_id;
+        if(!map.has(attendancearr[i].id)) {
+            map.set(attendancearr[i].id, []);
+        }
+        map.get(attendancearr[i].id).push(attendancearr[i]);
     }
-    map.get(attendancearr[i].id).push(attendancearr[i]);
-}
-let html = "<tr><th>Name (id)</th>"; 
-for (let i = 0; i < events.length; i++) {
-    var startDate = new Date(events[i].starttimestamp*1000);
-    var endDate = new Date(events[i].endtimestamp*1000);
-    html += `<th class="cell" data-time="${events[i].starttimestamp}" data-name="${events[i].name}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
-}
-html += "</tr>";
-for (let i = 0; i < [...map.keys()].length; i++) {
-    let userid = [...map.keys()][i];
-    let records = map.get(userid);
-    html += `<tr><td>${records[0].name} (${userid.substr(0,4)})</td>`;
-    for (let j = 0; j < events.length; j++) {   
-        let statusupdate = false;
-        for (let k = 0; k < records.length; k++) {
-            if (records[k].event_id == events[j].id) {
-                html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}</td>`;
-                statusupdate = true;
-                break;
-            }
-        }
-        if (!statusupdate) {
-            const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
-            html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${status}</td>`;
-        }
+    let html = "<tr><th>Name (id)</th>"; 
+    for (let i = 0; i < events.length; i++) {
+        var startDate = new Date(events[i].starttimestamp*1000);
+        var endDate = new Date(events[i].endtimestamp*1000);
+        html += `<th class="cell" data-time="${events[i].starttimestamp}" data-name="${events[i].name}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
     }
     html += "</tr>";
+    for (let i = 0; i < [...map.keys()].length; i++) {
+        let userid = [...map.keys()][i];
+        let records = map.get(userid);
+        html += `<tr><td>${records[0].name} (${userid.substr(0,4)})</td>`;
+        for (let j = 0; j < events.length; j++) {   
+            let statusupdate = false;
+            for (let k = 0; k < records.length; k++) {
+                if (records[k].event_id == events[j].id) {
+                    html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}</td>`;
+                    statusupdate = true;
+                    break;
+                }
+            }
+            if (!statusupdate) {
+                const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
+                html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${status}</td>`;
+            }
+        }
+        html += "</tr>";
+    }
+    document.getElementById("displayattendance").innerHTML = html;
 }
-document.getElementById("displayattendance").innerHTML = html;
 
 document.getElementById("export").onclick = () => {
     // Variable to store the final csv data
