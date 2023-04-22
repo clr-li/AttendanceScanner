@@ -16,12 +16,23 @@
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
+        <script type="module" src="/components/TypeSelect.js"></script>
     </head>
     <body>
         <navigation-manager>
-            <div id="qr-container">
-                <div id="qr-reader" class="buttonize"></div>
-            </div>
+            <section>
+                <h1>Scan QR Codes to Take Attendance</h1>
+                <div id="qr-container">
+                    <div id="qr-reader" class="buttonize"></div>
+                </div>
+                <br>
+                <type-select id="status" name="status" label="STATUS: ">
+                    <option>PRESENT</option>
+                    <option>ABSENT</option>
+                    <option>EXCUSED</option>
+                    <option>LATE</option>
+                </type-select>
+            </section>
         </navigation-manager>
         
         <script type="module" src="/scanner.js" defer></script>

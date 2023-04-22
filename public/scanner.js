@@ -2,13 +2,15 @@ import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 await requireLogin();
 
-let url = new URL(window.location);
-let params = url.searchParams;
-let eventid = params.get('eventid');
-let businessId = params.get('businessId');
+const url = new URL(window.location);
+const params = url.searchParams;
+const eventid = params.get('eventid');
+const businessId = params.get('businessId');
 const res = await GET(`/eventdata?eventid=${eventid}&businessId=${businessId}`); 
 const eventInfo = await res.json();
-console.log(eventInfo);
+
+let status = Date.now() <= parseInt(eventInfo.starttimestamp) * 1000 ? "PRESENT" : "LATE";
+
 let lastUserId = -1;
 async function onScanSuccess(decodedText, decodedResult) {
     // Handle on success condition with the decoded text or result.
@@ -21,7 +23,6 @@ async function onScanSuccess(decodedText, decodedResult) {
     console.log(`Scan result: ${decodedText}`, decodedResult);
 
     if (lastUserId != decodedText) {
-        const status = Date.now() <= parseInt(eventInfo.starttimestamp) * 1000 ? "PRESENT" : "LATE";
         const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=${status}&businessId=${businessId}`);
         console.log(res.status);
         if (!fileMode) html5QrcodeScanner.resume();
@@ -30,6 +31,12 @@ async function onScanSuccess(decodedText, decodedResult) {
         if (!fileMode) html5QrcodeScanner.resume();
     }
 }
+
+const statusSelector = document.getElementById("status");
+statusSelector.addEventListener("select", (e) => {
+    status = e.detail;
+})
+statusSelector.setAttribute("value", status);
 
 let html5QrcodeScanner = new Html5QrcodeScanner(
   "qr-reader", { fps: 10, qrbox: 250 });
