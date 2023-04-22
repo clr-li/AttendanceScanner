@@ -82,7 +82,6 @@ function asyncRunWithID(sql, params=[]) {
 };
 
 // ============================ MODULE EXPORTS ============================
-exports.db = db
 exports.asyncGet = asyncGet
 exports.asyncAll = asyncAll
 exports.asyncRun = asyncRun
