@@ -220,11 +220,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
             current.setDate(current.getDate() + interval);
         else if (frequency === "weekly")
             current.setDate(current.getDate() + 7 * interval);
-        // if (frequency === "daily")
-        //     current.setDate(current.getDate() + interval);
-        // else if (frequency === "weekly")
-        //     current.setDate(current.getDate() + 7 * interval);
-        if (frequency === "monthly")
+        else if (frequency === "monthly")
             current.setMonth(current.getMonth() + interval);
     }
 }

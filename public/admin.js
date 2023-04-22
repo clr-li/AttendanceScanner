@@ -20,7 +20,6 @@ businessSelector.addEventListener("select", (e) => {
 })
 
 function getBusinessId() {
-    console.log(selectedBusiness.dataset.id);
     return selectedBusiness.dataset.id;
 }
 
