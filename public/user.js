@@ -141,13 +141,13 @@ async function handleBusinessLoad(business) {
             labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
             datasets: [
                 {
-                    label: 'Absent',
-                    data: dayOfTheWeekAbsentCounts,
+                    label: 'Present',
+                    data: dayOfTheWeekPresentCounts,
                     borderWidth: 1
                 },
                 {
-                    label: 'Present',
-                    data: dayOfTheWeekPresentCounts,
+                    label: 'Absent',
+                    data: dayOfTheWeekAbsentCounts,
                     borderWidth: 1
                 },
                 {
