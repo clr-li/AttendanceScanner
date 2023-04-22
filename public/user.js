@@ -75,7 +75,6 @@ async function handleBusinessLoad(business) {
             return;
         }
         const shouldLeave = await Popup.confirm("Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.");
-        console.log(shouldLeave)
         if (shouldLeave) {
             const res = await GET(`/leave?businessId=${business.id}`);
             if (!res.ok) {
