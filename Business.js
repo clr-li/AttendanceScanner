@@ -155,20 +155,33 @@ router.get("/attendancedata", async function(request, response) {
   response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
 });
 
+router.get("/userdata", async function(request, response) {
+    const uid = await handleAuth(request, response, request.query.businessId);
+    if (!uid) return;
+    
+    const businessId = request.query.businessId;
+
+    const numUsers = await asyncGet('SELECT COUNT() FROM Members WHERE business_id = ?', [businessId]);
+    const ownerName = await asyncGet("SELECT Users.name FROM Members INNER JOIN Users on Members.user_id = Users.id WHERE Members.business_id = ? AND Members.role = 'owner'", [businessId]);
+    const userEvents = await asyncAll(`SELECT Events.name, Events.starttimestamp, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id WHERE (Records.user_id = ? OR Records.user_id is NULL) AND Events.business_id = ?`, [uid, businessId]);
+
+    response.send({ numUsers: numUsers['COUNT()'], ownerName: ownerName.name, userEvents: userEvents });
+});
+
 /**
  * Gets all the attendance records for the current user within a business.
  * @queryParams businessId - id of the business to get attendance records within
  * @requiredPriviledges member of the business
  * @response json list of records for the current user within the specified business.
  */
-router.get("/userdata", async function(request, response) {
+router.get("/userEvents", async function(request, response) {
   const uid = await handleAuth(request, response, request.query.businessId);
   if (!uid) return;
   
   const businessId = request.query.businessId;
 
   response.send(await asyncAll(`SELECT Events.name, Events.starttimestamp, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id WHERE (Records.user_id = ? OR Records.user_id is NULL) AND Events.business_id = ?`, [uid, businessId]));
-})
+});
 
 /**
  * Creates a new event for the specified business.

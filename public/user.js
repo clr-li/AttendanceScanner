@@ -68,13 +68,22 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 // ================== Display Groups ==================
-async function handleBusinessLoad(id) {
-    document.getElementById('leave-' + id).addEventListener('click', async () => {
+async function handleBusinessLoad(business) {
+    document.getElementById('leave-' + business.id).addEventListener('click', async () => {
+        if (business.role === 'owner') {
+            Popup.alert(`<h1>Warning!</h1>Can't leave a group you own. Please go to <a href="/payment.html" class="button">manage groups</a> if you want to delete the group.`);
+            return;
+        }
         const shouldLeave = await Popup.confirm("Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.");
-        console.log(shouldLeave);
+        if (shouldLeave) {
+            const res = await GET(`/leave?businessId=${business.id}`);
+            if (!res.ok) {
+                Popup.alert(`<h1>Failed to leave ${business.name}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
+            }
+        }
     });
 
-    const records = await (await GET(`/userdata?businessId=${id}`)).json();
+    const records = await (await GET(`/userdata?businessId=${business.id}`)).json();
     console.log(records);
     
     // records.forEach((record) => {
@@ -116,7 +125,7 @@ userBusinesses.forEach((business) => {
         </div>
     `;
     setTimeout(() => {
-        handleBusinessLoad(business.id);
+        handleBusinessLoad(business);
     });
 })
 document.getElementById("businesses").innerHTML = businessHTML;
