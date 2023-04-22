@@ -93,7 +93,7 @@ export class Popup extends Component {
      */
     static alert(message) {
         const popup = document.createElement('pop-up');
-        popup.textContent = message;
+        popup.innerHTML = message;
         document.body.appendChild(popup);
     }
 
