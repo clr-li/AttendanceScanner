@@ -1,6 +1,7 @@
 import { GET, POST } from './util/Client.js';
 import { calcSimilarity } from './util/util.js';
 import { requireLogin } from './util/Auth.js';
+import { Popup } from './components/Popup.js';
 await requireLogin();
 
 const eventFilterSelector = document.getElementById("filterEventName");
@@ -165,11 +166,18 @@ document.getElementById('newevent').onclick = () => {
 
 let res2 = await GET('/businesses');
 let o = await res2.json();
+let noBusinesses = true;
 o.forEach(business => {
     if (business.role != 'user') {
+        noBusinesses = false;
         businessSelector.addOption(business.name, business.role, {"data-id": business.id});
     }
 });
+if (noBusinesses) {
+    const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
+    if (shouldRedirect) location.assign('/payment.html');
+    else history.back();
+}
 businessSelector.setAttribute("value", businessSelector.firstElementChild.value);
 selectedBusiness = businessSelector.firstElementChild;
 await updateEvents();
