@@ -1,6 +1,8 @@
 import { Component } from "../util/Component.js";
 import './UserIcon.js';
 
+const SIZE_THRESHOLD = 470;
+
 class Navbar extends Component {
     initialHTML() {
         return /* html */`
@@ -8,9 +10,10 @@ class Navbar extends Component {
             <header>
                 <img src="/assets/logo.png">
                 <nav>
-                    <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${window.innerWidth > 360 ? 'Home' : '<i class="fa fa-home"></i>'}</a>
-                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > 360 ? 'My Groups' : '<i class="fa fa-users"></i>'}</a>
-                    <a href="/">${window.innerWidth > 360 ? 'About' : '<i class="fa fa-info"></i>'}</a>
+                    <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Home' : '<i class="fa fa-home"></i>'}</a>
+                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Groups' : '<i class="fa fa-users"></i>'}</a>
+                    <a href="/calendar.html">${window.innerWidth > SIZE_THRESHOLD ? 'Calendar' : '<i class="fa fa-calendar"></i>'}</a>
+                    <a href="/admin.html">${window.innerWidth > SIZE_THRESHOLD ? 'Admin' : '<i class="fa fa-user-gear"></i>'}</a>
                 </nav>
                 <user-icon></user-icon>
             </header>
@@ -51,7 +54,7 @@ class Navbar extends Component {
                     display: flex;
                     align-items: center;
                 }
-                @media (max-width: 360px) {
+                @media (max-width: ${SIZE_THRESHOLD}px) {
                     a {
                         padding: 0 clamp(6px, 10%, 16px);
                     }
