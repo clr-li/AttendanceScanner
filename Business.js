@@ -211,9 +211,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
     let current = startDate;
     while (current < endDate) {
         const currentEndDate = new Date(endDate);
-        if (frequency === "monthly")
-          currentEndDate.setMonth(current.getMonth());
-        currentEndDate.setDate(current.getDate());
+        currentEndDate.setFullYear(current.getFullYear(), current.getMonth(), current.getDate());
         asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
             [businessId, name, description, current.getTime() / 1000, currentEndDate.getTime() / 1000, repeatId]);
         if (frequency === "daily")
