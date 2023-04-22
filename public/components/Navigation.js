@@ -37,6 +37,7 @@ class Navbar extends Component {
                 }
                 user-icon {
                     max-width: 80px;
+                    width: fit-content;
                 }
                 nav {
                     flex-grow: 3;
