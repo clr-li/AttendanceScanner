@@ -193,10 +193,8 @@ let joincode = data.joincode;
 let joinlink = window.location.origin + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
 new QRCode(document.getElementById("qrcode"), joinlink);
 
-document.getElementById("joinlink").onclick = () => {
-    setTimeout(() => {
-        window.navigator.clipboard.writeText(joinlink);
-    }, 3000);
+document.getElementById("joinlink").onfocus = () => { // onfocus instead of onclick fixes the clipboard DOM exception security issue
+    window.navigator.clipboard.writeText(joinlink);
     document.getElementById("joinlink").classList.add("success");
     setTimeout(() => {
         document.getElementById("joinlink").classList.remove("success");
