@@ -11,11 +11,14 @@
         <!-- Import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
         
-        <!--   Import QR generating capabilities   -->
+        <!-- Import QR generating capabilities -->
         <script src="util/qrcode.min.js"></script>
         
-        <!--   Import QR scanning capabilities   -->
+        <!-- Import QR scanning capabilities -->
         <script src="https://unpkg.com/html5-qrcode"></script>
+
+        <!-- Charts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
@@ -30,7 +33,7 @@
                 <button class="button" id="fullscreenToggle">Full Screen &nbsp;<i class="fa fa-expand"></i></button>
                 <a id="downloadqr" class="button">Download &nbsp;<i class="fa fa-download"></i></a>
             </section>
-            <section class="medium-section" style="height: 60%;">
+            <section class="medium-section" style="min-height: 60%;">
                 <h1>My Groups</h1>
                 <a href="/payment.html" class="button">Manage Groups</a>
                 <button class="button" id="join">Scan QR Code to Join</button>

@@ -83,20 +83,118 @@ async function handleBusinessLoad(business) {
         }
     });
 
-    const records = await (await GET(`/userdata?businessId=${business.id}`)).json();
-    console.log(records);
+    const userdata = await (await GET(`/userdata?businessId=${business.id}`)).json();
+    console.log(userdata);
     
-    // records.forEach((record) => {
-    //    html += `Event: ${record.name} Status: ${record.status} Logged: ${record.timestamp} Event start: ${record.starttimestamp} Event end: ${record.endtimestamp}<br>`;
-    // });
-    // document.getElementById("events").innerHTML = html;
+    const description = document.getElementById('description-' + business.id);
+    description.classList.remove('load-wrapper');
+    description.innerHTML = `<span style="white-space: nowrap; margin: 30px">Created by ${userdata.ownerName}</span> <span style="white-space: nowrap;">With ${userdata.numUsers} current members</span> <span style="white-space: nowrap; margin: 30px">And ${userdata.userEvents.length} planned events!</span>`;
+
+    let absentCount = 0, presentCount = 0, lateCount = 0;
+    const dayOfTheWeekAbsentCounts = [0, 0, 0, 0, 0, 0, 0];
+    const dayOfTheWeekPresentCounts = [0, 0, 0, 0, 0, 0, 0];
+    const dayOfTheWeekLateCounts = [0, 0, 0, 0, 0, 0, 0];
+    const now = Date.now();
+    for (const event of userdata.userEvents) {
+        const starttimestamp = event.starttimestamp * 1000
+        const start = new Date(starttimestamp);
+        if (event.status === 'PRESENT') {
+            dayOfTheWeekPresentCounts[start.getDay()]++;
+            presentCount++;
+        } else if (event.status === 'LATE') {
+            dayOfTheWeekLateCounts[start.getDay()]++;
+            lateCount++;
+        } else if (starttimestamp <= now) {
+            dayOfTheWeekAbsentCounts[start.getDay()]++;
+            absentCount++;
+        }
+    }
+
+    Chart.overrides['doughnut'].plugins.legend.display = false;
+    Chart.overrides['doughnut'].responsive = false;
+    new Chart(document.getElementById('status-' + business.id), {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'ABSENT',
+                'PRESENT',
+                'LATE'
+            ],
+            datasets: [{
+                label: 'Events',
+                data: [absentCount, presentCount, lateCount],
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Attendance Status'
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('attendance-' + business.id), {
+        type: 'bar',
+        data: {
+            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            datasets: [
+                {
+                    label: 'Absent',
+                    data: dayOfTheWeekAbsentCounts,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Present',
+                    data: dayOfTheWeekPresentCounts,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Late',
+                    data: dayOfTheWeekLateCounts,
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: (value) => { if (value % 1 === 0) { return value; } }
+                    },
+                    stacked: true
+                }
+            },
+            maintainAspectRatio: false
+        }
+    });
+
+    document.getElementById('upcoming-' + business.id).innerHTML = /* html */`
+        <br>
+        <h1>Upcoming Events:</h1>
+        <br>
+        <ul style="width: fit-content; margin: auto">
+            ${
+                userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + ev.name + ' - ' + (new Date(ev.starttimestamp * 1000)).toDateString() + '</li>').join('')
+            }
+        </ul>
+        <br>
+        <a href="/calendar.html" class="button">See all in Calendar</a>
+    `;
+
+    [...document.getElementById('card-' + business.id).getElementsByClassName('load-wrapper')].forEach(elem => elem.classList.remove('load-wrapper'));
 }
 
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
 userBusinesses.forEach((business) => {
     businessHTML += /* html */ `
-        <div class="business-card">
+        <div class="business-card" id="card-${business.id}">
             <button id="leave-${business.id}" class="button delete" style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
             <h1>
                 ${business.name}
@@ -108,18 +206,22 @@ userBusinesses.forEach((business) => {
                 })</span>
             </h1>
             <hr>
-            <div style="height: 2rem;" class="load-wraper">
+            <div style="min-height: 1.5rem;" class="load-wrapper">
                 <div class="activity"></div>
+                <div id="description-${business.id}"></div>
             </div>
-            <div style="display: flex">
-                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+            <div style="display: flex; flex-wrap: wrap">
+                <div style="flex-grow: 1; min-width: 30%; min-height: 100px;" class="load-wrapper">
                     <div class="activity"></div>
+                    <canvas id="status-${business.id}" style="margin: auto"></canvas>
                 </div>
-                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+                <div style="flex-grow: 1; min-width: 30%; min-height: 100px;" class="load-wrapper">
                     <div class="activity"></div>
+                    <canvas id="attendance-${business.id}"></canvas>
                 </div>
-                <div style="width: 100%; aspect-ratio: 2 / 1" class="load-wraper">
+                <div style="flex-grow: 1; min-width: 30%; min-height: 100px;" class="load-wrapper">
                     <div class="activity"></div>
+                    <div id="upcoming-${business.id}"></div>
                 </div>
             </div>
         </div>

@@ -1,7 +1,5 @@
-.load-wraper {
+.load-wrapper {
     position: relative;
-    height: 100%;
-    width: auto;
     background-color: rgb(211,211,211);
     z-index: 4;
     overflow: hidden;
@@ -9,7 +7,7 @@
     margin: 4px;
 }
 
-.load-wraper > .activity {
+.load-wrapper > .activity {
     position: absolute;
     left: -45%;
     height: 100%;

@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS "Records" (
         "user_id"       TEXT NOT NULL,
         "timestamp"     TEXT NOT NULL,
         "status"        TEXT NOT NULL,
+        UNIQUE("event_id", "user_id") ON CONFLICT REPLACE,
         FOREIGN KEY("business_id") REFERENCES "Businesses"("id"),
         FOREIGN KEY("event_id") REFERENCES "Events"("id"),
         FOREIGN KEY("user_id") REFERENCES "Users"("id")
