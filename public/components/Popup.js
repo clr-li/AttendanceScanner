@@ -50,6 +50,7 @@ export class Popup extends Component {
                 :host:before {
                     content: '';
                     backdrop-filter: blur(5px);
+                    -webkit-backdrop-filter: blur(5px);
                     position: fixed;
                     top: 0; left: 0;
                     width: 100vw;
