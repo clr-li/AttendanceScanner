@@ -177,7 +177,7 @@ async function handleBusinessLoad(business) {
         <br>
         <h1>Upcoming Events:</h1>
         <br>
-        <ul style="width: fit-content; margin: auto">
+        <ul style="width: fit-content; margin: auto; list-style-type: none">
             ${
                 userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + ev.name + ' - ' + (new Date(ev.starttimestamp * 1000)).toDateString() + '</li>').join('')
             }
