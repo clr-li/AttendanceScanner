@@ -34,7 +34,7 @@ async function onScanSuccess(decodedText, decodedResult) {
 
 const statusSelector = document.getElementById("status");
 statusSelector.addEventListener("select", (e) => {
-    status = e.detail;
+    status = e.detail.value;
 })
 statusSelector.setAttribute("value", status);
 
