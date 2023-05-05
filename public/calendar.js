@@ -49,4 +49,4 @@ for (const [i, business] of Object.entries(businesses)) {
 // don't forget the no-script fallback
 setTimeout(() => {
     document.body.style.opacity = '1';
-}, 100);
+}, 200);
