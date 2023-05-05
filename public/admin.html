@@ -17,6 +17,13 @@
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/TypeSelect.js"></script>
+    
+        <style>
+            /* smooth load */
+            body {
+                opacity: 0;
+            }
+        </style>
     </head>
     <body>
         <navigation-manager>
@@ -104,5 +111,14 @@
         </navigation-manager>
         
         <script type="module" src="/admin.js"></script>
+        <noscript>
+            Please enable JavaScript for full functionality.
+            <!-- smooth load -->
+            <style>
+                body {
+                    opacity: 1;
+                }
+            </style>
+        </noscript>
     </body>
 </html>

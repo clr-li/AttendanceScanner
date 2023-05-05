@@ -43,3 +43,10 @@ for (const [i, business] of Object.entries(businesses)) {
           ]);
     });
 }
+
+// smooth load (keep previous page visible until content loaded)
+// requires the body to start with opacity: 0, and this should be the last script run.
+// don't forget the no-script fallback
+setTimeout(() => {
+    document.body.style.opacity = '1';
+}, 200);
