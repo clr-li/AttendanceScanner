@@ -6,18 +6,21 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+        <link rel="icon" type="image/png" href="assets/logo.png"/>
 
-        <!-- import the webpage's stylesheet -->
-        <link rel="stylesheet" href="/style.css">
+        <!-- Import the webpage's stylesheet -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- Import QR Code creating -->
+        <script src="util/qrcode.min.js"></script>
 
         <!-- Custom Components -->
-        <script type="module" src="/components/Navigation.js"></script>
-        <script type="module" src="/components/ContactForm.js"></script>
+        <script type="module" src="components/Navigation.js"></script>
+        <script type="module" src="components/ContactForm.js"></script>
     </head>
     <body>
-        <navigation-manager>
-            <section>
+        <navigation-manager id="navigation">
+            <section id="getStarted" style="opacity: 0;">
                 <h1>
                     Take attendance in seconds.
                 </h1>
@@ -77,5 +80,7 @@
                 <contact-form></contact-form>
             </section>
         </navigation-manager>
+
+        <script src="./index.js" type="module"></script>
     </body>
 </html>

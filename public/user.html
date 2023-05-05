@@ -6,13 +6,10 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+        <link rel="icon" type="image/png" href="assets/logo.png"/>
 
         <!-- Import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
-        
-        <!-- Import QR generating capabilities -->
-        <script src="util/qrcode.min.js"></script>
         
         <!-- Import QR scanning capabilities -->
         <script src="https://unpkg.com/html5-qrcode"></script>
@@ -21,18 +18,11 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- Custom Components -->
-        <script type="module" src="/components/Navigation.js"></script>
+        <script type="module" src="components/Navigation.js"></script>
+        <script type="module" src="components/QRCode.js"></script>
     </head>
     <body>
         <navigation-manager>
-            <section id="myqr" class="light-section">
-                <h1>My QR Code</h1>
-                <p>Scan this to take attendance at events!</p>
-                <div class="img" id="qrcode"></div>
-                <br>
-                <button class="button" id="fullscreenToggle">Full Screen &nbsp;<i class="fa fa-expand"></i></button>
-                <a id="downloadqr" class="button">Download &nbsp;<i class="fa fa-download"></i></a>
-            </section>
             <section class="medium-section" style="min-height: 65%">
                 <h1>My Groups</h1>
                 <a href="/payment.html" class="button">Manage Groups</a>

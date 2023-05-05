@@ -1,8 +1,7 @@
-import { requireLogin, getCurrentUser } from './util/Auth.js';
+import { requireLogin } from './util/Auth.js';
 import { GET } from './util/Client.js';
 import { Popup } from './components/Popup.js';
 await requireLogin();
-const user = getCurrentUser();
       
 // ================== Join Logic ==================
 async function joinFromUrl(urlstr) {
@@ -42,29 +41,6 @@ document.getElementById('join').addEventListener('click', (e) => {
         e.target.textContent = "Stop Join Code Scanner";
     }
     e.target.classList.toggle('scanning');
-});
-
-// ================== Identity QR Code ==================
-new QRCode(document.getElementById("qrcode"), user.uid);
-document.getElementById("qrcode").getElementsByTagName('img')[0].onload = () => {
-    document.getElementById('downloadqr').download = user.name + '.png';
-    document.getElementById('downloadqr').href = document.getElementById("qrcode").getElementsByTagName('img')[0].src;
-};
-document.getElementById('fullscreenToggle').addEventListener('click', (e) => {
-    if (document.fullscreenElement) { 
-        document.exitFullscreen(); 
-        e.target.innerHTML = 'Full Screen &nbsp;<i class="fa fa-expand"></i>' 
-    } else { 
-        document.getElementById('myqr').requestFullscreen(); 
-        e.target.innerHTML = 'Collapse &nbsp;<i class="fa-solid fa-compress"></i>';
-    }
-});
-document.addEventListener("fullscreenchange", () => {
-    if (document.fullscreenElement) {
-        document.getElementById('fullscreenToggle').innerHTML = 'Collapse &nbsp;<i class="fa-solid fa-compress"></i>';
-    } else {
-        document.getElementById('fullscreenToggle').innerHTML = 'Full Screen &nbsp;<i class="fa fa-expand"></i>' 
-    }
 });
 
 // ================== Display Groups ==================
