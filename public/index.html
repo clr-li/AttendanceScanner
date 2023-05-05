@@ -17,8 +17,15 @@
         <!-- Custom Components -->
         <script type="module" src="components/Navigation.js"></script>
         <script type="module" src="components/ContactForm.js"></script>
+
+        <style>
+            /* smooth load */
+            body {
+                opacity: 0;
+            }
+        </style>
     </head>
-    <body style="opacity: 0;">
+    <body>
         <navigation-manager id="navigation">
             <section id="getStarted" style="opacity: 0;">
                 <h1>
@@ -82,5 +89,14 @@
         </navigation-manager>
 
         <script src="./index.js" type="module"></script>
+        <noscript>
+            Please enable JavaScript for full functionality.
+            <!-- smooth load -->
+            <style>
+                body {
+                    opacity: 1;
+                }
+            </style>
+        </noscript>
     </body>
 </html>

@@ -20,6 +20,13 @@
         <!-- Custom Components -->
         <script type="module" src="components/Navigation.js"></script>
         <script type="module" src="components/QRCode.js"></script>
+
+        <style>
+            /* smooth load */
+            body {
+                opacity: 0;
+            }
+        </style>
     </head>
     <body>
         <navigation-manager>
@@ -60,7 +67,16 @@
                 margin-bottom: 6px;
             }
         </style>
-        
+
         <script type="module" src="/user.js"></script>
+        <noscript>
+            Please enable JavaScript for full functionality.
+            <!-- smooth load -->
+            <style>
+                body {
+                    opacity: 1;
+                }
+            </style>
+        </noscript>
     </body>
 </html>
