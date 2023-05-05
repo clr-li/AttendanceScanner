@@ -4,7 +4,7 @@ await requireLogin();
 const user = getCurrentUser();
 
 /**
- * 
+ * Shows the user's QR Code
  * @requires module: <script src="util/qrcode.min.js"></script>
  */
  export class QRCode extends Component {
@@ -14,7 +14,7 @@ const user = getCurrentUser();
         <link rel="stylesheet" href="/styles/button.css">
         <link rel="stylesheet" href="/styles/qrcode.css">
         <link rel="stylesheet" href="/styles/sections.css">
-        <section id="myqr" class="light-section">
+        <section id="myqr">
             <h1>My QR Code</h1>
             <p>Scan this to take attendance at events!</p>
             <div class="img" id="qrcode"></div>
