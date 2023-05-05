@@ -2,11 +2,16 @@ import { getCurrentUser } from "./util/Auth.js";
 const user = getCurrentUser();
 
 if (user) {
-    document.getElementById('getStarted').style.display = 'none';
     const QRCode = (await import('./components/QRCode.js')).QRCode;
     document.getElementById('navigation').prepend(new QRCode());
-} else {
-    document.getElementById('getStarted').style.opacity = '1';
+
+    for (const element of document.getElementsByClassName('only-logged-in')) {
+        element.style.display = 'block';
+    };
+
+    for (const element of document.getElementsByClassName('not-logged-in')) {
+        element.style.display = 'none';
+    };
 }
 
 // smooth load (keep previous page visible until content loaded)

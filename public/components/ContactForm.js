@@ -11,9 +11,14 @@ class ContactForm extends Component {
         <h1>
             Contact Us
         </h1>
+        <p>Experiencing any technological issues with the service? Have a question or feature request? We're happy to hear from you!</p>
+        <br>
+        <p>NOTE: You'll have to contact the groups you're part of directly to dispute attendance records since we don't decide whether or you should be marked absent.</p>
+        <br>
         <form class="form" id="contactform">
             <label for="name">Name</label>
             <input id="name" type="text" required>
+            <br>
             <label for="email">Email</label>
             <input id="email" type="email" required><br>
             <label for="message">What would you like to say to us?</label><br>

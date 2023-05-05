@@ -16,7 +16,7 @@ const user = getCurrentUser();
         <link rel="stylesheet" href="/styles/sections.css">
         <section id="myqr">
             <h1>My QR Code</h1>
-            <p>Scan this to take attendance at events!</p>
+            <p>Event hosts will scan your unique code to take your attendance!</p>
             <div class="img" id="qrcode"></div>
             <br>
             <button class="button" id="fullscreenToggle">Full Screen &nbsp;<i class="fa fa-expand"></i></button>

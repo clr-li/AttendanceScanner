@@ -27,7 +27,7 @@
     </head>
     <body>
         <navigation-manager id="navigation">
-            <section id="getStarted" style="opacity: 0;">
+            <section class="not-logged-in">
                 <h1>
                     Take attendance in seconds.
                 </h1>
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </section>
-            <section class="light-section">
+            <section class="not-logged-in light-section">
                 <h1>
                     Features
                 </h1>
@@ -76,7 +76,41 @@
                     </div>
                 </div>
             </section>
-            <section class="medium-section">
+            <section class="only-logged-in light-section">
+                <h1>Actions</h1>
+                <p>Click below to navigate to the specified features!</p>
+                <div class="rows">
+                    <div role="link" class="cols" onclick="location.assign('scanner.html#new')">
+                        <h2>Quick Attendance</h2>
+                        <img src="assets/logo.png" style="max-width:197px; margin-top: 0.5em;">
+                        <p>
+                            Instantly start taking attendance! Just scan QR Codes from one of the groups you own and a new event will automatically be created to keep track of whose codes you scan.
+                        </p>
+                    </div><br><br>
+                    <div role="link" class="cols" onclick="location.assign('scanner.html')">
+                        <h2>Take Attendance</h2>
+                        <img src="assets/phoneqr.jpg" style="max-width:300px; margin-top: 0.5em;">
+                        <p>
+                            Scan people's QR-Codes for existing events to set their attendance status. By default, you cannot scan the same person twice in a row, but if you scan a person again at a later time, their attendance status for the relevant event will be updated.
+                        </p>
+                    </div><br><br>
+                    <div role="link" class="cols" onclick="location.assign('calendar.html')">
+                        <h2>View Your Events</h2>
+                        <img src="assets/calendar.png" style="max-width:300px; margin-top: 0.5em;">
+                        <p>
+                            Events are the classes, lessons, rehearsals and more that the organizations/groups you're a member of have invited you to and the ones you've created. You can view upcoming events and see which events you were marked absent/present for in the calendar.
+                        </p>
+                    </div><br><br>
+                    <div role="link" class="cols" onclick="location.assign('user.html')">
+                        <h2>Join Groups</h2>
+                        <img src="/assets/groups.png" style="max-width:310px; margin-top: 0.5em;">
+                        <p>
+                            Join groups to sign up for their events - all it takes is an invite link or scanning their QR-Code! Yo
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="not-logged-in medium-section">
                 <h1>
                     Our Partners
                 </h1>
