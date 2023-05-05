@@ -22,19 +22,20 @@ async function showSubscriptions() {
     subscriptions.forEach(sub => {
         const div = document.createElement("div");
         div.id = sub.id;
-        div.innerHTML = `
-        <h3>${sub.plan} PLAN</h3>
-        <ul>
-            <li>Business: ${sub.businessName}</li>
-            <li>Status: ${sub.status}</li>
-            <li>Next Billing Date: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
-            <li>Next Billing Amount: ${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount))}</li>
-        </ul>
+        div.innerHTML = /* html */`
+        <h3 style="margin-bottom: 5px;">${sub.plan} PLAN</h3>
+        <div style="text-align: center; max-width: 28%; margin: auto;">
+            <li style="text-align: left; margin-bottom: 3px;">Business: ${sub.businessName}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Status: ${sub.status}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Next Billing Date: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Next Billing Amount: ${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount))}</li>
+        </div>
         <button aria-label="delete" id="btn-${sub.id}" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0">❌</button>
         `;
-        div.style = "border: 1px solid black; border-radius: 20px; padding: 10px; margin: 8px; position: relative";
+        div.style = "max-width: var(--max-width); border: 1px solid black; border-radius: 20px; padding: 10px; margin: auto; position: relative";
         document.getElementById("subscriptions").appendChild(div);
         document.getElementById("btn-" + sub.id).addEventListener("click", () => { if (confirm("This will cancel this subscription and delete all data of its associated business. Proceed?")) unsubscribe(sub.id) });
+        document.getElementById("subscriptions").appendChild(document.createElement("br"));
     });
     document.getElementById("loader").style.display = "none";
 }
