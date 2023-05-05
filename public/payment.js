@@ -1,5 +1,6 @@
 import { GET, POST } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
+import { Popup } from './components/Popup.js';
 await requireLogin();
 
 async function unsubscribe(id) {
@@ -34,7 +35,7 @@ async function showSubscriptions() {
         `;
         div.style = "max-width: var(--max-width); border: 1px solid black; border-radius: 20px; padding: 10px; margin: auto; position: relative";
         document.getElementById("subscriptions").appendChild(div);
-        document.getElementById("btn-" + sub.id).addEventListener("click", () => { if (confirm("This will cancel this subscription and delete all data of its associated business. Proceed?")) unsubscribe(sub.id) });
+        document.getElementById("btn-" + sub.id).addEventListener("click", async () => { if (await Popup.confirm(`This will cancel this subscription and delete all data of its associated business. Proceed?`)) unsubscribe(sub.id) });
         document.getElementById("subscriptions").appendChild(document.createElement("br"));
     });
     document.getElementById("loader").style.display = "none";
