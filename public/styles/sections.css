@@ -35,3 +35,7 @@ section img {
 .purple-section {
     background-color: var(--purple-section);
 }
+
+.only-logged-in {
+    display: none;
+}

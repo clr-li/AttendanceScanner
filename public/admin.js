@@ -1,4 +1,4 @@
-import { GET, POST } from './util/Client.js';
+import { GET } from './util/Client.js';
 import { calcSimilarity } from './util/util.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
@@ -173,6 +173,7 @@ o.forEach(business => {
     }
 });
 if (noBusinesses) {
+    document.body.style.opacity = '1';
     const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
     if (shouldRedirect) location.assign('/payment.html');
     else history.back();

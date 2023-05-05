@@ -80,32 +80,39 @@
                 <h1>Actions</h1>
                 <p>Click below to navigate to the specified features!</p>
                 <div class="rows">
-                    <div role="link" class="cols" onclick="location.assign('scanner.html#new')">
+                    <div role="link" class="cols" onclick="location.assign('scanner.html#new')" style="margin-bottom: 16px; cursor: pointer;">
                         <h2>Quick Attendance</h2>
                         <img src="assets/logo.png" style="max-width:197px; margin-top: 0.5em;">
                         <p>
                             Instantly start taking attendance! Just scan QR Codes from one of the groups you own and a new event will automatically be created to keep track of whose codes you scan.
                         </p>
-                    </div><br><br>
-                    <div role="link" class="cols" onclick="location.assign('scanner.html')">
+                    </div>
+                    <div role="link" class="cols" onclick="location.assign('user.html')" style="margin-bottom: 16px; cursor: pointer;">
+                        <h2>Join Groups</h2>
+                        <img src="/assets/groups.png" style="max-width:310px; margin-top: 0.5em;">
+                        <p>
+                            Join groups to sign up for their events - all it takes is an invite link or scanning their QR-Code! You can view your attendance status or leave the group at any time.
+                        </p>
+                    </div>
+                    <div role="link" class="cols" onclick="location.assign('scanner.html')" style="margin-bottom: 16px; cursor: pointer;">
                         <h2>Take Attendance</h2>
-                        <img src="assets/phoneqr.jpg" style="max-width:300px; margin-top: 0.5em;">
+                        <img src="assets/phoneqr.jpg" style="max-width:260px; margin-top: 0.5em;">
                         <p>
                             Scan people's QR-Codes for existing events to set their attendance status. By default, you cannot scan the same person twice in a row, but if you scan a person again at a later time, their attendance status for the relevant event will be updated.
                         </p>
-                    </div><br><br>
-                    <div role="link" class="cols" onclick="location.assign('calendar.html')">
+                    </div>
+                    <div role="link" class="cols" onclick="location.assign('calendar.html')" style="margin-bottom: 16px; cursor: pointer;">
                         <h2>View Your Events</h2>
                         <img src="assets/calendar.png" style="max-width:300px; margin-top: 0.5em;">
                         <p>
                             Events are the classes, lessons, rehearsals and more that the organizations/groups you're a member of have invited you to and the ones you've created. You can view upcoming events and see which events you were marked absent/present for in the calendar.
                         </p>
-                    </div><br><br>
-                    <div role="link" class="cols" onclick="location.assign('user.html')">
-                        <h2>Join Groups</h2>
-                        <img src="/assets/groups.png" style="max-width:310px; margin-top: 0.5em;">
+                    </div>
+                    <div role="link" class="cols" onclick="location.assign('admin.html')" style="margin-bottom: 16px; cursor: pointer;">
+                        <h2>Create New Events</h2>
+                        <img src="assets/admin.jpg" style="max-width:300px; margin-top: 0.5em;">
                         <p>
-                            Join groups to sign up for their events - all it takes is an invite link or scanning their QR-Code! Yo
+                            Create, edit and delete events for the groups you own from the Admin Dashboard!
                         </p>
                     </div>
                 </div>
@@ -116,6 +123,16 @@
                 </h1>
                 <br>
                 <img src="/assets/syso.png" style="max-width:350px; background-color: black; padding: 15px">
+            </section>
+            <section class="not-logged-in purple-section">
+                <h1>FAQ</h1>
+                <h2>Why???</h2>
+                <p>Because!</p>
+                <h2>???</h2>
+                <p>!!!</p>
+            </section>
+            <section class="only-logged-in medium-section">
+                <h1>FAQ</h1>
             </section>
             <section class="purple-section">
                 <contact-form></contact-form>
