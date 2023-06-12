@@ -1,4 +1,6 @@
 import { GET } from './util/Client.js';
+import { requireLogin } from './util/Auth.js';
+await requireLogin();
 
 $("#calendar").evoCalendar();
 const resBusiness = await GET('/businesses');

@@ -175,7 +175,7 @@ userBusinesses.forEach((business) => {
                 ${business.name}
                 <span>(${
                     (business.role !== 'user') ?
-                        '<a href="/admin.html?businessId=' + business.id + '">' + business.role + '</a>'
+                        `<a title="navigate to dashboard" href="/admin.html?businessId=` + business.id + '">' + business.role + '</a>'
                     : 
                         business.role
                 })</span>

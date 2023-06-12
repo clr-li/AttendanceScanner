@@ -60,8 +60,13 @@
                     <input type="date" id="enddate" name="enddate">
                     <label for="endtime">End Time: </label>
                     <input type="time" id="endtime" name="endtime"><br>
-                    <input id="repeat" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
-                    <label for="repeat">Repeat</label><br>
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-bottom: 12px;">
+                        <label style="font-size: 1.5rem; margin: 6px">Repeat</label>
+                        <div class="checkbox-wrapper-6">
+                            <input id="repeat" class="tgl tgl-light" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
+                            <label class="tgl-btn" for="repeat"></label>
+                        </div>
+                    </div>
                     <div id="repeatform" style="display: none;">
                         <select id="frequency">
                             <option>Daily</option>
@@ -69,23 +74,23 @@
                             <option>Monthly</option>
                         </select>
                         <input type="number" id="interval" value="1">
-                        <div id="daysoftheweek" class="form">
-                            <input type="checkbox" id="sunday" name="sunday" value="sunday">
-                            <label for="sunday">Sunday</label>
-                            <input type="checkbox" id="monday" name="monday" value="monday">
-                            <label for="monday">Monday</label>
-                            <input type="checkbox" id="tuesday" name="tuesday" value="tuesday">
-                            <label for="tuesday">Tuesday</label>
-                            <input type="checkbox" id="wednesday" name="wednesday" value="wednesday">
-                            <label for="wednesday">Wednesday</label>
-                            <input type="checkbox" id="thursday" name="thursday" value="thursday">
-                            <label for="thursday">Thursday</label>
-                            <input type="checkbox" id="friday" name="friday" value="friday">
-                            <label for="friday">Friday</label>
-                            <input type="checkbox" id="saturday" name="saturday" value="saturday">
-                            <label for="saturday">Saturday</label>
-                        </div>
-                    </div>
+                        <div id="daysoftheweek" class="weekDays-selector" style="margin: 16px; margin-bottom: 0;">
+                            <input type="checkbox" id="sunday" name="sunday" value="sunday" class="weekday" />
+                            <label for="sunday">S</label>
+                            <input type="checkbox" id="monday" name="monday" value="monday" class="weekday" />
+                            <label for="monday">M</label>
+                            <input type="checkbox" id="tuesday" name="tuesday" value="tuesday" class="weekday" />
+                            <label for="tuesday">T</label>
+                            <input type="checkbox" id="wednesday" name="wednesday" value="wednesday" class="weekday" />
+                            <label for="wednesday">W</label>
+                            <input type="checkbox" id="thursday" name="thursday" value="thursday" class="weekday" />
+                            <label for="thursday">T</label>
+                            <input type="checkbox" id="friday" name="friday" value="friday" class="weekday" />
+                            <label for="friday">F</label>
+                            <input type="checkbox" id="saturday" name="saturday" value="saturday" class="weekday" />
+                            <label for="saturday">S</label>
+                          </div>
+                    </div><br>
                     <button type="button" id="submitevent" class="button">Submit</button>
                 </form>
             </section>
