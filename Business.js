@@ -264,6 +264,18 @@ router.get("/makeRecurringEvent", async function(request, response) {
     response.sendStatus(200);
 });
 
+router.get('/assignRole', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { assignRoles: true });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+    const userid = request.query.userId;
+    const role = request.query.role;
+
+    await asyncRun(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? `,
+        [role, businessId, userid]); 
+});
+
 /**
  * Updates event info for the specified business and event.
  * @queryParams businessId - id of the business to update event info for

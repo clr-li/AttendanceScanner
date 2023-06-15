@@ -339,7 +339,7 @@ async function updateTable() {
     for (let i = 0; i < [...map.keys()].length; i++) {
         let userid = [...map.keys()][i];
         let records = map.get(userid);
-        html += `<tr><td>${records[0].name} (${userid.substr(0,4)})</td>`;
+        html += `<tr><td>${records[0].name} (${userid.substr(0,4)})<br><select><option>owner</option><option>admin</option><option>moderator</option><option>scanner</option><option>user</option></select></td>`;
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
             for (let k = 0; k < records.length; k++) {
