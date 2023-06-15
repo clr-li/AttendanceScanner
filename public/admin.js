@@ -63,6 +63,13 @@ function validateEventTime(startDate, endDate, startTime, endTime) {
     return true;
 }
 
+function showSuccessDialog() {
+    document.getElementById('new-event-success').show();
+    setTimeout(() => {
+        document.getElementById('new-event-success').close();
+    }, 3000);
+}
+
 document.getElementById('submitevent').addEventListener('click', () => {
     console.log("adding event");
     const name = document.getElementById('name').value;
@@ -75,14 +82,14 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
 
-    if (!startdate || !starttime || !enddate || !endtime) {
-        Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
-        return;
-    }
+    // if (!startdate || !starttime || !enddate || !endtime) {
+    //     Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
+    //     return;
+    // }
 
-    if (!validateEventTime(startdate, enddate, starttime, endtime)) {
-        return;
-    }
+    // if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+    //     return;
+    // }
     if (document.getElementById("repeat").checked) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
@@ -99,11 +106,13 @@ document.getElementById('submitevent').addEventListener('click', () => {
             counter++;
         }
         GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}`).then(() => {
+            showSuccessDialog();
             updateEvents();
         });
     } else {
         GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
             console.log(res.status);
+            showSuccessDialog();
             let id = (await res.json())["last_insert_rowid()"];
             var startDate = new Date(starttimestamp*1000);
             var endDate = new Date(endtimestamp*1000);
@@ -219,6 +228,7 @@ new QRCode(document.getElementById("qrcode"), joinlink);
 document.getElementById("joinlink").onfocus = () => { // onfocus instead of onclick fixes the clipboard DOM exception security issue
     window.navigator.clipboard.writeText(joinlink);
     document.getElementById("joinlink").classList.add("success");
+    document.activeElement.blur();
     setTimeout(() => {
         document.getElementById("joinlink").classList.remove("success");
     }, 5000);
