@@ -22,7 +22,7 @@ input:-webkit-autofill:active {
     margin-right: 10px;
 }
 
-.form > input[type="date"], input[type="time"], input[type="text"], input[type="list"], input[type="email"], textarea { 
+.form input, .form textarea, .form select { 
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
@@ -122,5 +122,5 @@ input:-webkit-autofill:active {
     transition: all 0.2s ease;
 }
 .checkbox-wrapper-6 .tgl-light:checked + .tgl-btn {
-    background: #9FD6AE;
+    background: var(--success);
 }
