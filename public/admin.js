@@ -175,8 +175,15 @@ selectedBusiness = businessSelector.firstElementChild;
 await updateEvents();
 
 if (eventSelector.firstElementChild) {
-    eventSelector.setAttribute("value", eventSelector.firstElementChild.value);
-    selectedEvent = eventSelector.firstElementChild;
+    let item = eventSelector.firstElementChild;
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    const eventid = params.get('eventId');
+    if (eventid) {
+        item = eventSelector.shadowRoot.querySelector('option[data-id="' + eventid + '"]');
+    }
+    eventSelector.setAttribute("value",item.value);
+    selectedEvent = item;
     getEventData();
 }
 

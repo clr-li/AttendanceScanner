@@ -39,7 +39,7 @@ for (const [i, business] of Object.entries(businesses)) {
               date: month+"/"+day+"/"+year,
               badge: status,
               color: eventColor,
-              description: '<h3 style="margin-top:0.1em;margin-bottom:0.5em;">' + event.name + "</h3>" + "Event Description: " + event.description,
+              description: '<h3 style="margin-top:0.1em;margin-bottom:0.5em;">' + event.name + "</h3>" + "Event Description: " + event.description + `&nbsp;&nbsp;&nbsp;&nbsp;<a style="color: #5a5a5a; text-decoration: none;" href="/admin.html?eventId=${event.id}">Edit <i class="fa-regular fa-pen-to-square"></i></a>`,
               everyYear: false
             }
           ]);
