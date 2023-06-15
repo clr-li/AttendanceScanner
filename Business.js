@@ -276,19 +276,35 @@ router.get("/makeRecurringEvent", async function(request, response) {
  * @response 200 OK
  */
 router.get("/updateevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const name = request.query.name;
-  const description = request.query.description;
-  const starttimestamp = request.query.starttimestamp;
-  const endtimestamp = request.query.endtimestamp;
-  const eventid = request.query.eventid;
-  
-  await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
-                [name, starttimestamp, endtimestamp, description, businessId, eventid]);
-  response.sendStatus(200);
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+    const name = request.query.name;
+    const description = request.query.description;
+    const starttimestamp = request.query.starttimestamp;
+    const endtimestamp = request.query.endtimestamp;
+    const eventid = request.query.eventid;
+    const repeatId = request.query.repeatId;
+    const repeatEffect = request.query.repeatEffect;
+    const starttimedelta = request.query.starttimedelta;
+    const endtimedelta = request.query.endtimedelta;
+
+    if (repeatEffect == 1) {
+        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
+            [name, starttimestamp, endtimestamp, description, businessId, eventid]);
+    } else if (repeatEffect == 2) {
+        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`,
+            [name, starttimedelta, endtimedelta, description, businessId, repeatId, starttimestamp]);
+    } else if (repeatEffect == 3) {
+        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND repeat_id = ?`,
+        [name, starttimedelta, endtimedelta, description, businessId, repeatId]);
+    } else {
+        response.sendStatus(400);
+        return;
+    }
+
+    response.sendStatus(200);
 });
 
 /**
@@ -299,14 +315,27 @@ router.get("/updateevent", async function(request, response) {
  * @response 200 OK
  */
 router.get("/deleteevent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const eventid = request.query.eventid;
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
 
-  await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
-  response.sendStatus(200);
+    const businessId = request.query.businessId;
+    const eventid = request.query.eventid;
+    const repeatId = request.query.repeatId;
+    const repeatEffect = request.query.repeatEffect;
+    const starttimestamp = request.query.starttimestamp;
+
+    if (repeatEffect == 1) {
+        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
+    } else if (repeatEffect == 2) {
+        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`, [businessId, repeatId, starttimestamp]);
+    } else if (repeatEffect == 3) {
+        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND repeat_id = ?`, [businessId, repeatId]);
+    } else {
+        response.sendStatus(400);
+        return;
+    }
+
+    response.sendStatus(200);
 });
 
 /**

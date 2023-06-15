@@ -155,14 +155,6 @@ function sortStudents(searchword) {
     }
 }
 
-document.getElementById('newevent').onclick = () => {
-    if (document.getElementById('eventform').style.display == 'block') {
-        document.getElementById('eventform').style.display = 'none';
-    } else {
-        document.getElementById('eventform').style.display = 'block';
-    }
-}
-
 let res2 = await GET('/businesses');
 let o = await res2.json();
 let noBusinesses = true;
@@ -219,25 +211,48 @@ function getEventData() {
             <label for="update-endtime">End Time:</label>
             <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
             <label for="update-description">Description: </label>
-            <input type="text" value="${eventinfo.description}" id="update-description">
+            <input type="text" value="${eventinfo.description}" id="update-description"><br>
+            <label class="radio">This event <input type="radio" checked="true" name="repeat-effect" value="1"></label>
+            <label class="radio">This and future events <input type="radio" name="repeat-effect" value="2" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
+            <label class="radio">All events <input type="radio" name="repeat-effect" value="3" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
             <br><button id="update" class="button" type="button">Update Event</button>
             <button id="delete" class="button delete" type="button">Delete Event</button>
             <button id="scan" class="button" type="button">
             Scanner
-            </button><br><br>
+            </button>
         `;
         document.getElementById('scan').onclick = () => {
             window.open(`scanner.html?eventid=${eventid}&businessId=${getBusinessId()}`)
         };
         document.getElementById('delete').onclick = () => {
-            GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => {
+            let repeatEffect;
+            for (const radio of document.querySelectorAll('input[name="repeat-effect"]')) {
+                if (radio.checked) {
+                    repeatEffect = radio.value;
+                    break;
+                }
+            }
+            
+            const startdate = document.getElementById('update-startdate').value;
+            const starttime = document.getElementById('update-starttime').value;
+            const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
+
+            GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
                 console.log(res.status);
                 eventSelector.removeChild(selectedEvent);
-            })
+            });
         };
         document.getElementById('update').onclick = () => {
             const name = document.getElementById('update-name').value;
             const description = document.getElementById('update-description').value;
+
+            let repeatEffect = "1";
+            for (const radio of document.querySelectorAll('input[name="repeat-effect"]')) {
+                if (radio.checked) {
+                    repeatEffect = radio.value;
+                    break;
+                }
+            }
 
             const startdate = document.getElementById('update-startdate').value;
             const starttime = document.getElementById('update-starttime').value;
@@ -245,8 +260,9 @@ function getEventData() {
             const endtime = document.getElementById('update-endtime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
-            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then((res) => {
-                document.getElementsByClassName('item')[0].innerHTML = name + " — " + "from " + (new Date(starttimestamp*1000)).toDateString() + " to " + (new Date(endtimestamp*1000)).toDateString();
+            const starttimedelta = starttimestamp - eventinfo.starttimestamp;
+            const endtimedelta = endtimestamp - eventinfo.endtimestamp;
+            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
             });
