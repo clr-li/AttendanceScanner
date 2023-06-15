@@ -52,6 +52,17 @@ async function updateEvents() {
     }));
 }
 
+function validateEventTime(startDate, endDate, startTime, endTime) {
+    if (startDate > endDate) {
+        Popup.alert('Invalid date. Start date can\'t be later than end date.', 'var(--error)');
+        return false;
+    } else if (startDate == endDate && startTime > endTime) {
+        Popup.alert('Invalid time. Start time can\'t be later than end time', 'var(--error)');
+        return false;
+    }
+    return true;
+}
+
 document.getElementById('submitevent').addEventListener('click', () => {
     console.log("adding event");
     const name = document.getElementById('name').value;
@@ -63,12 +74,24 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const endtime = document.getElementById('endtime').value;
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
-    
+
+    if (!startdate || !starttime || !enddate || !endtime) {
+        Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
+        return;
+    }
+
+    if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+        return;
+    }
     if (document.getElementById("repeat").checked) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
         let daysoftheweek = [];
         let counter = 0;
+        if (interval < 1) {
+            Popup.alert('Please enter a positive number.', 'var(--error)');
+            return;
+        }
         for (const dayElement of [...document.getElementById("daysoftheweek").getElementsByTagName('input')]) {
             if (dayElement.checked) {
                 daysoftheweek.push(counter);
@@ -269,6 +292,11 @@ function getEventData() {
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
             const starttimedelta = starttimestamp - eventinfo.starttimestamp;
             const endtimedelta = endtimestamp - eventinfo.endtimestamp;
+
+            if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+                return;
+            }
+
             GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
