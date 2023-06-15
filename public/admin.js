@@ -90,6 +90,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
     if (!validateEventTime(startdate, enddate, starttime, endtime)) {
         return;
     }
+
     if (document.getElementById("repeat").checked) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
@@ -279,7 +280,7 @@ function getEventData() {
 
             GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
                 console.log(res.status);
-                eventSelector.removeChild(selectedEvent);
+                updateEvents();
             });
         };
         document.getElementById('update').onclick = () => {
