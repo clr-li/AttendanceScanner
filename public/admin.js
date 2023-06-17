@@ -71,7 +71,6 @@ function showSuccessDialog() {
 }
 
 document.getElementById('submitevent').addEventListener('click', () => {
-    console.log("adding event");
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
     
@@ -318,6 +317,9 @@ function getEventData() {
 
 Window.onload = updateTable();
 
+let allButtons;
+let allSelects;
+let userIds = new Array();
 async function updateTable() {
     let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
     let map = new Map();
@@ -338,8 +340,10 @@ async function updateTable() {
     html += "</tr>";
     for (let i = 0; i < [...map.keys()].length; i++) {
         let userid = [...map.keys()][i];
+        userIds.push(userid);
         let records = map.get(userid);
-        html += `<tr><td>${records[0].name} (${userid.substr(0,4)})<br><select><option>owner</option><option>admin</option><option>moderator</option><option>scanner</option><option>user</option></select></td>`;
+        html += `<tr><td>${records[0].name} (${records[0].role} - ${userid.substr(0,4)})<br><form><select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;"><option value="owner">owner</option><option value="admin">admin</option><option value="moderator">moderator</option><option value="scanner">scanner</option><option value="user">user</option></select><button type="button" class="changerole" style="background: none; border: none;">&nbsp<i class="fa-regular fa-pen-to-square"></button></form></td>`;
+        
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
             for (let k = 0; k < records.length; k++) {
@@ -357,6 +361,16 @@ async function updateTable() {
         html += "</tr>";
     }
     document.getElementById("displayattendance").innerHTML = html;
+    allButtons = document.getElementsByClassName('changerole');
+    allSelects = document.getElementsByClassName('newrole');
+    for (var i = 0; i < allButtons.length; i++) {
+        allButtons[i].addEventListener('click', function() {
+            let role = allSelects[i].value;
+            GET(`/assignRole?businessId=${getBusinessId()}&userId=${userIds[i]}&role=${role}`).then(() => {
+                console.log(res.status);
+            });
+        })
+    }
 }
 
 document.getElementById("export").onclick = () => {

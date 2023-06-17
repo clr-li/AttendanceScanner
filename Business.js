@@ -152,7 +152,7 @@ router.get("/attendancedata", async function(request, response) {
   const businessid = request.query.businessId;
 
   const attendanceinfo = await asyncAll(`SELECT Users.name, Records.* FROM Records LEFT JOIN Users ON Records.user_id = Users.id WHERE Records.business_id = ? GROUP BY Users.id, Records.event_id ORDER BY Records.timestamp DESC`, [businessid]);
-  response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
+  response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id, role FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ?`, [businessid])));
 });
 
 router.get("/userdata", async function(request, response) {
@@ -272,6 +272,9 @@ router.get('/assignRole', async (request, response) => {
     const userid = request.query.userId;
     const role = request.query.role;
 
+    console.log(role);
+    console.log(userid);
+    console.log(businessId);
     await asyncRun(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? `,
         [role, businessId, userid]); 
 });
