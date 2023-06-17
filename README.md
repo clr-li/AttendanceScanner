@@ -8,7 +8,7 @@ URL: https://attendancescannerqr.web.app
 # Source Control and Workflow
 ## Branches
 - `master` - production branch - clone of Glitch branch (Glitch is currently used for hosting the server)
-- `main` - main development branch - latest stable version of the code, hosted on Git
+- `main` - main development branch - latest stable version of the code, hosted on Github
 
 ## Local Development
 ### Setup
