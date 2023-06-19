@@ -317,12 +317,10 @@ function getEventData() {
 
 Window.onload = updateTable();
 
-let allButtons;
-let allSelects;
-let userIds = new Array();
 async function updateTable() {
     let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
     let map = new Map();
+    let userIds = [];
     for (let i = 0; i < attendancearr.length; i++) {
         if (attendancearr[i].user_id)
             attendancearr[i].id = attendancearr[i].user_id;
@@ -342,7 +340,18 @@ async function updateTable() {
         let userid = [...map.keys()][i];
         userIds.push(userid);
         let records = map.get(userid);
-        html += `<tr><td>${records[0].name} (${records[0].role} - ${userid.substr(0,4)})<br><form><select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;"><option value="owner">owner</option><option value="admin">admin</option><option value="moderator">moderator</option><option value="scanner">scanner</option><option value="user">user</option></select><button type="button" class="changerole" style="background: none; border: none;">&nbsp<i class="fa-regular fa-pen-to-square"></button></form></td>`;
+        const roleChangeHTML = records[0].role == 'owner' ? '' : `<br>
+        <form>
+            <select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;">
+                <option value="admin">admin</option>
+                <option value="moderator">moderator</option>
+                <option value="scanner">scanner</option>
+                <option value="user">user</option>
+            </select>
+            <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
+        </form>
+        `;
+        html += `<tr><td>${records[0].name} (${records[0].role} - ${userid.substr(0,4)})${roleChangeHTML}</td>`;
         
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
@@ -361,11 +370,11 @@ async function updateTable() {
         html += "</tr>";
     }
     document.getElementById("displayattendance").innerHTML = html;
-    allButtons = document.getElementsByClassName('changerole');
-    allSelects = document.getElementsByClassName('newrole');
-    for (var i = 0; i < allButtons.length; i++) {
-        allButtons[i].addEventListener('click', function() {
-            let role = allSelects[i].value;
+    let allRoleButtons = document.getElementsByClassName('changerole');
+    let allRoleSelects = document.getElementsByClassName('newrole');
+    for (let i = 0; i < allRoleButtons.length; i++) {
+        allRoleButtons[i].addEventListener('click', function() {
+            let role = allRoleSelects[i].value;
             GET(`/assignRole?businessId=${getBusinessId()}&userId=${userIds[i]}&role=${role}`).then(() => {
                 console.log(res.status);
             });

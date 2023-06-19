@@ -2,7 +2,7 @@
 const express = require('express'),
   router = express.Router();
 // database access
-const { asyncGet, asyncAll, asyncRun, asyncRunWithID } = require('./Database');
+const { asyncGet, asyncAll, asyncRun, asyncRunWithID, asyncRunWithChanges } = require('./Database');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
 // random universal unique ids for joincodes
@@ -272,11 +272,15 @@ router.get('/assignRole', async (request, response) => {
     const userid = request.query.userId;
     const role = request.query.role;
 
-    console.log(role);
-    console.log(userid);
-    console.log(businessId);
-    await asyncRun(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? `,
-        [role, businessId, userid]); 
+    if (role === "owner") {
+        response.sendStatus(403);
+        return;
+    }
+
+    const changes = await asyncRunWithChanges(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? AND role != 'owner'`,
+        [role, businessId, userid]);
+    
+    response.sendStatus(changes == 0 ? 403 : 200);
 });
 
 /**

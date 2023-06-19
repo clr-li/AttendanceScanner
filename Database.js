@@ -81,8 +81,18 @@ function asyncRunWithID(sql, params=[]) {
     });
 };
 
+function asyncRunWithChanges(sql, params=[]) {
+    return new Promise((resolve, reject) => {
+        db.run(sql, params, function (err) {
+            if (err) { console.log("sql error: " + sql); reject(err); }
+            else resolve(this.changes);
+        });
+    });
+}
+
 // ============================ MODULE EXPORTS ============================
 exports.asyncGet = asyncGet
 exports.asyncAll = asyncAll
 exports.asyncRun = asyncRun
+exports.asyncRunWithChanges = asyncRunWithChanges;
 exports.asyncRunWithID = asyncRunWithID
