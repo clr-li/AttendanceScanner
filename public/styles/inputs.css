@@ -132,10 +132,10 @@ input:-webkit-autofill:active {
     display: inline-block;
     position: relative;
     width: 20vw;
+    height: 0;
 }
 input[type="radio"] {
     opacity: 0;
-    cursor: pointer;
     width: 20px;
     height: 20px;
     outline: none;
@@ -148,13 +148,23 @@ input[type="radio"]:checked + .overlay .circle:before {
 input[type="radio"]:checked:hover + .overlay .circle:before {
     background: var(--accent);
 }
-input[type="radio"]:hover + .overlay .circle {
+input[type="radio"]:hover:not(:disabled) + .overlay .circle {
     border-color: var(--accent);
+}
+input[type="radio"]:disabled + .overlay .circle:before {
+    opacity: 0.5;
+}
+input[type="radio"]:disabled + .overlay .circle {
+    opacity: 0.5;
+}
+input[type="radio"]:disabled + .overlay {
+    cursor: default;
 }
 input[type="radio"] + .overlay {
     clear: both;
     position: absolute;
     width: 100%;
+    cursor: pointer;
 }
 input[type="radio"] + .overlay .text {
     width: 100%;

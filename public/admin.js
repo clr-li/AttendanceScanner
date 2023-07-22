@@ -261,14 +261,14 @@ function getEventData() {
                     </label>
                 </div>
                 <div>
-                    <input id="future" name="repeat-effect" type="radio" class="open" value="2" checked>
+                    <input id="future" name="repeat-effect" type="radio" class="open" value="2"  ${eventinfo.repeat_id != null ? '' : 'disabled'}>
                     <label for="future" class="overlay">
                         <div class="circle"></div> 
                         <span class=text>This and future events</span>  
                     </label>
                 </div>
                 <div>
-                    <input id="all" name="repeat-effect" type="radio" class="open" value="3" checked>
+                    <input id="all" name="repeat-effect" type="radio" class="open" value="3"  ${eventinfo.repeat_id != null ? '' : 'disabled'}>
                     <label for="all" class="overlay">
                         <div class="circle"></div> 
                         <span class=text>All events</span>  
@@ -281,9 +281,6 @@ function getEventData() {
             Scanner
             </button>
         `;
-        // <label class="radio">This event <input type="radio" checked="true" name="repeat-effect" value="1"></label>
-        //     <label class="radio">This and future events <input type="radio" name="repeat-effect" value="2" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
-        //     <label class="radio">All events <input type="radio" name="repeat-effect" value="3" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
         document.getElementById('scan').onclick = () => {
             window.open(`scanner.html?eventid=${eventid}&businessId=${getBusinessId()}`)
         };
