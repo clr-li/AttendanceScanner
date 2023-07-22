@@ -252,15 +252,38 @@ function getEventData() {
             <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
             <label for="update-description">Description: </label>
             <input type="text" value="${eventinfo.description}" id="update-description"><br>
-            <label class="radio">This event <input type="radio" checked="true" name="repeat-effect" value="1"></label>
-            <label class="radio">This and future events <input type="radio" name="repeat-effect" value="2" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
-            <label class="radio">All events <input type="radio" name="repeat-effect" value="3" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
+            <div class="radios">
+                <div>
+                    <input id="curr" name="repeat-effect" type="radio" class="open" value="1" checked>
+                    <label for="curr" class="overlay">
+                        <div class="circle"></div> 
+                        <span class=text>This event</span>  
+                    </label>
+                </div>
+                <div>
+                    <input id="future" name="repeat-effect" type="radio" class="open" value="2" checked>
+                    <label for="future" class="overlay">
+                        <div class="circle"></div> 
+                        <span class=text>This and future events</span>  
+                    </label>
+                </div>
+                <div>
+                    <input id="all" name="repeat-effect" type="radio" class="open" value="3" checked>
+                    <label for="all" class="overlay">
+                        <div class="circle"></div> 
+                        <span class=text>All events</span>  
+                    </label>
+                </div>
+            </div>
             <br><button id="update" class="button" type="button">Update Event</button>
             <button id="delete" class="button delete" type="button">Delete Event</button>
             <button id="scan" class="button" type="button">
             Scanner
             </button>
         `;
+        // <label class="radio">This event <input type="radio" checked="true" name="repeat-effect" value="1"></label>
+        //     <label class="radio">This and future events <input type="radio" name="repeat-effect" value="2" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
+        //     <label class="radio">All events <input type="radio" name="repeat-effect" value="3" ${eventinfo.repeat_id != null ? '' : 'disabled'}></label>
         document.getElementById('scan').onclick = () => {
             window.open(`scanner.html?eventid=${eventid}&businessId=${getBusinessId()}`)
         };
