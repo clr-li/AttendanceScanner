@@ -102,7 +102,7 @@ class Footer extends Component {
                         <ul>
                             <li><a href="/">About Us</a></li>
                             <li><a href="/">FAQ</a></li>
-                            <li><a href="/">Contact</a></li>
+                            <li><a href="/#contact">Contact</a></li>
                         </ul>
                     </div>
                     <div class="colbig">
