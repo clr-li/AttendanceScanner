@@ -322,6 +322,7 @@ function getEventData() {
             const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
             const starttimedelta = starttimestamp - eventinfo.starttimestamp;
             const endtimedelta = endtimestamp - eventinfo.endtimestamp;
+            console.log(starttimedelta + " end: " + endtimedelta);
 
             if (!validateEventTime(startdate, enddate, starttime, endtime)) {
                 return;

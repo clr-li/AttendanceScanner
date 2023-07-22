@@ -316,8 +316,8 @@ router.get("/updateevent", async function(request, response) {
         await asyncRun(`UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`,
             [name, starttimedelta, endtimedelta, description, businessId, repeatId, starttimestamp]);
     } else if (repeatEffect == 3) {
-        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND repeat_id = ?`,
-        [name, starttimedelta, endtimedelta, description, businessId, repeatId]);
+        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ?`,
+            [name, starttimedelta, endtimedelta, description, businessId, repeatId]);
     } else {
         response.sendStatus(400);
         return;
