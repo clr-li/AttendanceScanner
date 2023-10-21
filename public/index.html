@@ -124,7 +124,27 @@
                 <br>
                 <img src="/assets/syso.png" style="max-width:350px; background-color: black; padding: 15px">
             </section>
-            <section class="purple-section" id="contact">
+            <section class="medium-section">
+                <h1>
+                    How To Use
+                </h1>
+                <div style="display: flex;align-items: center;justify-content: center;flex-wrap: wrap;">
+                  <iframe width="560" height="315" src="https://www.youtube.com/embed/lkIFF4maKMU?si=a-TD6tWnTk0eSl0s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                <div style="max-width: 60em; margin: auto;">
+                    <button class="button" onclick="document.getElementById('translation').style.display = document.getElementById('translation').style.display == 'block' ? 'none' : 'block'">Transcript</button>
+                    <p id="translation" style="display: none; text-align: left; border-style: solid; padding: 1em;">
+                        This is a tool to take attendance in the easiest way possible. I’m going to show you how to use it in this short tutorial. 
+
+                        <br><br>To get started, click on the sign in button which will prompt you to sign in with Google. Once you’re in, a unique QR code will be generated for you to scan to get your attendance taken at any event. It’s that easy.
+
+                        <br><br>To create your own group, navigate to the admin dashboard, which will redirect you to the start-a-group page. Now when you click on the admin page, you will see your unique QR code for people to scan to join your group. On this page you can create events, update events, delete events, view events, and open the qr code scanner to take attendance.
+
+                        <br><br>The groups page allows you to view your attendance data and the calendar allows you to view your attendance status and edit events.
+                    </p>
+                </div>
+            </section>
+            <section class="purple-section"id="contact">
                 <contact-form></contact-form>
             </section>
         </navigation-manager>
