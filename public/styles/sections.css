@@ -42,8 +42,7 @@ section img {
 
 .transcript {
     display: none; 
-    text-align: left; 
-    /* border:none; */
+    text-align: left;
     border-style: solid; 
     padding: 1em;
 }

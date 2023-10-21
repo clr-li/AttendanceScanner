@@ -20,3 +20,7 @@ if (user) {
 setTimeout(() => {
     document.body.style.opacity = '1';
 }, 100);
+
+if (!(/^((?!chrome|android).)*safari/i.test(navigator.userAgent))) {
+    document.getElementById("safari-nav").style.display = "none";
+}

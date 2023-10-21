@@ -61,3 +61,13 @@
     padding: 15px;
     font-size: 1.5rem;
 }
+
+.nav_icon {
+    color: white;
+    text-align: center;
+    height: 42px;
+    padding: 0 clamp(6px, 4%, 16px);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
