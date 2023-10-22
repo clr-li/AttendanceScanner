@@ -398,6 +398,7 @@ async function updateTable() {
         if (map.get(userIds[i])[0].role != 'owner') {
             let id = userIds[i];
             let b_id = button_index;
+            allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
             allRoleButtons[button_index].addEventListener('click', function() {
                 let role = allRoleSelects[b_id].value;
                 GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then(() => {
