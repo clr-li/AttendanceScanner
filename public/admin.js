@@ -63,10 +63,10 @@ function validateEventTime(startDate, endDate, startTime, endTime) {
     return true;
 }
 
-function showSuccessDialog() {
-    document.getElementById('new-event-success').show();
+function showSuccessDialog(id) {
+    document.getElementById(id).show();
     setTimeout(() => {
-        document.getElementById('new-event-success').close();
+        document.getElementById(id).close();
     }, 3000);
 }
 
@@ -106,13 +106,13 @@ document.getElementById('submitevent').addEventListener('click', () => {
             counter++;
         }
         GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}`).then(() => {
-            showSuccessDialog();
+            showSuccessDialog('new-event-success');
             updateEvents();
         });
     } else {
         GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
             console.log(res.status);
-            showSuccessDialog();
+            showSuccessDialog('new-event-success');
             let id = (await res.json())["last_insert_rowid()"];
             var startDate = new Date(starttimestamp*1000);
             var endDate = new Date(endtimestamp*1000);
@@ -403,6 +403,7 @@ async function updateTable() {
                 let role = allRoleSelects[b_id].value;
                 GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then(() => {
                     console.log(res.status);
+                    showSuccessDialog('role-success')
                 });
             })
             button_index++;
