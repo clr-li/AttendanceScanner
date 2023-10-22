@@ -20,6 +20,7 @@ export function htmlToElements(html) {
 
 /**
  * Utility class to make Web Component creation simpler.
+ * @Important Each component must be defined in its own file. Safari does not support multiple components registered in the same file.
  * @link Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#high-level_view
  * @link Web Component Lifecycle: https://bignerdranch.com/blog/learn-the-lifecycle-of-a-web-component-by-building-a-custom-element/
  * @abstract

@@ -268,7 +268,7 @@ router.get('/assignRole', async (request, response) => {
     const uid = await handleAuth(request, response, request.query.businessId, { assignRoles: true });
     if (!uid) return;
 
-    const businessId = request.query.businessId;
+    const businessId = parseInt(request.query.businessId);
     const userid = request.query.userId;
     const role = request.query.role;
 

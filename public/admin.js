@@ -364,15 +364,15 @@ async function updateTable() {
         const roleChangeHTML = records[0].role == 'owner' ? '' : `<br>
         <form>
             <select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;">
-                <option value="user">user</option>
                 <option value="admin">admin</option>
                 <option value="moderator">moderator</option>
                 <option value="scanner">scanner</option>
+                <option value="user">user</option>
             </select>
             <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
         </form>
         `;
-        html += `<tr><td>${records[0].name} (${records[0].role} - ${userid.substr(0,4)})${roleChangeHTML}</td>`;
+        html += `<tr><td>${records[0].name} (<strong>${records[0].role}</strong> - ${userid.substr(0,4)})${roleChangeHTML}</td>`;
         
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
@@ -393,13 +393,20 @@ async function updateTable() {
     document.getElementById("displayattendance").innerHTML = html;
     let allRoleButtons = document.getElementsByClassName('changerole');
     let allRoleSelects = document.getElementsByClassName('newrole');
-    for (let i = 0; i < allRoleButtons.length; i++) {
-        allRoleButtons[i].addEventListener('click', function() {
-            let role = allRoleSelects[i].value;
-            GET(`/assignRole?businessId=${getBusinessId()}&userId=${userIds[i]}&role=${role}`).then(() => {
-                console.log(res.status);
-            });
-        })
+    let button_index = 0;
+    for (let i = 0; i < userIds.length; i++) {
+        if (map.get(userIds[i])[0].role != 'owner') {
+            let id = userIds[i];
+            let b_id = button_index;
+            allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
+            allRoleButtons[button_index].addEventListener('click', function() {
+                let role = allRoleSelects[b_id].value;
+                GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then(() => {
+                    console.log(res.status);
+                });
+            })
+            button_index++;
+        }
     }
 }
 
