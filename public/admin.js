@@ -393,13 +393,19 @@ async function updateTable() {
     document.getElementById("displayattendance").innerHTML = html;
     let allRoleButtons = document.getElementsByClassName('changerole');
     let allRoleSelects = document.getElementsByClassName('newrole');
-    for (let i = 0; i < allRoleButtons.length; i++) {
-        allRoleButtons[i].addEventListener('click', function() {
-            let role = allRoleSelects[i].value;
-            GET(`/assignRole?businessId=${getBusinessId()}&userId=${userIds[i]}&role=${role}`).then(() => {
-                console.log(res.status);
-            });
-        })
+    let button_index = 0;
+    for (let i = 0; i < userIds.length; i++) {
+        if (map.get(userIds[i])[0].role != 'owner') {
+            let id = userIds[i];
+            let b_id = button_index;
+            allRoleButtons[button_index].addEventListener('click', function() {
+                let role = allRoleSelects[b_id].value;
+                GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then(() => {
+                    console.log(res.status);
+                });
+            })
+            button_index++;
+        }
     }
 }
 
