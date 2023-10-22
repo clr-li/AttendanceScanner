@@ -11,8 +11,9 @@ const app = initializeApp({
 const auth = getAuth(app);
 auth.useDeviceLanguage();
 const googleProvider = new GoogleAuthProvider(); // sign in with Google, could easily replace (or add) other identity providers like Facebook
-await setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
-await getRedirectResult(auth); // initialize auth with redirect login results if available
+// Got rid of await for setPersistence and getRedirectResult because Safari spasms and an if(false) still runs the two lines
+setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
+getRedirectResult(auth); // initialize auth with redirect login results if available
 console.log("Initialized auth!");
 
 /**
