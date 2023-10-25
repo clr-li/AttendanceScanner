@@ -1,5 +1,6 @@
 import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
+import { Popup } from './components/Popup.js';
 await requireLogin();
 
 const url = new URL(window.location);
@@ -25,6 +26,12 @@ async function onScanSuccess(decodedText, decodedResult) {
     if (lastUserId != decodedText) {
         const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=${status}&businessId=${businessId}`);
         console.log(res.status);
+        if (!res.ok) {
+            Popup.alert(res.statusText, 'var(--error)');
+        } else {
+            if (fileMode)
+                Popup.alert(`Successfully recorded attendance!`, 'var(--success)', 2000);
+        }
         if (!fileMode) html5QrcodeScanner.resume();
         lastUserId = decodedText;
     } else {

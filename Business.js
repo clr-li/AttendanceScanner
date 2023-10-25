@@ -4,7 +4,7 @@ const express = require('express'),
 // database access
 const { asyncGet, asyncAll, asyncRun, asyncRunWithID, asyncRunWithChanges } = require('./Database');
 // user auth
-const handleAuth = require('./Auth').handleAuth;
+const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
 const uuid = require('uuid');
 
@@ -134,6 +134,13 @@ router.get("/recordAttendance", async (request, response) => {
   const businessid = request.query.businessId;
   const userid = request.query.userid;
   const status = request.query.status;
+
+  if (!(await getAccess(userid, businessid, {}))) {
+    response.statusMessage = "cannot take attendance for non-member";
+    response.sendStatus(400);
+    console.log("Cannot take attendance for non-member");
+    return;
+  }
 
   await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessid, userid, Math.round(Date.now() / 1000), status]);
   response.sendStatus(200);
