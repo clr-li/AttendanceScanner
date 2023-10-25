@@ -401,9 +401,11 @@ async function updateTable() {
             allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
             allRoleButtons[button_index].addEventListener('click', function() {
                 let role = allRoleSelects[b_id].value;
-                GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then(() => {
+                GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then((res) => {
                     console.log(res.status);
-                    showSuccessDialog('role-success')
+                    if (res.status === 200) {
+                        showSuccessDialog('role-success');
+                    }
                 });
             })
             button_index++;

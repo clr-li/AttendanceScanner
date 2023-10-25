@@ -12,7 +12,7 @@ const express = require('express'),
 // ============================ AUTH SETTINGS ============================
 const TOKEN_VERIFICATION = process.env.DEVELOPMENT !== 'true'; // true => verify idToken with firebase, false => just decode it for development purposes
 console.log("TOKEN VERIFICATION: " + TOKEN_VERIFICATION);
-const ACCESS_TABLE = { // the various roles and their priviledges
+const ACCESS_TABLE = { // the various roles and their privileges
     owner:       { owner: true , assignRoles: true , read: true , write: true , scanner: true  },
     admin:       { owner: false, assignRoles: true , read: true , write: true , scanner: true  },
     moderator:   { owner: false, assignRoles: false, read: true , write: true , scanner: false },
