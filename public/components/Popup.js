@@ -8,6 +8,7 @@ export class Popup extends Component {
         const borderColor = this.getAttribute("color") ?? "var(--accent)";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
+            <link rel="stylesheet" href="/styles/animations.css">
             <div id="popup">
                 <i class="fa fa-circle-xmark" id="cross"></i>
                 <div>
@@ -100,13 +101,21 @@ export class Popup extends Component {
     /**
      * Creates a popup with the given message and appends it to the DOM.
      * @param {string} message 
+     * @param {string} color
+     * @param {number} timout_ms 
      */
-    static alert(message, color) {
+    static alert(message, color, timout_ms=null) {
         const popup = document.createElement('pop-up');
         if (color) {
             popup.setAttribute('color', color);
         }
         popup.innerHTML = message;
+        if (timout_ms) {
+            popup.shadowRoot.getElementById('popup').style.animation = "fadeInAndOut " + timout_ms + "ms";
+            setTimeout(() => {
+                popup.close();
+            }, timout_ms);
+        }
         document.body.appendChild(popup);
     }
 
