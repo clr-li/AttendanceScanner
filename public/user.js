@@ -2,7 +2,7 @@ import { requireLogin } from './util/Auth.js';
 import { GET } from './util/Client.js';
 import { Popup } from './components/Popup.js';
 await requireLogin();
-      
+
 // ================== Join Logic ==================
 async function joinFromUrl(urlstr) {
     const url = new URL(urlstr);
@@ -12,6 +12,7 @@ async function joinFromUrl(urlstr) {
     if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
         await GET(`/join?businessId=${businessId}&code=${joincode}`);
+        location.assign("/user.html");
     }
 }
 joinFromUrl(window.location.href);
@@ -56,6 +57,7 @@ async function handleBusinessLoad(business) {
             if (!res.ok) {
                 Popup.alert(`<h1>Failed to leave ${business.name}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
             }
+            location.assign("/user.html");
         }
     });
 

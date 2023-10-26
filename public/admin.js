@@ -118,6 +118,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
             var endDate = new Date(endtimestamp*1000);
             eventSelector.addOption(name + " (" + id + ")", startDate.toDateString() + " to " + endDate.toDateString(), {"data-id": id});
         });
+        location.assign("/admin.html#eventform");
     }
 });
     
@@ -372,8 +373,13 @@ async function updateTable() {
             <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
         </form>
         `;
-        html += `<tr><td>${records[0].name} (<strong>${records[0].role}</strong> - ${userid.substr(0,4)})${roleChangeHTML}</td>`;
-        
+        html += `<tr><td>${records[0].name} (${userid.substr(0,4)}`;
+        if (records[0].role != 'owner') {
+            html += `)${roleChangeHTML}`;
+        } else {
+            html += ` - owner)${roleChangeHTML}`;
+        }
+        html += "</td>";
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
             for (let k = 0; k < records.length; k++) {
