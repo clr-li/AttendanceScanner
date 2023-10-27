@@ -102,6 +102,22 @@ router.get('/leave', async (request, response) => {
     response.sendStatus(200);
 });
 
+router.get('/removeMember', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+    const userId = request.query.userId;
+
+    if (await getAccess(userId, businessId, { owner: false })) {
+        await asyncRun(`DELETE FROM Members WHERE business_id = ? AND user_id = ?`, [businessId, userId]);
+        response.sendStatus(200);
+    } else {
+        response.statusMessage = "Cannot remove non-members or owners";
+        response.sendStatus(400);
+    }
+});
+
 /**
  * Gets data for all the events for the user in the specified business.
  * @queryParams businessId - id of the business to get events for
@@ -136,9 +152,8 @@ router.get("/recordAttendance", async (request, response) => {
   const status = request.query.status;
 
   if (!(await getAccess(userid, businessid, {}))) {
-    response.statusMessage = "cannot take attendance for non-member";
+    response.statusMessage = "Cannot take attendance for non-member";
     response.sendStatus(400);
-    console.log("Cannot take attendance for non-member");
     return;
   }
 
@@ -157,8 +172,22 @@ router.get("/attendancedata", async function(request, response) {
   if (!uid) return;
   
   const businessid = request.query.businessId;
-
-  const attendanceinfo = await asyncAll(`SELECT Users.name, Records.*, Members.role FROM Records, Members LEFT JOIN Users ON Records.user_id = Users.id WHERE Members.user_id = Users.id AND Records.business_id = ? GROUP BY Users.id, Records.event_id, Members.role ORDER BY Members.role, Records.timestamp DESC`, [businessid]);
+  const attendanceinfo = await asyncAll(`
+    SELECT 
+      UserData.name, Records.*, UserData.role
+    FROM
+      Records 
+      INNER JOIN (SELECT * FROM Users INNER JOIN Members ON Members.user_id = Users.id WHERE Members.business_id = ?) as UserData ON Records.user_id = UserData.id
+    WHERE 
+      Records.business_id = ? 
+    GROUP BY 
+      UserData.id,
+      Records.event_id,
+      UserData.role
+    ORDER BY
+      UserData.role ASC,
+      Records.timestamp DESC`, 
+    [businessid, businessid]);
   response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id, role FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`, [businessid])));
 });
 
