@@ -64,7 +64,7 @@ export async function login() {
  * Automatically reruns itself when the token expires.
  */
 export async function requireLogin() {
-    if (!(await login())) location.assign('/login.html?redirect=' + location.href);
+    if (!(await login())) location.assign('/login.html?redirect=' + encodeURIComponent(location.href));
     else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
     else console.log('Using dev login');
 }
