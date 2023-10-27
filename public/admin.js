@@ -17,6 +17,9 @@ businessSelector.addEventListener("select", (e) => {
     updateEvents();
     updateTable();
     getEventData();
+    let inputUrl = new URL(window.location);
+    inputUrl.searchParams.set('businessId', getBusinessId());
+    location.search = inputUrl.search;
 })
 
 function getBusinessId() {
@@ -203,8 +206,22 @@ if (noBusinesses) {
     if (shouldRedirect) location.assign('/payment.html');
     else history.back();
 }
-businessSelector.setAttribute("value", businessSelector.firstElementChild.value);
-selectedBusiness = businessSelector.firstElementChild;
+
+const urlstr = window.location.href;
+const url = new URL(urlstr);
+const params = url.searchParams;
+const businessId = params.get('businessId');
+
+let child = businessSelector.firstElementChild;
+for (let i = 0; i < businessSelector.childNodes.length; i++) {
+    if (businessSelector.childNodes[i].dataset.id == businessId) {
+        child = businessSelector.childNodes[i];
+        break;
+    }
+}
+
+businessSelector.setAttribute("value", child.value);
+selectedBusiness = child;
 await updateEvents();
 
 if (eventSelector.firstElementChild) {
