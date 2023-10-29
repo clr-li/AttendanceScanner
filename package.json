@@ -26,6 +26,7 @@
   "repository": {
     "url": "https://github.com/clr-li/AttendanceScanner"
   },
+  "private": true,
   "license": "MIT",
   "keywords": [
     "node",
