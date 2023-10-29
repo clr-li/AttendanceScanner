@@ -74,7 +74,7 @@ async function getUID(idToken, registerIfNewUser=true) {
  */
 async function getAccess(userid, businessid, requiredPriviledges={}) {
   try {
-    const role = (await asyncGet(`SELECT role from Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
+    const role = (await asyncGet(`SELECT role FROM Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
     const access = ACCESS_TABLE[role];
     for (const [priviledge, isRequired] of Object.entries(requiredPriviledges)) {

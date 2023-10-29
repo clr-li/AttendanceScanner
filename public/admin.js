@@ -379,7 +379,7 @@ async function updateTable() {
         let userid = [...map.keys()][i];
         userIds.push(userid);
         let records = map.get(userid);
-        const roleChangeHTML = records[0].role == 'owner' ? '' : `<br>
+        const roleChangeHTML = `<br>
         <form>
             <select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;">
                 <option value="admin">admin</option>
@@ -388,13 +388,14 @@ async function updateTable() {
                 <option value="user">user</option>
             </select>
             <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
+            <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
         </form>
         `;
-        html += `<tr><td>${records[0].name} (${userid.substr(0,4)}`;
+        html += `<tr id="row-${userid}"><td>${records[0].name} (${userid.substr(0,4)}`;
         if (records[0].role != 'owner') {
             html += `)${roleChangeHTML}`;
         } else {
-            html += ` - owner)${roleChangeHTML}`;
+            html += ` - owner)`;
         }
         html += "</td>";
         for (let j = 0; j < events.length; j++) {   
@@ -414,8 +415,9 @@ async function updateTable() {
         html += "</tr>";
     }
     document.getElementById("displayattendance").innerHTML = html;
-    let allRoleButtons = document.getElementsByClassName('changerole');
-    let allRoleSelects = document.getElementsByClassName('newrole');
+    const allRoleButtons = document.getElementsByClassName('changerole');
+    const allRoleSelects = document.getElementsByClassName('newrole');
+    const allKickButtons = document.getElementsByClassName('kickuser');
     let button_index = 0;
     for (let i = 0; i < userIds.length; i++) {
         if (map.get(userIds[i])[0].role != 'owner') {
@@ -430,7 +432,18 @@ async function updateTable() {
                         showSuccessDialog('role-success');
                     }
                 });
-            })
+            });
+            allKickButtons[button_index].addEventListener('click', function() {
+                GET(`/removeMember?businessId=${getBusinessId()}&userId=${id}`).then((res) => {
+                    console.log(res.status);
+                    if (res.status === 200) {
+                        showSuccessDialog('role-success');
+                        document.getElementById("row-" + id).remove();
+                    } else {
+                        Popup.alert(res.statusText, 'var(--error)');
+                    }
+                });
+            });
             button_index++;
         }
     }
