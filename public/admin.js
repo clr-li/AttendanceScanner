@@ -55,11 +55,12 @@ async function updateEvents() {
     }));
 }
 
-function validateEventTime(startDate, endDate, startTime, endTime) {
+function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {
+    console.log(startDate, endDate, startTime, endTime, isRepeating);
     if (startDate > endDate) {
         Popup.alert('Invalid date. Start date can\'t be later than end date.', 'var(--error)');
         return false;
-    } else if (startDate == endDate && startTime > endTime) {
+    } else if ((isRepeating || startDate == endDate) && startTime > endTime) {
         Popup.alert('Invalid time. Start time can\'t be later than end time', 'var(--error)');
         return false;
     }
@@ -83,17 +84,18 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const endtime = document.getElementById('endtime').value;
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
+    const isRepeating = document.getElementById("repeat").checked;
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
         return;
     }
 
-    if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+    if (!validateEventTime(startdate, enddate, starttime, endtime, isRepeating)) {
         return;
     }
 
-    if (document.getElementById("repeat").checked) {
+    if (isRepeating) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
         let daysoftheweek = [];
@@ -342,7 +344,7 @@ function getEventData() {
             const endtimedelta = endtimestamp - eventinfo.endtimestamp;
             console.log(starttimedelta + " end: " + endtimedelta);
 
-            if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+            if (!validateEventTime(startdate, enddate, starttime, endtime, "1" != repeatEffect)) {
                 return;
             }
 
