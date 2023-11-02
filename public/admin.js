@@ -17,6 +17,9 @@ businessSelector.addEventListener("select", (e) => {
     updateEvents();
     updateTable();
     getEventData();
+    let inputUrl = new URL(window.location);
+    inputUrl.searchParams.set('businessId', getBusinessId());
+    location.search = inputUrl.search;
 })
 
 function getBusinessId() {
@@ -52,21 +55,22 @@ async function updateEvents() {
     }));
 }
 
-function validateEventTime(startDate, endDate, startTime, endTime) {
+function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {
+    console.log(startDate, endDate, startTime, endTime, isRepeating);
     if (startDate > endDate) {
         Popup.alert('Invalid date. Start date can\'t be later than end date.', 'var(--error)');
         return false;
-    } else if (startDate == endDate && startTime > endTime) {
+    } else if ((isRepeating || startDate == endDate) && startTime > endTime) {
         Popup.alert('Invalid time. Start time can\'t be later than end time', 'var(--error)');
         return false;
     }
     return true;
 }
 
-function showSuccessDialog() {
-    document.getElementById('new-event-success').show();
+function showSuccessDialog(id) {
+    document.getElementById(id).show();
     setTimeout(() => {
-        document.getElementById('new-event-success').close();
+        document.getElementById(id).close();
     }, 3000);
 }
 
@@ -80,17 +84,18 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const endtime = document.getElementById('endtime').value;
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
+    const isRepeating = document.getElementById("repeat").checked;
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
         return;
     }
 
-    if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+    if (!validateEventTime(startdate, enddate, starttime, endtime, isRepeating)) {
         return;
     }
 
-    if (document.getElementById("repeat").checked) {
+    if (isRepeating) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
         let daysoftheweek = [];
@@ -106,18 +111,19 @@ document.getElementById('submitevent').addEventListener('click', () => {
             counter++;
         }
         GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}`).then(() => {
-            showSuccessDialog();
+            showSuccessDialog('new-event-success');
             updateEvents();
         });
     } else {
         GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
             console.log(res.status);
-            showSuccessDialog();
+            showSuccessDialog('new-event-success');
             let id = (await res.json())["last_insert_rowid()"];
             var startDate = new Date(starttimestamp*1000);
             var endDate = new Date(endtimestamp*1000);
             eventSelector.addOption(name + " (" + id + ")", startDate.toDateString() + " to " + endDate.toDateString(), {"data-id": id});
         });
+        location.assign("/admin.html#eventform");
     }
 });
     
@@ -202,8 +208,22 @@ if (noBusinesses) {
     if (shouldRedirect) location.assign('/payment.html');
     else history.back();
 }
-businessSelector.setAttribute("value", businessSelector.firstElementChild.value);
-selectedBusiness = businessSelector.firstElementChild;
+
+const urlstr = window.location.href;
+const url = new URL(urlstr);
+const params = url.searchParams;
+const businessId = params.get('businessId');
+
+let child = businessSelector.firstElementChild;
+for (let i = 0; i < businessSelector.childNodes.length; i++) {
+    if (businessSelector.childNodes[i].dataset.id == businessId) {
+        child = businessSelector.childNodes[i];
+        break;
+    }
+}
+
+businessSelector.setAttribute("value", child.value);
+selectedBusiness = child;
 await updateEvents();
 
 if (eventSelector.firstElementChild) {
@@ -324,7 +344,7 @@ function getEventData() {
             const endtimedelta = endtimestamp - eventinfo.endtimestamp;
             console.log(starttimedelta + " end: " + endtimedelta);
 
-            if (!validateEventTime(startdate, enddate, starttime, endtime)) {
+            if (!validateEventTime(startdate, enddate, starttime, endtime, "1" != repeatEffect)) {
                 return;
             }
 
@@ -361,19 +381,25 @@ async function updateTable() {
         let userid = [...map.keys()][i];
         userIds.push(userid);
         let records = map.get(userid);
-        const roleChangeHTML = records[0].role == 'owner' ? '' : `<br>
+        const roleChangeHTML = `<br>
         <form>
             <select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;">
-                <option value="user">user</option>
                 <option value="admin">admin</option>
                 <option value="moderator">moderator</option>
                 <option value="scanner">scanner</option>
+                <option value="user">user</option>
             </select>
             <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
+            <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
         </form>
         `;
-        html += `<tr><td>${records[0].name} (${records[0].role} - ${userid.substr(0,4)})${roleChangeHTML}</td>`;
-        
+        html += `<tr id="row-${userid}"><td>${records[0].name} (${userid.substr(0,4)}`;
+        if (records[0].role != 'owner') {
+            html += `)${roleChangeHTML}`;
+        } else {
+            html += ` - owner)`;
+        }
+        html += "</td>";
         for (let j = 0; j < events.length; j++) {   
             let statusupdate = false;
             for (let k = 0; k < records.length; k++) {
@@ -391,15 +417,37 @@ async function updateTable() {
         html += "</tr>";
     }
     document.getElementById("displayattendance").innerHTML = html;
-    let allRoleButtons = document.getElementsByClassName('changerole');
-    let allRoleSelects = document.getElementsByClassName('newrole');
-    for (let i = 0; i < allRoleButtons.length; i++) {
-        allRoleButtons[i].addEventListener('click', function() {
-            let role = allRoleSelects[i].value;
-            GET(`/assignRole?businessId=${getBusinessId()}&userId=${userIds[i]}&role=${role}`).then(() => {
-                console.log(res.status);
+    const allRoleButtons = document.getElementsByClassName('changerole');
+    const allRoleSelects = document.getElementsByClassName('newrole');
+    const allKickButtons = document.getElementsByClassName('kickuser');
+    let button_index = 0;
+    for (let i = 0; i < userIds.length; i++) {
+        if (map.get(userIds[i])[0].role != 'owner') {
+            let id = userIds[i];
+            let b_id = button_index;
+            allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
+            allRoleButtons[button_index].addEventListener('click', function() {
+                let role = allRoleSelects[b_id].value;
+                GET(`/assignRole?businessId=${getBusinessId()}&userId=${id}&role=${role}`).then((res) => {
+                    console.log(res.status);
+                    if (res.status === 200) {
+                        showSuccessDialog('role-success');
+                    }
+                });
             });
-        })
+            allKickButtons[button_index].addEventListener('click', function() {
+                GET(`/removeMember?businessId=${getBusinessId()}&userId=${id}`).then((res) => {
+                    console.log(res.status);
+                    if (res.status === 200) {
+                        showSuccessDialog('role-success');
+                        document.getElementById("row-" + id).remove();
+                    } else {
+                        Popup.alert(res.statusText, 'var(--error)');
+                    }
+                });
+            });
+            button_index++;
+        }
     }
 }
 

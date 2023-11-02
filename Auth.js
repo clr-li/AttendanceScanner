@@ -12,7 +12,7 @@ const express = require('express'),
 // ============================ AUTH SETTINGS ============================
 const TOKEN_VERIFICATION = process.env.DEVELOPMENT !== 'true'; // true => verify idToken with firebase, false => just decode it for development purposes
 console.log("TOKEN VERIFICATION: " + TOKEN_VERIFICATION);
-const ACCESS_TABLE = { // the various roles and their priviledges
+const ACCESS_TABLE = { // the various roles and their privileges
     owner:       { owner: true , assignRoles: true , read: true , write: true , scanner: true  },
     admin:       { owner: false, assignRoles: true , read: true , write: true , scanner: true  },
     moderator:   { owner: false, assignRoles: false, read: true , write: true , scanner: false },
@@ -72,9 +72,9 @@ async function getUID(idToken, registerIfNewUser=true) {
  * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges the priviledges to check if they are allowed the users role
  * @returns true if the user is a member of the specified business and has a role with at least the priviledges specified as true in requiredPriviledges (and none of the priveledges specified as false), false otherwise.
  */
-async function getAccess(userid, businessid, requiredPriviledges={admin: true}) {
+async function getAccess(userid, businessid, requiredPriviledges={}) {
   try {
-    const role = (await asyncGet(`SELECT role from Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
+    const role = (await asyncGet(`SELECT role FROM Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
     const access = ACCESS_TABLE[role];
     for (const [priviledge, isRequired] of Object.entries(requiredPriviledges)) {
@@ -131,3 +131,4 @@ router.get("/isLoggedIn", async (request, response) => {
 // ============================ AUTH EXPORTS ============================
 exports.authRouter = router;
 exports.handleAuth = handleAuth;
+exports.getAccess = getAccess;

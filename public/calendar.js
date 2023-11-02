@@ -6,7 +6,6 @@ $("#calendar").evoCalendar();
 const resBusiness = await GET('/businesses');
 const businesses = await resBusiness.json();
 
-const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const colors = ["blue", "red", "purple", "green", "orange", "hotpink", "yellow", "turquoise", "indigo", "maroon", "lime"];
 for (const [i, business] of Object.entries(businesses)) {
     const resEvent = await GET('/userEvents?businessId=' + business.id);
@@ -14,7 +13,7 @@ for (const [i, business] of Object.entries(businesses)) {
     events.forEach(event => {
         const date = new Date(event.starttimestamp*1000);
         const endDate = new Date(event.endtimestamp*1000);
-        const month = months[date.getMonth()];
+        const month = date.getMonth() + 1;
         const day = date.getDate();
         const year = date.getFullYear();
         let starttime = 0;
