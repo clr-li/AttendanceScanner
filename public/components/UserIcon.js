@@ -29,10 +29,10 @@ const user = getCurrentUser();
                 <img src="${user.picture}" referrerpolicy="no-referrer">
                 <span id="profile" class="popup">
                     <p>Hi ${user.name}!</p>
-                    <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout(); location.href = '/login.html?redirect=/';});">
+                    <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout().then(() => {location.href = '/login.html?redirect=/'})});">
                         Switch Accounts
                     </button>
-                    <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout(); location.reload();});">
+                    <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout().then(() => {location.reload()})});">
                         Logout
                     </button>
                 </span>

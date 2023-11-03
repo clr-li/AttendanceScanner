@@ -17,6 +17,7 @@
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/TypeSelect.js"></script>
+        <script type="module" src="/components/Table.js"></script>
     
         <style>
             /* smooth load */
@@ -100,26 +101,7 @@
                 </form>
             </section>
             <section class="medium-section">
-                <h1>Event Table</h1>
-                <button class="button" onclick="window.location.href='/calendar.html';">Calendar View</button><br><br>
-                <form id="filterform" class="form">
-                    <label for="filtername">Name: </label>
-                    <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
-                    <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select><br>
-                    <label for="filterstart">Start Date: </label>
-                    <input type="date" id="filterstart" name="filterstart">
-                    <label for="filterend">End Date: </label>
-                    <input type="date" id="filterend" name="filterend"><br>
-                    <button type="button" value="Submit" id="submitfilter" class="button">Filter</button>
-                </form>
-                <br>
-                <div class="scroll">
-                    <table id="displayattendance" class="calendar"></table>
-                </div>
-                <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
-                    <p>success</p>
-                </dialog>
-                <button type="button" class="button" id="export">Export to CSV</button>
+                <attendance-table id="table"></attendance-table>
             </section>
         </navigation-manager>
         
