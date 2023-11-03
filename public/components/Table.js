@@ -178,24 +178,24 @@ export class Table extends Component {
             /* Loop through all table rows (except the
             first, which contains table headers): */
             for (i = 1; i < (rows.length - 1); i++) {
-            // Start by saying there should be no switching:
-            shouldSwitch = false;
-            /* Get the two elements you want to compare,
-            one from current row and one from the next: */
-            x = rows[i].getElementsByTagName("TD")[0];
-            y = rows[i + 1].getElementsByTagName("TD")[0];
-            // Check if the two rows should switch place:
-            if (calcSimilarity(x.innerHTML.toLowerCase(), searchword) < calcSimilarity(y.innerHTML.toLowerCase(), searchword)) {
-                // If so, mark as a switch and break the loop:
-                shouldSwitch = true;
-                break;
-            }
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare,
+                one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("TD")[0];
+                y = rows[i + 1].getElementsByTagName("TD")[0];
+                // Check if the two rows should switch place:
+                if (calcSimilarity(x.innerHTML.split('<br>')[0].toLowerCase(), searchword) > calcSimilarity(y.innerHTML.split('<br>')[0].toLowerCase(), searchword)) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                }
             }
             if (shouldSwitch) {
-            /* If a switch has been marked, make the switch
-            and mark that a switch has been done: */
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
+                /* If a switch has been marked, make the switch
+                and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
             }
         }
     }
@@ -244,7 +244,7 @@ export class Table extends Component {
             filteringEvent = e.detail;
         });
         this.shadowRoot.getElementById('submitfilter').onclick = () => {
-            [...this.shadowRoot.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach ((row) => {
+            [...this.shadowRoot.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach((row) => {
                 if (row.firstChild.nodeName == 'TD' && this.shadowRoot.getElementById('filtername').value != "") {
                     this.sortStudents(this.shadowRoot.getElementById('filtername').value);
                 } else {
