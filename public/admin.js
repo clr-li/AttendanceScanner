@@ -4,6 +4,9 @@ import { Popup } from './components/Popup.js';
 await requireLogin();
 
 const attendanceTable = document.getElementById("table");
+attendanceTable.addEventListener("reloadTable", () => {
+    runTable();
+})
 
 const businessSelector = document.getElementById("businessname");
 let selectedBusiness = null;
@@ -16,11 +19,6 @@ businessSelector.addEventListener("select", (e) => {
     inputUrl.searchParams.set('businessId', getBusinessId());
     location.search = inputUrl.search;
 })
-
-async function runTable() {
-    let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
-    attendanceTable.updateTable(attendancearr, events, selectedBusiness.dataset.id);
-}
 
 function getBusinessId() {
     return selectedBusiness.dataset.id;
@@ -48,7 +46,12 @@ async function updateEvents() {
         return option;
     });
     eventSelector.replaceChildren(...options);
-    attendanceTable.addEvents(eventNames);
+    attendanceTable.addEvents(options, eventNames);
+}
+
+async function runTable() {
+    let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
+    attendanceTable.updateTable(attendancearr, events, selectedBusiness.dataset.id);
 }
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {

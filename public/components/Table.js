@@ -28,7 +28,15 @@ export class Table extends Component {
             <br>
             <div class="scroll">
                 <table id="displayattendance" class="calendar"></table>
-            </div>
+            </div><br>
+            <type-select label="Event Name:" name="eventNameAlter" id="alter-events" placeholder="select/type event"></type-select>
+            <type-select id="status" name="status" label="STATUS: " placeholder="select">
+                <option value="PRESENT">PRESENT</option>
+                <option value="ABSENT">ABSENT</option>
+                <option value="EXCUSED">EXCUSED</option>
+                <option value="LATE">LATE</option>
+            </type-select>
+            <button class="button" id="alter-button">Alter Checked</button><br>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>success</p>
             </dialog>
@@ -57,7 +65,7 @@ export class Table extends Component {
             }
             map.get(attendancearr[i].id).push(attendancearr[i]);
         }
-        let html = "<tr><th>Name (id)</th>"; 
+        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th>Name (id)</th>`; 
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp*1000);
             var endDate = new Date(events[i].endtimestamp*1000);
@@ -80,7 +88,7 @@ export class Table extends Component {
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
-            html += `<tr id="row-${userid}"><td>${records[0].name} (${userid.substr(0,4)}`;
+            html += `<tr id="row-${userid}"><td><input type="checkbox" id="select-${userid}" class="selectedrows"></td><td>${records[0].name} (${userid.substr(0,4)}`;
             if (records[0].role != 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -105,6 +113,11 @@ export class Table extends Component {
         }
         const attendance = this.shadowRoot.getElementById("displayattendance");
         attendance.innerHTML = html;
+        this.shadowRoot.getElementById("select-all").addEventListener("input", (e) => {
+            for (const checkbox of [...attendance.getElementsByClassName("selectedrows")]) {
+                checkbox.checked = e.target.checked;
+            }
+        });
         const allRoleButtons = attendance.getElementsByClassName('changerole');
         const allRoleSelects = attendance.getElementsByClassName('newrole');
         const allKickButtons = attendance.getElementsByClassName('kickuser');
@@ -137,6 +150,18 @@ export class Table extends Component {
                 button_index++;
             }
         }
+        const alterButton = this.shadowRoot.getElementById("alter-button");
+        alterButton.addEventListener("click", async (e) => {
+            const ids_to_alter = [];
+            for (const checkbox of [...attendance.getElementsByClassName("selectedrows")]) {
+                if (checkbox.checked) {
+                    ids_to_alter.push(checkbox.id.split("-")[1]);
+                }
+            }
+            await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
+            const event = new CustomEvent('reloadTable', {});
+            this.dispatchEvent(event);
+        });
     }
 
     sortStudents(searchword) {
@@ -175,12 +200,13 @@ export class Table extends Component {
         }
     }
 
-    addEvents(eventNames) {
+    addEvents(options, eventNames) {
         this.eventFilterSelector.replaceChildren(...[...eventNames].map((name) => {
             const option = document.createElement('option');
             option.value = name;
             return option;
         }));
+        this.alterEventSelector.replaceChildren(...options.map(o => o.cloneNode(true)));
     }
 
     downloadCSVFile(csv_data) {
@@ -208,10 +234,15 @@ export class Table extends Component {
 
     connectedCallback() {
         this.eventFilterSelector = this.shadowRoot.getElementById("filterEventName");
+        this.alterEventSelector = this.shadowRoot.getElementById("alter-events");
+        this.event_to_alter = null;
+        this.alterEventSelector.addEventListener("select", (e) => {
+            this.event_to_alter = e.detail;
+        });
         let filteringEvent = null;
         this.eventFilterSelector.addEventListener("select", (e) => {
             filteringEvent = e.detail;
-        })
+        });
         this.shadowRoot.getElementById('submitfilter').onclick = () => {
             [...this.shadowRoot.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach ((row) => {
                 if (row.firstChild.nodeName == 'TD' && this.shadowRoot.getElementById('filtername').value != "") {
@@ -241,6 +272,13 @@ export class Table extends Component {
                 }
             });
         }
+
+        this.status = "EXCUSED";
+        const statusSelector = this.shadowRoot.getElementById("status");
+        statusSelector.addEventListener("select", (e) => {
+            this.status = e.detail.value;
+        });
+        statusSelector.setAttribute("value", this.status);
     
         this.shadowRoot.getElementById("export").onclick = () => {
             // Variable to store the final csv data
