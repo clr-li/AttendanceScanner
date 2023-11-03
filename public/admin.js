@@ -14,7 +14,6 @@ businessSelector.addEventListener("select", (e) => {
     selectedBusiness = e.detail;
     updateEvents();
     runTable();
-    getEventData();
     let inputUrl = new URL(window.location);
     inputUrl.searchParams.set('businessId', getBusinessId());
     location.search = inputUrl.search;
