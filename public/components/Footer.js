@@ -28,7 +28,7 @@ class Footer extends Component {
                     <div class="colsmall">
                         <h2>About Us</h2>
                         <ul>
-                            <li><a href="/">About Us</a></li>
+                            <li><a href="/about.html">About Us</a></li>
                             <li><a href="/">FAQ</a></li>
                             <li><a href="/#contact">Contact</a></li>
                         </ul>
