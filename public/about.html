@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>About</title>
+        <meta name="description" content="A service to automate attendance">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="assets/logo.png"/>
+
+        <!-- Import the webpage's stylesheet -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- Import QR Code creating -->
+        <script src="util/qrcode.min.js"></script>
+
+        <!-- Custom Components -->
+        <script type="module" src="components/Navigation.js"></script>
+        <script type="module" src="components/ContactForm.js"></script>
+
+        <style>
+            /* smooth load */
+            body {
+                opacity: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <navigation-manager id="navigation">
+            <section>
+                <h1>
+                    Our Team
+                </h1>
+                <img src="/assets/Alex.jpg" style="max-width:200px">
+                <img src="/assets/Claire.jpg" style="max-width:200px"><br>
+                <a href="https://www.linkedin.com/in/alexander-le-metzger"><img src="/assets/linkedin.png" style="max-width: 3rem;"></a>
+                <a href="https://www.linkedin.com/in/claire-li-a8a234253"><img src="/assets/linkedin.png" style="max-width: 3rem;"></a>
+            </section>
+        </navigation-manager>
+
+        <script>
+            // smooth load (keep previous page visible until content loaded)
+            // requires the body to start with opacity: 0, and this should be the last script run.
+            // don't forget the no-script fallback
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        </script>
+        <noscript>
+            Please enable JavaScript for full functionality.
+            <!-- smooth load -->
+            <style>
+                body {
+                    opacity: 1;
+                }
+            </style>
+        </noscript>
+    </body>
+</html>
