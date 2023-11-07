@@ -7,8 +7,9 @@
     "start": "node server.js",
     "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
-    "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master",
-    "deploy": "npm run glitch && npm run fire && git checkout main"
+    "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master --force",
+    "predeploy": "git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
+    "deploy": "git status --porcelain=v1 2>/dev/null || npm run glitch && npm run fire && git checkout main"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
