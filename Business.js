@@ -162,6 +162,30 @@ router.get("/recordAttendance", async (request, response) => {
 });
 
 /**
+ * Records a new attendance record for multiple users
+ * @queryParams event - id of the event to record attendance for
+ * @queryParams businessId - id of the business to record attendance for
+ * @queryParams ids - comma separated string of userids to record attendance for
+ * @queryParams status - the attendance status to note down
+ * @requiredPriviledges write for the business
+ * @response 200 OK if successful
+ */
+router.get("/alterAttendance", async (request, response) => {
+  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+  if (!uid) return;
+  
+  const businessId = request.query.businessId;
+  const ids = request.query.ids;
+  const event = request.query.event;
+  const status = request.query.status;
+
+  for (const id of ids.split(',')) {
+    await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, [status, businessId, event, id, Math.round(Date.now() / 1000)]);
+  }
+  response.sendStatus(200);
+});
+
+/**
  * Returns all the attendance records for the specified business.
  * @queryParams businessId - id of the business to get attendance records for
  * @requiredPriviledges read for the business

@@ -19,7 +19,7 @@ async function showSubscriptions() {
         var subscriptions = [];
     }
     
-    document.getElementById("subscriptions").innerHTML = "<h1>Manage Subscriptions</h1>";
+    document.getElementById("subscriptions").innerHTML = "<h1>Manage Subscriptions</h1><h3>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</h3>";
     subscriptions.forEach(sub => {
         const div = document.createElement("div");
         div.id = sub.id;
