@@ -116,5 +116,14 @@ import { getPattern } from "../util/util.js";
         option.textContent = textContent;
         this.appendChild(option);
     }
+    /**
+     * Sets the value of this input to the first option with the specified attribute.
+     */
+    setValue(attribute, value) {
+        const option = this.querySelector(`option[${attribute}="${value}"]`);
+        if (!option) return this.shadowRoot.getElementById("select").value;
+        this.setAttribute("value", option.value);
+        return option.value;
+    }
 }
 window.customElements.define('type-select', TypeSelect); // define custom <type-select> tag, name must be lowercase and have one hyphen

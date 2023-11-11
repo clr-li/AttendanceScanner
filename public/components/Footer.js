@@ -20,7 +20,7 @@ class Footer extends Component {
                     <div class="colsmall">
                         <h2>Attendance</h2>
                         <ul>
-                            <li><a href="/user.html">My Groups</a></li>
+                            <li><a href="/groups.html">My Groups</a></li>
                             <li><a href="/calendar.html">My Calendar</a></li>
                             <li><a href="/admin.html">Admin Dashboard</a></li>
                         </ul>

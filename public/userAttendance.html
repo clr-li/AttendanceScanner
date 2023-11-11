@@ -25,14 +25,14 @@
         <script type="module" defer>
             import { GET } from './util/Client.js';
             import { requireLogin, getCurrentUser } from './util/Auth.js';
+            import { useURL } from './util/StateManager.js';
             await requireLogin();
             const user = getCurrentUser();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const eventid = urlParams.get('eventid');
-            const businessId = urlParams.get('businessId');
-            const status = urlParams.get('status');
+            const { code } = useURL('code');
+            const { eventid } = useURL('eventid');
+            const { businessId } = useURL('businessId');
+            const { status } = useURL('status');
             
             const res = await GET(`/recordMyAttendance?code=${code}&eventid=${eventid}&businessId=${businessId}&status=${status}`);
             if (res.ok) {

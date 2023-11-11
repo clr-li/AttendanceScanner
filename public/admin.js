@@ -1,6 +1,7 @@
 import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
+import { useURL } from './util/StateManager.js';
 await requireLogin();
 
 const attendanceTable = document.getElementById("table");
@@ -9,26 +10,36 @@ attendanceTable.addEventListener("reloadTable", () => {
 })
 
 const businessSelector = document.getElementById("businessname");
-let selectedBusiness = null;
+const { get: getBusinessId, set: setBusinessId } = useURL('businessId');
 businessSelector.addEventListener("select", (e) => {
-    selectedBusiness = e.detail;
+    setBusinessId(e.detail.dataset.id);
     updateEvents();
     runTable();
-    let inputUrl = new URL(window.location);
-    inputUrl.searchParams.set('businessId', getBusinessId());
-    location.search = inputUrl.search;
-})
-
-function getBusinessId() {
-    return selectedBusiness.dataset.id;
+});
+const businessRes = await GET('/businesses');
+const businesses = await businessRes.json();
+let noBusinesses = true;
+businesses.forEach(business => {
+    if (business.role != 'user') {
+        noBusinesses = false;
+        businessSelector.addOption(business.name, business.role, {"data-id": business.id});
+    }
+});
+if (noBusinesses) {
+    document.body.style.opacity = '1';
+    const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
+    if (shouldRedirect) location.assign('/payment.html');
+    else history.back();
 }
+setBusinessId(getBusinessId() || businessSelector.firstElementChild.dataset.id);
+businessSelector.setValue('data-id', getBusinessId());
 
 const eventSelector = document.getElementById("events");
-let selectedEvent = null;
+const { get: getEventId, set: setEventId } = useURL('eventId');
 eventSelector.addEventListener("select", (e) => {
-    selectedEvent = e.detail;
+    setEventId(e.detail.dataset.id);
     getEventData();
-})
+});
 let events;
 async function updateEvents() {
     let res = await GET('/events?businessId=' + getBusinessId());
@@ -47,10 +58,16 @@ async function updateEvents() {
     eventSelector.replaceChildren(...options);
     attendanceTable.addEvents(options, eventNames);
 }
+await updateEvents();
+if (eventSelector.firstElementChild) {
+    setEventId(getEventId() || eventSelector.firstElementChild.dataset.id);
+    eventSelector.setValue('data-id', getEventId());
+    getEventData();
+}
 
 async function runTable() {
     let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
-    attendanceTable.updateTable(attendancearr, events, selectedBusiness.dataset.id);
+    attendanceTable.updateTable(attendancearr, events, getBusinessId());
 }
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {
@@ -124,52 +141,6 @@ document.getElementById('submitevent').addEventListener('click', () => {
     }
 });
 
-let res2 = await GET('/businesses');
-let o = await res2.json();
-let noBusinesses = true;
-o.forEach(business => {
-    if (business.role != 'user') {
-        noBusinesses = false;
-        businessSelector.addOption(business.name, business.role, {"data-id": business.id});
-    }
-});
-if (noBusinesses) {
-    document.body.style.opacity = '1';
-    const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
-    if (shouldRedirect) location.assign('/payment.html');
-    else history.back();
-}
-
-const urlstr = window.location.href;
-const url = new URL(urlstr);
-const params = url.searchParams;
-const businessId = params.get('businessId');
-
-let child = businessSelector.firstElementChild;
-for (let i = 0; i < businessSelector.childNodes.length; i++) {
-    if (businessSelector.childNodes[i].dataset.id == businessId) {
-        child = businessSelector.childNodes[i];
-        break;
-    }
-}
-
-businessSelector.setAttribute("value", child.value);
-selectedBusiness = child;
-await updateEvents();
-
-if (eventSelector.firstElementChild) {
-    let item = eventSelector.firstElementChild;
-    const url = new URL(window.location);
-    const params = url.searchParams;
-    const eventid = params.get('eventId');
-    if (eventid) {
-        item = eventSelector.shadowRoot.querySelector('option[data-id="' + eventid + '"]');
-    }
-    eventSelector.setAttribute("value",item.value);
-    selectedEvent = item;
-    getEventData();
-}
-
 let res = await GET('/joincode?businessId=' + getBusinessId());
 let data = await res.json();
 let joincode = data.joincode;
@@ -186,8 +157,7 @@ document.getElementById("joinlink").onfocus = () => { // onfocus instead of oncl
 };
 
 function getEventData() {
-    let eventid = selectedEvent.dataset.id;
-    GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
+    GET(`/eventdata?eventid=${getEventId()}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
         var startDate = new Date(eventinfo.starttimestamp*1000);
         var endDate = new Date(eventinfo.endtimestamp*1000);
         document.getElementById("eventdetails").innerHTML = /* html */`
@@ -233,7 +203,7 @@ function getEventData() {
             </button>
         `;
         document.getElementById('scan').onclick = () => {
-            window.open(`scanner.html?eventid=${eventid}&businessId=${getBusinessId()}`)
+            window.open(`scanner.html?eventid=${getEventId()}&businessId=${getBusinessId()}`)
         };
         document.getElementById('delete').onclick = () => {
             let repeatEffect;
@@ -248,7 +218,7 @@ function getEventData() {
             const starttime = document.getElementById('update-starttime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
 
-            GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
+            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
             });
@@ -278,7 +248,7 @@ function getEventData() {
                 return;
             }
 
-            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
+            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
             });

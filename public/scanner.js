@@ -2,23 +2,20 @@ import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { QRCode } from './components/QRCode.js';
+import { useURL } from './util/StateManager.js';
 await requireLogin();
 
-const url = new URL(window.location);
-const params = url.searchParams;
-const eventid = params.get('eventid');
-const businessId = params.get('businessId');
+const { eventid } = useURL('eventid');
+const { businessId } = useURL('businessId');
 const res = await GET(`/eventdata?eventid=${eventid}&businessId=${businessId}`); 
 const eventInfo = await res.json();
 
-let status = params.get("status") || Date.now() <= parseInt(eventInfo.starttimestamp) * 1000 ? "PRESENT" : "LATE";
+const { get: getStatus, set: setStatus } = useURL('status', Date.now() <= parseInt(eventInfo.starttimestamp) * 1000 ? "PRESENT" : "LATE");
 const statusSelector = document.getElementById("status");
 statusSelector.addEventListener("select", (e) => {
-    status = e.detail.value;
-    params.set("status", status);
-    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    setStatus(e.detail.value);
 })
-statusSelector.setAttribute("value", status);
+statusSelector.setAttribute("value", getStatus());
 
 // ========= Scanner =========
 let lastUserId = -1;
@@ -33,7 +30,7 @@ async function onScanSuccess(decodedText, decodedResult) {
     console.log(`Scan result: ${decodedText}`, decodedResult);
 
     if (lastUserId != decodedText) {
-        const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=${status}&businessId=${businessId}`);
+        const res = await GET(`/recordAttendance?eventid=${eventid}&userid=${decodedText}&status=${getStatus()}&businessId=${businessId}`);
         console.log(res.status);
         if (!res.ok) {
             Popup.alert(res.statusText, 'var(--error)');
@@ -65,7 +62,7 @@ const scanner = document.getElementById("scan");
 
 const codeRes = await GET(`/getOrSetTempAttendanceCode?eventid=${eventid}&businessId=${businessId}`);
 const code = await codeRes.text();
-const qrElement = new QRCode(`${location.origin}/userAttendance.html?eventid=${eventid}&businessId=${businessId}&status=${status}&code=${code}`, "attendanceCode");
+const qrElement = new QRCode(`${location.origin}/userAttendance.html?eventid=${eventid}&businessId=${businessId}&status=${getStatus()}&code=${code}`, "attendanceCode");
 qrElement.innerHTML = /* html */`
     <span title="Will also expire if the tab is deactivated - e.g. hidden from rendering or another url is visited">
     <label>
@@ -85,35 +82,34 @@ qrElement.innerHTML = /* html */`
 `;
 member_scan.append(qrElement);
 
+const { get: getExpiration, set: setExpiration } = useURL('expiration', 300_000);
+
 async function refreshTempAttendanceCode() {
-    const res = await GET(`/refreshTempAttendanceCode?eventid=${eventid}&businessId=${businessId}&expiration=${expiration}&code=${code}`);
+    const res = await GET(`/refreshTempAttendanceCode?eventid=${eventid}&businessId=${businessId}&expiration=${getExpiration()}&code=${code}`);
     if (!res.ok) {
         Popup.alert(res.statusText, 'var(--error)');
     }
 }
 
-let expiration = params.get('expiration') || 300_000;
-document.getElementById("expiration-select").value = expiration;
+document.getElementById("expiration-select").value = getExpiration();
 document.getElementById("expiration-select").addEventListener("change", async (e) => {
-    expiration = e.target.value;
-    params.set('expiration', expiration);
-    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    setExpiration(e.target.value);
     refreshTempAttendanceCode();
 });
 
 setInterval(() => {
-    console.log("refreshing code")
-    refreshTempAttendanceCode(document.getElementById("expiration-select").value);
+    setExpiration(document.getElementById("expiration-select").value);
+    refreshTempAttendanceCode();
 }, 250_000);
 
 document.getElementById("regen-button").addEventListener("click", async () => {
-    const codeRes = await GET(`/setNewTempAttendanceCode?eventid=${eventid}&businessId=${businessId}&expiration=${expiration}`);
+    const codeRes = await GET(`/setNewTempAttendanceCode?eventid=${eventid}&businessId=${businessId}&expiration=${getExpiration()}`);
     const code = await codeRes.text();
-    qrElement.update(`${location.origin}/userAttendance.html?eventid=${eventid}&businessId=${businessId}&status=${status}&code=${code}`);
+    qrElement.update(`${location.origin}/userAttendance.html?eventid=${eventid}&businessId=${businessId}&status=${getStatus()}&code=${code}`);
 });
 
 // ========= Switch between QR Code and Scanner =========
-const activeTab = params.get('active');
+const { get: getActiveTab, set: setActiveTab } = useURL('active', 'scanner');
 
 function activateScanner() {
     scanner.style.display = 'block'; member_scan.style.display = 'none';
@@ -124,8 +120,7 @@ function activateScanner() {
     } catch {
         // scanner is in file mode
     }
-    params.set('active', 'scanner');
-    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    setActiveTab('scanner');
     initScanner();
 }
 
@@ -138,11 +133,10 @@ function activateQR() {
     } catch {
         // scanner is in file mode
     }
-    params.set('active', 'qr');
-    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    setActiveTab('qr');
 }
 
-if (activeTab === "scanner") {
+if (getActiveTab() === "scanner") {
     activateScanner();
 } else {
     activateQR();

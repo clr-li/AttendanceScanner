@@ -178,8 +178,6 @@ router.get("/recordMyAttendance", async (request, response) => {
   const code = request.query.code;
   const key = eventid + "-" + businessId;
 
-  console.log(key)
-  console.log(await storage.getItem(key), code);
   if (await storage.getItem(key) !== code || !code) {
     response.statusMessage = "Invalid/Expired code";
     response.sendStatus(400);
