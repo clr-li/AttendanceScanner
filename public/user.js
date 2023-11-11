@@ -30,7 +30,7 @@ function onScanSuccess(decodedText, decodedResult) {
 let html5QrcodeScanner = new Html5QrcodeScanner(
     "qr-reader", { 
         fps: 10, 
-        qrbox: Math.min(window.innerWidth, 1000) / 2,
+        qrbox: Math.min(window.innerWidth, 400) / 2,
         formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
     });
 document.getElementById('join').addEventListener('click', (e) => {

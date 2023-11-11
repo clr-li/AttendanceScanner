@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Attendance Taken</title>
+        <meta name="description" content="A service to automate attendance">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+
+        <!-- Import the webpage's stylesheet -->
+        <link rel="stylesheet" href="/style.css">
+        
+        <script type="module" src="/components/Navigation.js"></script>
+    </head>
+    <body>
+        <navigation-manager>
+            <section id="content">
+                <noscript>
+                    <p>Please enable JavaScript to take attendance.</p>
+                </noscript>
+            </section>
+        </navigation-manager>
+        
+        <script type="module" defer>
+            import { GET } from './util/Client.js';
+            import { requireLogin, getCurrentUser } from './util/Auth.js';
+            await requireLogin();
+            const user = getCurrentUser();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const eventid = urlParams.get('eventid');
+            const businessId = urlParams.get('businessId');
+            const status = urlParams.get('status');
+            
+            const res = await GET(`/recordMyAttendance?code=${code}&eventid=${eventid}&businessId=${businessId}&status=${status}`);
+            if (res.ok) {
+                document.getElementById('content').innerHTML = /* html */`
+                    <h1>Hi, ${user.name}</h1>
+                    <p>Your attendance has been taken for this event!</p>
+                    <a href="/user.html" class="button">Back to Home</a>
+                `;
+            } else {
+                console.error(res.status, res.statusText);
+                document.getElementById('content').innerHTML = /* html */`
+                    <h1>Hi, ${user.name}</h1>
+                    <p>This attendance code has expired, please ask your organization to create a new one.</p>
+                    <a href="/user.html" class="button">Back to Home</a>
+                `;
+            }
+            
+        </script>
+    </body>
+</html>

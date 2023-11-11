@@ -3,7 +3,12 @@ const user = getCurrentUser();
 
 if (user) {
     const QRCode = (await import('./components/QRCode.js')).QRCode;
-    document.getElementById('navigation').prepend(new QRCode());
+    const myqr = new QRCode(user.uid, user.name);
+    myqr.innerHTML = /* html */`
+        <h1>My QR Code</h1>
+        <p>Event hosts will scan your unique code to take your attendance!</p>
+    `;
+    document.getElementById('navigation').prepend(myqr);
 
     for (const element of document.getElementsByClassName('only-logged-in')) {
         element.style.display = 'block';
