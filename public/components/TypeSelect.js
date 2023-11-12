@@ -125,5 +125,11 @@ import { getPattern } from "../util/util.js";
         this.setAttribute("value", option.value);
         return option.value;
     }
+    /**
+     * Gets the selected option of this input.
+     */
+    getSelected() {
+        return this.querySelector(`option[value="${this.getAttribute("value")}"]`);
+    }
 }
 window.customElements.define('type-select', TypeSelect); // define custom <type-select> tag, name must be lowercase and have one hyphen

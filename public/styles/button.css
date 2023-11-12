@@ -28,6 +28,13 @@
     font-size: 0.8rem;
 }
 
+.buttonize button:disabled,
+.button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .buttonize button:hover:not(:active), 
 .button:hover:not(:active) {
     box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;

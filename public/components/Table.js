@@ -200,7 +200,7 @@ export class Table extends Component {
         }
     }
 
-    addEvents(options, eventNames) {
+    replaceEvents(options, eventNames) {
         this.eventFilterSelector.replaceChildren(...[...eventNames].map((name) => {
             const option = document.createElement('option');
             option.value = name;
