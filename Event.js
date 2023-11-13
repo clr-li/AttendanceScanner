@@ -11,7 +11,7 @@ const { handleAuth } = require('./Auth');
 /**
  * Gets data for all the events for the user in the specified business.
  * @queryParams businessId - id of the business to get events for
- * @requiredPriviledges user must be a member of the specified business
+ * @requiredPrivileges user must be a member of the specified business
  * @response json list of event objects.
  */
 router.get("/events", async (request, response) => {
@@ -27,7 +27,7 @@ router.get("/events", async (request, response) => {
  * Gets all info associated with the specified event 
  * @queryParams businessId - id of the business to get the event from
  * @queryParams eventid - id of the event to get
- * @requiredPriviledges read access for the business
+ * @requiredPrivileges read access for the business
  * @response json object representing the event info
  */
 router.get("/eventdata", async function(request, response) {
@@ -44,7 +44,7 @@ router.get("/eventdata", async function(request, response) {
 /**
  * Gets all the attendance records for the current user within a business.
  * @queryParams businessId - id of the business to get attendance records within
- * @requiredPriviledges member of the business
+ * @requiredPrivileges member of the business
  * @response json list of records for the current user within the specified business.
  */
 router.get("/userEvents", async function(request, response) {
@@ -65,7 +65,7 @@ router.get("/userEvents", async function(request, response) {
  * @queryParams description - description of the event to create
  * @queryParams starttimestamp - unix epoch timestamp in seconds for when the event is supposed to start
  * @queryParams endtimestamp - unix epoch timestamp in seconds for when the event is supposed to end
- * @requiredPriviledges write access for the business
+ * @requiredPrivileges write access for the business
  * @response id of the newly created event.
  */
 router.get("/makeEvent", async function(request, response) {
@@ -108,7 +108,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
  * @queryParams frequency - the unit of time to repeat (daily, weekly, monthly)
  * @queryParams interval - the number of frequency units between events
  * @queryParams daysoftheweek - comma-separated values from 0-6 indicating the day of the week starting from Sunday
- * @requiredPriviledges write access for the business
+ * @requiredPrivileges write access for the business
  * @response id of the newly created event.
  */
 router.get("/makeRecurringEvent", async function(request, response) {
@@ -149,7 +149,7 @@ router.get("/makeRecurringEvent", async function(request, response) {
  * @queryParams description - updated event description
  * @queryParams starttimestamp - unix epoch timestamp in seconds for when the updated event is supposed to start
  * @queryParams endtimestamp - unix epoch timestamp in seconds for when the updated event is supposed to end
- * @requiredPriviledges write access for the business
+ * @requiredPrivileges write access for the business
  * @response 200 OK
  */
 router.get("/updateevent", async function(request, response) {
@@ -188,7 +188,7 @@ router.get("/updateevent", async function(request, response) {
  * Deletes the specified event for the specified business.
  * @queryParams businessId - id of the business to delete the event from
  * @queryParams eventid - id of the event to delete
- * @requiredPriviledges write access for the business
+ * @requiredPrivileges write access for the business
  * @response 200 OK
  */
 router.get("/deleteevent", async function(request, response) {

@@ -46,7 +46,7 @@ if (location.hash === "#new") {
     pop.innerHTML = /* html */`
         <type-select id="businessId" name="businesses" label="Please select a business: "></type-select>
         <type-select id="eventId" name="events" label="Optionally select an event: "></type-select>
-        <span title="Can only create events for businesses where you have write priviledges">
+        <span title="Can only create events for businesses where you have write privileges">
             <button class="button" id="create">Create New</button>
         </span>
         <span title="You must select an event to use it">

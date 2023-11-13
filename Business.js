@@ -50,7 +50,7 @@ router.get("/businesses", async (request, response) => {
 /**
  * Gets the joincode of the specified business.
  * @queryParams businessId - id of the business to get the joincode for
- * @requiredPriviledges read access to the specified business
+ * @requiredPrivileges read access to the specified business
  */
 router.get("/joincode", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, { read: true });
@@ -88,7 +88,7 @@ router.get("/join", async (request, response) => {
 /**
  * Leaves the specified business if user is not the owner.
  * @queryParams businessId - id of the business to leave
- * @requiredPriviledges member but not owner of the specified business
+ * @requiredPrivileges member but not owner of the specified business
  * @response 200 - OK; or 403 - [access denied]
  */
 router.get('/leave', async (request, response) => {
@@ -121,7 +121,7 @@ router.get('/removeMember', async (request, response) => {
 /**
  * Returns all the attendance records for the specified business.
  * @queryParams businessId - id of the business to get attendance records for
- * @requiredPriviledges read for the business
+ * @requiredPrivileges read for the business
  * @response json list of records for all users in the business as well as empty records for users with no attendance records.
  */
 router.get("/attendancedata", async function(request, response) {
@@ -151,7 +151,7 @@ router.get("/attendancedata", async function(request, response) {
 /**
  * Gets all the metadata of a business that a user is a member of.
  * @queryParams businessId - id of the business to get metadata for
- * @requiredPriviledges member of the business
+ * @requiredPrivileges member of the business
  * @response json object with a user count `numUsers` number, an `ownerName` string, and a list of `userEvents`.
  */
 router.get("/userdata", async function(request, response) {
@@ -172,7 +172,7 @@ router.get("/userdata", async function(request, response) {
  * @queryParams businessId - id of the business to assign a role in
  * @queryParams userId - id of the user to assign a role to
  * @queryParams role - role to assign to the user
- * @requiredPriviledges assignRoles for the business
+ * @requiredPrivileges assignRoles for the business
  * @response 200 OK if successful, 403 if user is an owner or nothing changed
  */
 router.get('/assignRole', async (request, response) => {
