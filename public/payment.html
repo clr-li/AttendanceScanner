@@ -23,12 +23,34 @@
     <body>
         <navigation-manager>
             <section id="subscriptions">
-            <h1>Manage Subscriptions</h1>
+                <h1>Manage Subscriptions</h1>
+            </section>
+
+            <section class="light-section">
+                <h2>
+                    Choose Subscription
+                </h2>
+                <div id="free" class="subscription">
+                    <h3 style="margin-bottom: 3px;">Free Plan</h3>
+                    <div style="text-align: center; max-width: 80%; margin: auto;">
+                        <li class="subscription-list">Price per Month: $0.00</li>
+                        <li class="subscription-list">Allow up to 50 members</li>
+                        <li class="subscription-list">Includes admin, moderator, scanner, and user privileges</li>
+                    </div>
+                </div>
+                <div id="standard" class="subscription">
+                    <h3 style="margin-bottom: 3px;">Standard Plan</h3>
+                    <div style="text-align: center; max-width: 80%; margin: auto;">
+                        <li class="subscription-list">Price per Month: $7.00</li>
+                        <li class="subscription-list">Allow up to 100 members</li>
+                        <li class="subscription-list">Includes custom roles, admin, moderator, scanner, and user privileges</li>
+                    </div>
+                </div>
             </section>
             
-            <section class="light-section">
+            <section id="purchase-subscription" class="medium-section" style="display: none;">
             <h2>
-                Add Subscriptions
+                Purchase Subscriptions
             </h2>
             <form id="payment-form" style ="max-width: var(--max-width); margin: auto;">
                 <div id="dropin-container"></div>
