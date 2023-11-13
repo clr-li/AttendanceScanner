@@ -119,21 +119,6 @@ router.get('/removeMember', async (request, response) => {
 });
 
 /**
- * Gets data for all the events for the user in the specified business.
- * @queryParams businessId - id of the business to get events for
- * @requiredPriviledges user must be a member of the specified business
- * @response json list of event objects.
- */
-router.get("/events", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId);
-  if (!uid) return;
-  
-  const events = await asyncAll(`SELECT id, name, starttimestamp, endtimestamp, description FROM Events WHERE business_id = ?`, [request.query.businessId]);
-  
-  response.send(events);
-});
-
-/**
  * Returns all the attendance records for the specified business.
  * @queryParams businessId - id of the business to get attendance records for
  * @requiredPriviledges read for the business
@@ -163,6 +148,12 @@ router.get("/attendancedata", async function(request, response) {
   response.send(attendanceinfo.concat(await asyncAll(`SELECT Users.name, Users.id, role FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`, [businessid])));
 });
 
+/**
+ * Gets all the metadata of a business that a user is a member of.
+ * @queryParams businessId - id of the business to get metadata for
+ * @requiredPriviledges member of the business
+ * @response json object with a user count `numUsers` number, an `ownerName` string, and a list of `userEvents`.
+ */
 router.get("/userdata", async function(request, response) {
     const uid = await handleAuth(request, response, request.query.businessId);
     if (!uid) return;
@@ -177,101 +168,13 @@ router.get("/userdata", async function(request, response) {
 });
 
 /**
- * Gets all the attendance records for the current user within a business.
- * @queryParams businessId - id of the business to get attendance records within
- * @requiredPriviledges member of the business
- * @response json list of records for the current user within the specified business.
+ * Assign a role to a user in the specified business.
+ * @queryParams businessId - id of the business to assign a role in
+ * @queryParams userId - id of the user to assign a role to
+ * @queryParams role - role to assign to the user
+ * @requiredPriviledges assignRoles for the business
+ * @response 200 OK if successful, 403 if user is an owner or nothing changed
  */
-router.get("/userEvents", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId);
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-
-  response.send(await asyncAll(`SELECT Events.name, Events.id, Events.starttimestamp, Events.description, Events.endtimestamp, Records.status, Records.timestamp FROM Records RIGHT JOIN Events ON Events.id = Records.event_id AND (Records.user_id = ? OR Records.user_id is NULL) WHERE Events.business_id = ?`, [uid, businessId]));
-});
-
-/**
- * Creates a new event for the specified business.
- * @queryParams businessId - id of the business to create an event for
- * @queryParams name - name of the event to create
- * @queryParams description - description of the event to create
- * @queryParams starttimestamp - unix epoch timestamp in seconds for when the event is supposed to start
- * @queryParams endtimestamp - unix epoch timestamp in seconds for when the event is supposed to end
- * @requiredPriviledges write access for the business
- * @response id of the newly created event.
- */
-router.get("/makeEvent", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const name = request.query.name;
-  const description = request.query.description;
-  const starttimestamp = request.query.starttimestamp;
-  const endtimestamp = request.query.endtimestamp;
-
-  const eventid = await asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId, name, description, starttimestamp, endtimestamp]);
-  response.send("" + eventid);
-});
-
-function createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval) {
-    let current = startDate;
-    while (current < endDate) {
-        const currentEndDate = new Date(endDate);
-        currentEndDate.setFullYear(current.getFullYear(), current.getMonth(), current.getDate());
-        asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
-            [businessId, name, description, current.getTime() / 1000, currentEndDate.getTime() / 1000, repeatId]);
-        if (frequency === "daily")
-            current.setDate(current.getDate() + interval);
-        else if (frequency === "weekly")
-            current.setDate(current.getDate() + 7 * interval);
-        else if (frequency === "monthly")
-            current.setMonth(current.getMonth() + interval);
-    }
-}
-
-/**
- * Creates a bunch of events for the specified business.
- * @queryParams businessId - id of the business to create an event for
- * @queryParams name - name of the event to create
- * @queryParams description - description of the event to create
- * @queryParams starttimestamp - unix epoch timestamp in seconds for when the event is supposed to start
- * @queryParams endtimestamp - unix epoch timestamp in seconds for when the event is supposed to end
- * @queryParams frequency - the unit of time to repeat (daily, weekly, monthly)
- * @queryParams interval - the number of frequency units between events
- * @queryParams daysoftheweek - comma-separated values from 0-6 indicating the day of the week starting from Sunday
- * @requiredPriviledges write access for the business
- * @response id of the newly created event.
- */
-router.get("/makeRecurringEvent", async function(request, response) {
-    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-    if (!uid) return;
-    
-    const businessId = request.query.businessId;
-    const name = request.query.name;
-    const description = request.query.description;
-    const startDate = new Date(parseInt(request.query.starttimestamp)*1000);
-    const endDate = new Date(parseInt(request.query.endtimestamp)*1000);
-    const frequency = request.query.frequency;
-    const interval = parseInt(request.query.interval);
-    const daysoftheweek = request.query.daysoftheweek;
-    const repeatId = uuid.v4();
-
-    if (frequency == "weekly" && daysoftheweek.length > 0) {
-        for (const day of daysoftheweek.split(",")) {
-            const newStartDate = new Date(startDate);
-            const daysToAdd = (7 + parseInt(day) - newStartDate.getDay()) % 7;
-            newStartDate.setDate(newStartDate.getDate() + daysToAdd);
-            createEventSequence(newStartDate, endDate, businessId, name, description, repeatId, frequency, interval);
-        }
-    } else {
-        createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval);
-    }
-
-    response.sendStatus(200);
-});
-
 router.get('/assignRole', async (request, response) => {
     const uid = await handleAuth(request, response, request.query.businessId, { assignRoles: true });
     if (!uid) return;
@@ -289,98 +192,6 @@ router.get('/assignRole', async (request, response) => {
         [role, businessId, userid]);
     
     response.sendStatus(changes == 0 ? 403 : 200);
-});
-
-/**
- * Updates event info for the specified business and event.
- * @queryParams businessId - id of the business to update event info for
- * @queryParams eventid - id of the event to update
- * @queryParams name - updated event name
- * @queryParams description - updated event description
- * @queryParams starttimestamp - unix epoch timestamp in seconds for when the updated event is supposed to start
- * @queryParams endtimestamp - unix epoch timestamp in seconds for when the updated event is supposed to end
- * @requiredPriviledges write access for the business
- * @response 200 OK
- */
-router.get("/updateevent", async function(request, response) {
-    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-    if (!uid) return;
-
-    const businessId = request.query.businessId;
-    const name = request.query.name;
-    const description = request.query.description;
-    const starttimestamp = request.query.starttimestamp;
-    const endtimestamp = request.query.endtimestamp;
-    const eventid = request.query.eventid;
-    const repeatId = request.query.repeatId;
-    const repeatEffect = request.query.repeatEffect;
-    const starttimedelta = request.query.starttimedelta;
-    const endtimedelta = request.query.endtimedelta;
-
-    if (repeatEffect == 1) {
-        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
-            [name, starttimestamp, endtimestamp, description, businessId, eventid]);
-    } else if (repeatEffect == 2) {
-        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`,
-            [name, starttimedelta, endtimedelta, description, businessId, repeatId, starttimestamp]);
-    } else if (repeatEffect == 3) {
-        await asyncRun(`UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ?`,
-            [name, starttimedelta, endtimedelta, description, businessId, repeatId]);
-    } else {
-        response.sendStatus(400);
-        return;
-    }
-
-    response.sendStatus(200);
-});
-
-/**
- * Deletes the specified event for the specified business.
- * @queryParams businessId - id of the business to delete the event from
- * @queryParams eventid - id of the event to delete
- * @requiredPriviledges write access for the business
- * @response 200 OK
- */
-router.get("/deleteevent", async function(request, response) {
-    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-    if (!uid) return;
-
-    const businessId = request.query.businessId;
-    const eventid = request.query.eventid;
-    const repeatId = request.query.repeatId;
-    const repeatEffect = request.query.repeatEffect;
-    const starttimestamp = request.query.starttimestamp;
-
-    if (repeatEffect == 1) {
-        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
-    } else if (repeatEffect == 2) {
-        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`, [businessId, repeatId, starttimestamp]);
-    } else if (repeatEffect == 3) {
-        await asyncRun(`DELETE FROM Events WHERE business_id = ? AND repeat_id = ?`, [businessId, repeatId]);
-    } else {
-        response.sendStatus(400);
-        return;
-    }
-
-    response.sendStatus(200);
-});
-
-/**
- * Gets all info associated with the specified event 
- * @queryParams businessId - id of the business to get the event from
- * @queryParams eventid - id of the event to get
- * @requiredPriviledges read access for the business
- * @response json object representing the event info
- */
-router.get("/eventdata", async function(request, response) {
-  const uid = await handleAuth(request, response, request.query.businessId, { read: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const eventid = request.query.eventid;
-  
-  const eventinfo = await asyncGet(`SELECT * FROM Events WHERE business_id = ? AND id = ?`, [businessId, eventid]);
-  response.send(eventinfo);
 });
 
 // ============================ BUSINESS EXPORTS ============================

@@ -4,7 +4,7 @@
 const express = require('express'),
   router = express.Router();
 // database access
-const { asyncGet, asyncAll, asyncRun, asyncRunWithID, asyncRunWithChanges } = require('./Database');
+const { asyncRun } = require('./Database');
 // user auth
 const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
