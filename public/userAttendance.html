@@ -39,14 +39,14 @@
                 document.getElementById('content').innerHTML = /* html */`
                     <h1>Hi, ${user.name}</h1>
                     <p>Your attendance has been taken for this event!</p>
-                    <a href="/user.html" class="button">Back to Home</a>
+                    <a href="/groups.html" class="button">Back to Home</a>
                 `;
             } else {
                 console.error(res.status, res.statusText);
                 document.getElementById('content').innerHTML = /* html */`
                     <h1>Hi, ${user.name}</h1>
                     <p>This attendance code has expired, please ask your organization to create a new one.</p>
-                    <a href="/user.html" class="button">Back to Home</a>
+                    <a href="/groups.html" class="button">Back to Home</a>
                 `;
             }
             

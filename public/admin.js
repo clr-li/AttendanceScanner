@@ -29,7 +29,7 @@ async function updateJoinLink() {
     const res = await GET('/joincode?businessId=' + getBusinessId());
     const data = await res.json();
     const joincode = data.joincode;
-    const joinlink = window.location.origin + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
+    const joinlink = window.location.origin + "/groups.html?id=" + getBusinessId() + "&code=" + joincode;
     document.getElementById("qrcode").innerHTML = "";
     new QRCode(document.getElementById("qrcode"), joinlink);
 

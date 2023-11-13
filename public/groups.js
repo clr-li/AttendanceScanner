@@ -12,7 +12,7 @@ async function joinFromUrl(urlstr) {
     if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
         await GET(`/join?businessId=${businessId}&code=${joincode}`);
-        location.assign("/user.html");
+        location.assign("/groups.html");
     }
 }
 joinFromUrl(window.location.href);
@@ -21,7 +21,7 @@ function onScanSuccess(decodedText, decodedResult) {
     // Handle on success condition with the decoded text or result.
     html5QrcodeScanner.pause();
     console.log(`Scan result: ${decodedText}`, decodedResult);
-    if (decodedText.startsWith("https://" + window.location.hostname + "/user.html?")) {
+    if (decodedText.startsWith("https://" + window.location.hostname + "/groups.html?")) {
         joinFromUrl(decodedText);
     } else {
         html5QrcodeScanner.resume();
@@ -57,7 +57,7 @@ async function handleBusinessLoad(business) {
             if (!res.ok) {
                 Popup.alert(`<h1>Failed to leave ${business.name}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
             }
-            location.assign("/user.html");
+            location.assign("/groups.html");
         }
     });
 
