@@ -134,58 +134,6 @@ router.get("/events", async (request, response) => {
 });
 
 /**
- * Records an attendance scan of a user for a specific business and event.
- * @queryParams eventid - id of the event to record attendance for
- * @queryParams businessId - id of the business to record attendance for
- * @queryParams userid - the user to record attendance of
- * @queryParams status - the attendance status to note down
- * @requiredPriviledges scanner for the business
- * @response 200 OK if successful
- */
-router.get("/recordAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
-  
-  const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
-  const userid = request.query.userid;
-  const status = request.query.status;
-
-  if (!(await getAccess(userid, businessid, {}))) {
-    response.statusMessage = "Cannot take attendance for non-member";
-    response.sendStatus(400);
-    return;
-  }
-
-  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessid, userid, Math.round(Date.now() / 1000), status]);
-  response.sendStatus(200);
-});
-
-/**
- * Records a new attendance record for multiple users
- * @queryParams event - id of the event to record attendance for
- * @queryParams businessId - id of the business to record attendance for
- * @queryParams ids - comma separated string of userids to record attendance for
- * @queryParams status - the attendance status to note down
- * @requiredPriviledges write for the business
- * @response 200 OK if successful
- */
-router.get("/alterAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const ids = request.query.ids;
-  const event = request.query.event;
-  const status = request.query.status;
-
-  for (const id of ids.split(',')) {
-    await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, [status, businessId, event, id, Math.round(Date.now() / 1000)]);
-  }
-  response.sendStatus(200);
-});
-
-/**
  * Returns all the attendance records for the specified business.
  * @queryParams businessId - id of the business to get attendance records for
  * @requiredPriviledges read for the business

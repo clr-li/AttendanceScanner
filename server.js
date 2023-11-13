@@ -28,9 +28,13 @@ app.use('/', authRouter);
 const { paymentRouter } = require('./Payment');
 app.use('/', paymentRouter);
 
-// ============================ ATTENDANCE ============================
+// ============================ Business ============================
 const { businessRouter } = require('./Business');
 app.use('/', businessRouter);
+
+// ============================ ATTENDANCE ============================
+const { attendanceRouter } = require('./Attendance');
+app.use('/', attendanceRouter);
 
 // ============================ SERVER ============================
 // listen for requests :)

@@ -1,56 +1,52 @@
 import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
+import { initBusinessSelector, initEventSelector } from './util/selectors.js';
 await requireLogin();
 
 const attendanceTable = document.getElementById("table");
 attendanceTable.addEventListener("reloadTable", () => {
     runTable();
-})
+});
 
-const businessSelector = document.getElementById("businessname");
-let selectedBusiness = null;
-businessSelector.addEventListener("select", (e) => {
-    selectedBusiness = e.detail;
-    updateEvents();
-    runTable();
-    let inputUrl = new URL(window.location);
-    inputUrl.searchParams.set('businessId', getBusinessId());
-    location.search = inputUrl.search;
-})
+const { get: getBusinessId } = await initBusinessSelector("businessId", async () => {
+    updateJoinLink();
+    await updateEvents();
+    await runTable();
+});
 
-function getBusinessId() {
-    return selectedBusiness.dataset.id;
-}
-
-const eventSelector = document.getElementById("events");
-let selectedEvent = null;
-eventSelector.addEventListener("select", (e) => {
-    selectedEvent = e.detail;
-    getEventData();
-})
 let events;
-async function updateEvents() {
-    let res = await GET('/events?businessId=' + getBusinessId());
-    events = await res.json();
-    const eventNames = new Set();
-    const options = events.map(event => {
-        var startDate = new Date(event.starttimestamp*1000);
-        var endDate = new Date(event.endtimestamp*1000);
-        eventNames.add(event.name);
-        const option = document.createElement('option');
-        option.value = event.name + " (" + event.id + ")";
-        option.textContent = startDate.toDateString() + " to " + endDate.toDateString();
-        option.setAttribute("data-id", event.id);
-        return option;
-    });
-    eventSelector.replaceChildren(...options);
-    attendanceTable.addEvents(options, eventNames);
+const { get: getEventId, selector: eventSelector, updateEvents } = await initEventSelector("eventId", getBusinessId, async () => {
+    getEventData();
+}, async (newEvents, newOptions, newEventNames) => {
+    events = newEvents;
+    attendanceTable.replaceEvents(newOptions, newEventNames);
+});
+if (getEventId()) getEventData();
+
+
+async function updateJoinLink() {
+    const res = await GET('/joincode?businessId=' + getBusinessId());
+    const data = await res.json();
+    const joincode = data.joincode;
+    const joinlink = window.location.origin + "/groups.html?id=" + getBusinessId() + "&code=" + joincode;
+    document.getElementById("qrcode").innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), joinlink);
+
+    document.getElementById("joinlink").onfocus = () => { // onfocus instead of onclick fixes the clipboard DOM exception security issue
+        window.navigator.clipboard.writeText(joinlink);
+        document.getElementById("joinlink").classList.add("success");
+        document.activeElement.blur();
+        setTimeout(() => {
+            document.getElementById("joinlink").classList.remove("success");
+        }, 5000);
+    };
 }
+updateJoinLink();
 
 async function runTable() {
     let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
-    attendanceTable.updateTable(attendancearr, events, selectedBusiness.dataset.id);
+    attendanceTable.updateTable(attendancearr, events, getBusinessId());
 }
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {
@@ -115,79 +111,17 @@ document.getElementById('submitevent').addEventListener('click', () => {
         GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
             console.log(res.status);
             showSuccessDialog('new-event-success');
-            let id = (await res.json())["last_insert_rowid()"];
-            var startDate = new Date(starttimestamp*1000);
-            var endDate = new Date(endtimestamp*1000);
+            const id = res.json();
+            const startDate = new Date(starttimestamp*1000);
+            const endDate = new Date(endtimestamp*1000);
             eventSelector.addOption(name + " (" + id + ")", startDate.toDateString() + " to " + endDate.toDateString(), {"data-id": id});
         });
         location.assign("/admin.html#eventform");
     }
 });
 
-let res2 = await GET('/businesses');
-let o = await res2.json();
-let noBusinesses = true;
-o.forEach(business => {
-    if (business.role != 'user') {
-        noBusinesses = false;
-        businessSelector.addOption(business.name, business.role, {"data-id": business.id});
-    }
-});
-if (noBusinesses) {
-    document.body.style.opacity = '1';
-    const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
-    if (shouldRedirect) location.assign('/payment.html');
-    else history.back();
-}
-
-const urlstr = window.location.href;
-const url = new URL(urlstr);
-const params = url.searchParams;
-const businessId = params.get('businessId');
-
-let child = businessSelector.firstElementChild;
-for (let i = 0; i < businessSelector.childNodes.length; i++) {
-    if (businessSelector.childNodes[i].dataset.id == businessId) {
-        child = businessSelector.childNodes[i];
-        break;
-    }
-}
-
-businessSelector.setAttribute("value", child.value);
-selectedBusiness = child;
-await updateEvents();
-
-if (eventSelector.firstElementChild) {
-    let item = eventSelector.firstElementChild;
-    const url = new URL(window.location);
-    const params = url.searchParams;
-    const eventid = params.get('eventId');
-    if (eventid) {
-        item = eventSelector.shadowRoot.querySelector('option[data-id="' + eventid + '"]');
-    }
-    eventSelector.setAttribute("value",item.value);
-    selectedEvent = item;
-    getEventData();
-}
-
-let res = await GET('/joincode?businessId=' + getBusinessId());
-let data = await res.json();
-let joincode = data.joincode;
-let joinlink = window.location.origin + "/user.html?id=" + getBusinessId() + "&code=" + joincode;
-new QRCode(document.getElementById("qrcode"), joinlink);
-
-document.getElementById("joinlink").onfocus = () => { // onfocus instead of onclick fixes the clipboard DOM exception security issue
-    window.navigator.clipboard.writeText(joinlink);
-    document.getElementById("joinlink").classList.add("success");
-    document.activeElement.blur();
-    setTimeout(() => {
-        document.getElementById("joinlink").classList.remove("success");
-    }, 5000);
-};
-
 function getEventData() {
-    let eventid = selectedEvent.dataset.id;
-    GET(`/eventdata?eventid=${eventid}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
+    GET(`/eventdata?eventid=${getEventId()}&businessId=${getBusinessId()}`).then((res) => res.json().then((eventinfo) => {
         var startDate = new Date(eventinfo.starttimestamp*1000);
         var endDate = new Date(eventinfo.endtimestamp*1000);
         document.getElementById("eventdetails").innerHTML = /* html */`
@@ -233,7 +167,7 @@ function getEventData() {
             </button>
         `;
         document.getElementById('scan').onclick = () => {
-            window.open(`scanner.html?eventid=${eventid}&businessId=${getBusinessId()}`)
+            window.open(`scanner.html?eventId=${getEventId()}&businessId=${getBusinessId()}`)
         };
         document.getElementById('delete').onclick = () => {
             let repeatEffect;
@@ -248,7 +182,7 @@ function getEventData() {
             const starttime = document.getElementById('update-starttime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
 
-            GET(`/deleteevent?eventid=${eventid}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
+            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
             });
@@ -278,7 +212,7 @@ function getEventData() {
                 return;
             }
 
-            GET(`/updateevent?eventid=${eventid}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
+            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
                 console.log(res.status);
                 updateEvents();
             });

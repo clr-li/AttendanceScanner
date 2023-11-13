@@ -213,3 +213,35 @@ input[type="radio"] + .overlay .text {
     background: transparent;
     border-radius: 50%;
 }
+
+.button-tab {
+    color: var(--accent); 
+    background: transparent; 
+    border: none; 
+    min-width: 3rem;
+}
+.button-tab.active {
+    border-bottom: 2px solid var(--accent);
+}
+.button-tab:hover:not(.active) {
+    border-bottom: 2px solid var(--accent-lighter);
+}
+
+.themify {
+    border: 1px solid var(--accent); 
+    color: var(--accent); 
+    border-radius: 8px; 
+    padding: 2px; 
+    background: white;
+}
+
+button.themify:hover {
+    border: 1px solid var(--accent-lighter); 
+    color: var(--accent-lighter); 
+}
+
+button.themify:active {
+    border: 1px solid var(--accent); 
+    color: var(--accent);
+    transform: translateY(2px);
+}

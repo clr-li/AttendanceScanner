@@ -12,14 +12,13 @@
         <link rel="stylesheet" href="/style.css">
         
         <!-- Import QR scanning capabilities -->
-        <script src="https://unpkg.com/html5-qrcode"></script>
+        <script src="util/html5_qrcode.min.js"></script>
 
         <!-- Charts -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- Custom Components -->
         <script type="module" src="components/Navigation.js"></script>
-        <script type="module" src="components/QRCode.js"></script>
 
         <style>
             /* smooth load */
@@ -34,7 +33,7 @@
                 <h1>My Groups</h1>
                 <a href="/payment.html" class="button">Manage Groups</a>
                 <button class="button" id="join">Scan QR Code to Join</button>
-                <div id="qr-container">
+                <div class="qr-container">
                     <div id="qr-reader" class="buttonize"></div>
                 </div>
                 <br>
@@ -68,7 +67,7 @@
             }
         </style>
 
-        <script type="module" src="/user.js"></script>
+        <script type="module" src="/groups.js"></script>
         <noscript>
             Please enable JavaScript for full functionality.
             <!-- smooth load -->
