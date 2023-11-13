@@ -99,7 +99,8 @@ export class Table extends Component {
                 let statusupdate = false;
                 for (let k = 0; k < records.length; k++) {
                     if (records[k].event_id == events[j].id) {
-                        html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}</td>`;
+                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" GMT-")[0];
+                        html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}-${recordTimestamp}</td>`;
                         statusupdate = true;
                         break;
                     }
