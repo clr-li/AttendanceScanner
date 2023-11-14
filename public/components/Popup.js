@@ -162,6 +162,12 @@ export class Popup extends Component {
         });
     }
 
+    /**
+     * Creates a text input popup with the given message.
+     * 
+     * @param {string} message the prompt message to display to the user.
+     * @returns the text entered by the user or null if the user clicks 'CANCEL'.
+     */
     static prompt(message) {
         return new Promise((resolve, reject) => {
             const popup = document.createElement('pop-up');
