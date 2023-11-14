@@ -194,6 +194,35 @@ router.get('/assignRole', async (request, response) => {
     response.sendStatus(changes == 0 ? 403 : 200);
 });
 
+// ============================ USER ROUTES ============================
+/**
+ * Updates the name of the authenticated user.
+ * @queryParams name - the new name of the user.
+ * @response 200 OK - if successful.
+ */
+router.get("/changeName", async (request, response) => {
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+
+  const name = request.query.name;
+
+  await asyncRun("UPDATE Users SET name = ? WHERE id = ?", [name, uid]);
+  response.sendStatus(200);
+}); 
+
+/**
+ * Gets the name of the user
+ * @queryParams name - the new name of the user.
+ * @response 200 OK - if successful.
+ */
+router.get("/getName", async (request, response) => {
+  const uid = await handleAuth(request, response);
+  if (!uid) return;
+
+  const name = await asyncGet("SELECT name FROM Users WHERE id = ?", [uid]);
+  response.send(name);
+}); 
+
 // ============================ BUSINESS EXPORTS ============================
 exports.businessRouter = router;
 exports.createBusiness = createBusiness;

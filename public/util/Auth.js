@@ -29,11 +29,13 @@ function parseJwt(token) {
  * Gets the current user profile.
  * @returns an object representing the currently logged in user or null if no user has logged in. 
  */
-export function getCurrentUser() {
+export async function getCurrentUser() {
     const token = auth.currentUser ? auth.currentUser.accessToken : sessionStorage.getItem('idtoken');
     if (!token) return null;
     const decoded = parseJwt(token);
-    return { name: decoded.name, picture: decoded.picture, uid: decoded.user_id, email: decoded.email_verified ? decoded.email : null }
+    const res = await GET("/getName");
+    const name = await res.json();
+    return { name: name.name, picture: decoded.picture, uid: decoded.user_id, email: decoded.email_verified ? decoded.email : null }
 }
 
 /**

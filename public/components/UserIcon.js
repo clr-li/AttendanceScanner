@@ -1,7 +1,9 @@
 import { Component } from "../util/Component.js";
 import { getCurrentUser } from '../util/Auth.js';
+import { Popup } from "./Popup.js";
+import { GET } from "../util/Client.js";
 
-const user = getCurrentUser();
+const user = await getCurrentUser();
 
 /**
  * The UserIcon component displays basic user information and provides a login button when logged in, otherwise provides a login button
@@ -11,6 +13,7 @@ const user = getCurrentUser();
         if (!user) return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
+            <link rel="stylesheet" href="/styles/inputs.css">
             <a href="/login.html?redirect=${location.href}" class="button">Sign In</a>
             <style>
                 :host {
@@ -29,6 +32,7 @@ const user = getCurrentUser();
                 <img src="${user.picture}" referrerpolicy="no-referrer">
                 <span id="profile" class="popup">
                     <p>Hi ${user.name}!</p>
+                    <button class="button" id="change-name">Change Name</button>
                     <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout().then(() => {location.href = '/login.html?redirect=/'})});">
                         Switch Accounts
                     </button>
@@ -46,17 +50,26 @@ const user = getCurrentUser();
     onClick() {
         this.shadowRoot.getElementById('profile').classList.toggle('show');
     }
+    async changeName() {
+        const name = await Popup.prompt("Change my name to: ");
+        if (name) {
+            await GET(`/changeName?name=${name}`);
+            location.reload();
+        }
+    }
     /**
      * Called when this component is attached to the DOM. Has access to attributes and properties of this component and can be used to attach event listeners.
      */
     connectedCallback() {
         this.addEventListener('click', this.onClick);
+        this.shadowRoot.getElementById("change-name").addEventListener('click', this.changeName);
     }
     /**
      * Called when this component is removed from the DOM. Should be used to clean up resources such as event listeners.
      */
     disconnectedCallback() {
         this.removeEventListener("click", this.onClick);
+        this.shadowRoot.getElementById("change-name").removeEventListener('click', this.changeName);
     }
 }
 

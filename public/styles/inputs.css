@@ -3,7 +3,7 @@
     padding: 0.2rem;
 }
 
-.form input[type="text"], input[type="list"], input[type="email"] {
+.form input[type="text"], input[type="list"], input[type="email"], .basic-input {
     min-width: min(30ch, 100%);
 }
 
@@ -26,7 +26,7 @@ input:-webkit-autofill:active {
     margin-right: 10px;
 }
 
-.form input, .form textarea, .form select { 
+.form input, .form textarea, .form select, .basic-input { 
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
