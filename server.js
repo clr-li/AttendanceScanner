@@ -28,13 +28,17 @@ app.use('/', authRouter);
 const { paymentRouter } = require('./Payment');
 app.use('/', paymentRouter);
 
-// ============================ Business ============================
+// ============================ BUSINESS ============================
 const { businessRouter } = require('./Business');
 app.use('/', businessRouter);
 
 // ============================ ATTENDANCE ============================
 const { attendanceRouter } = require('./Attendance');
 app.use('/', attendanceRouter);
+
+// ============================ EVENTS ============================
+const { eventRouter } = require('./Event');
+app.use('/', eventRouter);
 
 // ============================ SERVER ============================
 // listen for requests :)

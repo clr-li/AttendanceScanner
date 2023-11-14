@@ -4,7 +4,7 @@
 const express = require('express'),
   router = express.Router();
 // database access
-const { asyncGet, asyncAll, asyncRun, asyncRunWithID, asyncRunWithChanges } = require('./Database');
+const { asyncRun } = require('./Database');
 // user auth
 const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
@@ -24,7 +24,7 @@ storage.init({
  * @queryParams businessId - id of the business to record attendance for
  * @queryParams userid - the user to record attendance of
  * @queryParams status - the attendance status to note down
- * @requiredPriviledges scanner for the business
+ * @requiredPrivileges scanner for the business
  * @response 200 OK if successful
  */
 router.get("/recordAttendance", async (request, response) => {
@@ -53,7 +53,7 @@ router.get("/recordAttendance", async (request, response) => {
  * @queryParams businessId - id of the business to record attendance for
  * @queryParams ids - comma separated string of userids to record attendance for
  * @queryParams status - the attendance status to note down
- * @requiredPriviledges write for the business
+ * @requiredPrivileges write for the business
  * @response 200 OK if successful
  */
 router.get("/alterAttendance", async (request, response) => {
@@ -78,7 +78,7 @@ router.get("/alterAttendance", async (request, response) => {
  * @queryParams eventid - id of the event to record attendance for
  * @queryParams businessId - id of the business to record attendance for
  * @queryParams expiration - time from now in milliseconds to expire the code (default: 10 seconds)
- * @requiredPriviledges scanner for the business
+ * @requiredPrivileges scanner for the business
  * @response the code to take attendance with
  */
 router.get("/setNewTempAttendanceCode", async (request, response) => {
@@ -103,7 +103,7 @@ router.get("/setNewTempAttendanceCode", async (request, response) => {
  * @queryParams businessId - id of the business to record attendance for
  * @queryParams expiration - time from now in milliseconds to expire the code (default: 10 seconds)
  * @queryParams code - the attendance code to refresh to if no code is present
- * @requiredPriviledges scanner for the business
+ * @requiredPrivileges scanner for the business
  * @response 200 OK if successful, 400 if no code to refresh
  */
 router.get("/refreshTempAttendanceCode", async (request, response) => {
@@ -136,7 +136,7 @@ router.get("/refreshTempAttendanceCode", async (request, response) => {
  * Gets or sets the temporary attendance code for the specified business and event that can be used to record attendance.
  * @queryParams eventid - id of the event to record attendance for
  * @queryParams businessId - id of the business to record attendance for
- * @requiredPriviledges scanner for the business
+ * @requiredPrivileges scanner for the business
  * @response the code to take attendance with, does not refresh expiration time.
  */
 router.get("/getOrSetTempAttendanceCode", async (request, response) => {
@@ -165,7 +165,7 @@ router.get("/getOrSetTempAttendanceCode", async (request, response) => {
  * @queryParams businessId - id of the business to record attendance for
  * @queryParams code - the attendance code to check against
  * @queryParams status - the attendance status to note down
- * @requiredPriviledges member of the business
+ * @requiredPrivileges member of the business
  * @response 200 OK if successful, 400 if invalid code
  */
 router.get("/recordMyAttendance", async (request, response) => {

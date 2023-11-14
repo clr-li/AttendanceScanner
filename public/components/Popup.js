@@ -161,6 +161,40 @@ export class Popup extends Component {
             document.body.appendChild(popup);
         });
     }
+
+    static prompt(message) {
+        return new Promise((resolve, reject) => {
+            const popup = document.createElement('pop-up');
+            const messageP = document.createElement('p');
+            messageP.textContent = message
+            const input = document.createElement('input');
+            input.classList.add('basic-input');
+            const br = document.createElement('br');
+            const cancelBtn = document.createElement('button');
+            cancelBtn.classList.add('button');
+            cancelBtn.textContent = "CANCEL";
+            const confirmBtn = document.createElement('button');
+            confirmBtn.classList.add('button');
+            confirmBtn.textContent = "CONFIRM";
+            const handleCancel = () => {
+                cancelBtn.removeEventListener('click', handleCancel);
+                confirmBtn.removeEventListener('click', handleConfirm);
+                popup.remove();
+                resolve(null);
+            }
+            const handleConfirm = () => {
+                cancelBtn.removeEventListener('click', handleCancel);
+                confirmBtn.removeEventListener('click', handleConfirm);
+                popup.remove();
+                resolve(input.value);
+            }
+            cancelBtn.addEventListener('click', handleCancel);
+            confirmBtn.addEventListener('click', handleConfirm);
+            popup.handleCancel = handleCancel;
+            popup.append(messageP, input, br, cancelBtn, confirmBtn);
+            document.body.appendChild(popup);
+        });
+    }
 }
 
 window.customElements.define('pop-up', Popup);

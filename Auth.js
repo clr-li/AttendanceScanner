@@ -66,18 +66,18 @@ async function getUID(idToken, registerIfNewUser=true) {
 }
 
 /**
- * Checks that the given user has the specified priviledges for the given business.
+ * Checks that the given user has the specified privileges for the given business.
  * @param {string} userid the uid of the user to check access for
  * @param {number} businessid the business to check access within
- * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges the priviledges to check if they are allowed the users role
- * @returns true if the user is a member of the specified business and has a role with at least the priviledges specified as true in requiredPriviledges (and none of the priveledges specified as false), false otherwise.
+ * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPrivileges the privileges to check if they are allowed the users role
+ * @returns true if the user is a member of the specified business and has a role with at least the privileges specified as true in requiredPrivileges (and none of the priveledges specified as false), false otherwise.
  */
-async function getAccess(userid, businessid, requiredPriviledges={}) {
+async function getAccess(userid, businessid, requiredPrivileges={}) {
   try {
     const role = (await asyncGet(`SELECT role FROM Members WHERE user_id = ? AND business_id = ?`, [userid, businessid])).role;
     if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
     const access = ACCESS_TABLE[role];
-    for (const [priviledge, isRequired] of Object.entries(requiredPriviledges)) {
+    for (const [priviledge, isRequired] of Object.entries(requiredPrivileges)) {
       if (isRequired != access[priviledge]) return false;
     }
     return true;
@@ -92,12 +92,12 @@ async function getAccess(userid, businessid, requiredPriviledges={}) {
  * @param {Request} request the request object
  * @param {Response} response the response object
  * @param {number} businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid
- * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPriviledges  an object of which priviledges are required, empty if no priviledges are required, ignored if business_id is false
- * @requires request and response are valid, businessid is a valid id if requiredPriviledges is not empty
+ * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPrivileges  an object of which privileges are required, empty if no privileges are required, ignored if business_id is false
+ * @requires request and response are valid, businessid is a valid id if requiredPrivileges is not empty
  * @returns the uid of the user if auth succeeded, false otherwise.
  * @effects sends response status error codes for failed auth
  */
-async function handleAuth(request, response, businessid=false, requiredPriviledges={}) {
+async function handleAuth(request, response, businessid=false, requiredPrivileges={}) {
   if (!request.headers.idtoken) { 
     response.statusMessage = "no idtoken provided, user does not appear to be signed in";
     response.sendStatus(400);
@@ -109,8 +109,8 @@ async function handleAuth(request, response, businessid=false, requiredPriviledg
     response.sendStatus(401);
     return false;
   }
-  if (businessid && !(await getAccess(uid, businessid, requiredPriviledges))) {
-    response.statusMessage = "access denied, user does not have the necessary priviledges for this endpoint";
+  if (businessid && !(await getAccess(uid, businessid, requiredPrivileges))) {
+    response.statusMessage = "access denied, user does not have the necessary privileges for this endpoint";
     response.sendStatus(403);
     return false;
   }
