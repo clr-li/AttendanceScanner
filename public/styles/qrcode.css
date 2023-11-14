@@ -5,6 +5,14 @@
     display: inline-block; 
     overflow: hidden;
     background-color: white;
+    margin: 8px;
+}
+
+#qrcode {
+    display: block;
+    width: fit-content;
+    margin: auto;
+    margin-top: 10px;
 }
 
 #qrcode > img {
@@ -36,13 +44,33 @@
 }
 
 /* ================ Scanner ================ */
-#qr-container {
-    max-width: var(--max-width); margin: auto; width: 100%;
+.qr-container {
+    max-width: var(--max-width); 
+    margin: auto; 
+    width: 400px;
 }
-#qr-reader button {
+.qr-reader button {
     text-align: center;
 }
-#qr-reader {
+.qr-reader {
     border-radius: 10px;
     overflow: hidden;
+}
+.scanner-container {
+    background-color: var(--light-section); 
+    width: fit-content;
+    max-width: var(--max-width);
+    padding: 3rem; 
+    padding-top: 2rem; 
+    padding-bottom: 2rem; 
+    border-radius: 16px; 
+    margin: auto;
+}
+@media (max-width: 500px) {
+    .scanner-container {
+        width: 100%;
+        border-radius: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
 }

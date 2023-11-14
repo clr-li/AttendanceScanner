@@ -11,8 +11,11 @@
         <!-- Import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css">
         
-        <!--   Import QR scanning capabilities   -->
-        <script src="https://unpkg.com/html5-qrcode"></script>
+        <!-- Import QR scanning capabilities   -->
+        <script src="util/html5_qrcode.min.js"></script>
+
+        <!-- Import QR generating -->
+        <script src="util/qrcode.min.js"></script>
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
@@ -22,16 +25,25 @@
         <navigation-manager>
             <section>
                 <h1>Scan QR Codes to Take Attendance</h1>
-                <div id="qr-container">
-                    <div id="qr-reader" class="buttonize"></div>
+                <div class="scanner-container">
+                    <button class="button-tab active" id="scan-button">Scan</button>
+                    <button class="button-tab" id="qr-button">QR Code</button>
+                    <hr style="border-color: var(--accent);">
+                    <div class="qr-container" id="scan">
+                        <p style="text-align: left;">Each member has a unique QR code on their homepage that you can scan here to take their attendance!</p>
+                        <div id="qr-reader" class="buttonize"></div>
+                    </div>
+                    <div class="qr-container" style="display: none;" id="member-scan">
+                        <p style="text-align: left;">Alternatively, have members scan this QR code with their phone. Works in printed format too!</p>
+                    </div>
+                    <br>
+                    <type-select id="status" name="status" label="STATUS: ">
+                        <option value="PRESENT">PRESENT</option>
+                        <option value="ABSENT">ABSENT</option>
+                        <option value="EXCUSED">EXCUSED</option>
+                        <option value="LATE">LATE</option>
+                    </type-select>
                 </div>
-                <br>
-                <type-select id="status" name="status" label="STATUS: ">
-                    <option value="PRESENT">PRESENT</option>
-                    <option value="ABSENT">ABSENT</option>
-                    <option value="EXCUSED">EXCUSED</option>
-                    <option value="LATE">LATE</option>
-                </type-select>
             </section>
         </navigation-manager>
         

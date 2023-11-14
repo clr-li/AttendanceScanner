@@ -3,7 +3,7 @@
     padding: 0.2rem;
 }
 
-.form input[type="text"], input[type="list"], input[type="email"] {
+.form input[type="text"], input[type="list"], input[type="email"], .basic-input {
     min-width: min(30ch, 100%);
 }
 
@@ -26,7 +26,7 @@ input:-webkit-autofill:active {
     margin-right: 10px;
 }
 
-.form input, .form textarea, .form select { 
+.form input, .form textarea, .form select, .basic-input { 
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
@@ -212,4 +212,36 @@ input[type="radio"] + .overlay .text {
     content: '';
     background: transparent;
     border-radius: 50%;
+}
+
+.button-tab {
+    color: var(--accent); 
+    background: transparent; 
+    border: none; 
+    min-width: 3rem;
+}
+.button-tab.active {
+    border-bottom: 2px solid var(--accent);
+}
+.button-tab:hover:not(.active) {
+    border-bottom: 2px solid var(--accent-lighter);
+}
+
+.themify {
+    border: 1px solid var(--accent); 
+    color: var(--accent); 
+    border-radius: 8px; 
+    padding: 2px; 
+    background: white;
+}
+
+button.themify:hover {
+    border: 1px solid var(--accent-lighter); 
+    color: var(--accent-lighter); 
+}
+
+button.themify:active {
+    border: 1px solid var(--accent); 
+    color: var(--accent);
+    transform: translateY(2px);
 }

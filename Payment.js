@@ -19,7 +19,8 @@ const { createBusiness, deleteBusiness } = require('./Business');
 // ============================ PAYMENT SETTINGS ============================
 // subscription plans
 const PLAN_IDS = {
-  STANDARD: "n2wg"
+  STANDARD: "n2wg",
+  FREE: "388r"
 };
 const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], keyval[0]])); // reverse lookup plan name from plan id
 
@@ -109,7 +110,17 @@ router.post("/checkout", async (request, response) => {
     const nonceFromTheClient = request.body.nonce;
     const deviceData = request.body.deviceData;
     const businessName = request.body.businessName;
+    const TYPE = request.body.subscriptionType;
 
+    if (!TYPE) {
+        response.statusMessage = "No subscription type specified";
+        response.sendStatus(400);
+        return;
+    } else if (!businessName) {
+        response.statusMessage = "No business name specified";
+        response.sendStatus(400);
+        return;
+    }
     const user = await asyncGet(`SELECT customer_id, name FROM Users WHERE id = ?`, [uid]);
 
     let paymentToken;
@@ -124,7 +135,7 @@ router.post("/checkout", async (request, response) => {
         }
         });
         if (!result.success) {
-            response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
+            response.statusMessage = "Customer validation failed: customer validations, payment method validations or card verification is NOT in order";
             response.sendStatus(401);
             return;
         }
@@ -138,7 +149,8 @@ router.post("/checkout", async (request, response) => {
         deviceData: deviceData
         });
         if (!result.success) {
-            response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
+
+            response.statusMessage = "Customer creation failed: customer validations, payment method validations or card verification is NOT in order";
             response.sendStatus(401);
             return;
         }
@@ -154,17 +166,19 @@ router.post("/checkout", async (request, response) => {
 
     const subscriptionResult = await gateway.subscription.create({
         paymentMethodToken: paymentToken,
-        planId: PLAN_IDS.STANDARD,
+        planId: PLAN_IDS[TYPE],
     });
+
     if (!subscriptionResult.success) {
-        response.statusMessage = "customer validations, payment method validations or card verification is NOT in order";
+        response.statusMessage = "Subscription creation failed: customer validations, payment method validations or card verification is NOT in order";
         response.sendStatus(401);
         return;
     }
     console.log("Added subscription via paymentToken: " + paymentToken)
-    await createBusiness(uid, businessName, subscriptionResult.subscription.id);
+    const businessId = await createBusiness(uid, businessName, subscriptionResult.subscription.id);
 
-    response.sendStatus(200);
+    response.status(200);
+    response.send({businessId: businessId});
 });
 
 // gets the noncanceled subscriptions

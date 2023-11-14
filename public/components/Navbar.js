@@ -11,7 +11,7 @@ class Navbar extends Component {
                 <img src="/assets/logo.png">
                 <nav>
                     <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Home' : '<i class="fa fa-home"></i>'}</a>
-                    <a href="/user.html" class="${location.pathname === '/user.html' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Groups' : '<i class="fa fa-users"></i>'}</a>
+                    <a href="/groups.html" class="${location.pathname === '/groups.html' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Groups' : '<i class="fa fa-users"></i>'}</a>
                     <a href="/calendar.html" class="${location.pathname === '/calendar.html' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Calendar' : '<i class="fa fa-calendar"></i>'}</a>
                     <a href="/admin.html" class="${location.pathname === '/admin.html' ? 'active' : ''}">${window.innerWidth > SIZE_THRESHOLD ? 'Admin' : '<i class="fa fa-user-gear"></i>'}</a>
                 </nav>

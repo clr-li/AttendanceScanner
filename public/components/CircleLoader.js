@@ -27,7 +27,8 @@ export class CircleLoader extends HTMLElement {
 const CSS = /* css */`
 .container {
     z-index: 999999; 
-    position: absolute; 
+    position: absolute;
+    position: fixed;
     width: 100vw; height: 100vh; 
     top: 0; left: 0; 
     background-color: black; 

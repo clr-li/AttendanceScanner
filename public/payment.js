@@ -3,15 +3,25 @@ import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 await requireLogin();
 
-async function unsubscribe(id) {
+let subscriptionType = null;
+
+function showLoader() {
     document.getElementById("loader").style.display = "block";
-    await GET("/cancelSubscription?id=" + id);
-    document.getElementById("subscriptions").removeChild(document.getElementById(id));
+}
+
+function hideLoader() {
     document.getElementById("loader").style.display = "none";
 }
 
+async function unsubscribe(id) {
+    showLoader();
+    await GET("/cancelSubscription?id=" + id);
+    document.getElementById("subscriptions").removeChild(document.getElementById(id));
+    hideLoader();
+}
+
 async function showSubscriptions() {
-    document.getElementById("loader").style.display = "block";
+    showLoader();
     try {
         const res = await GET("/subscriptions");
         var subscriptions = await res.json();
@@ -38,7 +48,7 @@ async function showSubscriptions() {
         document.getElementById("btn-" + sub.id).addEventListener("click", async () => { if (await Popup.confirm(`This will cancel this subscription and delete all data of its associated business. Proceed?`)) unsubscribe(sub.id) });
         document.getElementById("subscriptions").appendChild(document.createElement("br"));
     });
-    document.getElementById("loader").style.display = "none";
+    hideLoader();
 }
 
 const form = document.getElementById('payment-form');
@@ -63,7 +73,7 @@ const dropinInstance = await braintree.dropin.create({
 // Device data collection
 const dataCollectorInstance = await braintree.dataCollector.create({
     client: clientInstance
-})
+});
 const deviceData = dataCollectorInstance.deviceData;
 localStorage.setItem("device-data", deviceData);
 
@@ -71,15 +81,40 @@ localStorage.setItem("device-data", deviceData);
 form.addEventListener('submit', async event => {
     event.preventDefault();
 
-    document.getElementById("loader").style.display = "block";
+    showLoader();
     try {
         const payload = await dropinInstance.requestPaymentMethod();
+        payload.subscriptionType = subscriptionType;
         payload.deviceData = localStorage.getItem("device-data");
         payload.businessName = document.getElementById("businessName").value;
-        await POST("/checkout", payload)
+        const res = await POST("/checkout", payload)
+        if (res.ok) {
+            location.assign("/admin.html?businessId=" + (await res.json()).businessId);
+        } else {
+            Popup.alert(res.statusText, "var(--error)");
+        }
     } finally {
         showSubscriptions();
     }
+});
+
+const freeSubscription = document.getElementById("free");
+const standardSubscription = document.getElementById("standard");
+
+freeSubscription.addEventListener("click", async () => {
+    console.log("free subscription");
+    freeSubscription.classList.add("active-subscription");
+    standardSubscription.classList.remove("active-subscription");
+    document.getElementById("purchase-subscription").style.display = "block";
+    subscriptionType = "FREE";
+});
+
+standardSubscription.addEventListener("click", async () => {
+    console.log("standard subscription");
+    freeSubscription.classList.remove("active-subscription");
+    standardSubscription.classList.add("active-subscription");
+    document.getElementById("purchase-subscription").style.display = "block";
+    subscriptionType = "STANDARD";
 });
 
 showSubscriptions();
