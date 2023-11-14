@@ -27,7 +27,7 @@
             import { requireLogin, getCurrentUser } from './util/Auth.js';
             import { useURL } from './util/StateManager.js';
             await requireLogin();
-            const user = getCurrentUser();
+            const user = await getCurrentUser();
 
             const { code } = useURL('code');
             const { eventid } = useURL('eventid');
