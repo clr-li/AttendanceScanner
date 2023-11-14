@@ -62,14 +62,16 @@ const user = await getCurrentUser();
      */
     connectedCallback() {
         this.addEventListener('click', this.onClick);
-        this.shadowRoot.getElementById("change-name").addEventListener('click', this.changeName);
+        const nameButton = this.shadowRoot.getElementById("change-name");
+        if (nameButton) nameButton.addEventListener('click', this.changeName);
     }
     /**
      * Called when this component is removed from the DOM. Should be used to clean up resources such as event listeners.
      */
     disconnectedCallback() {
         this.removeEventListener("click", this.onClick);
-        this.shadowRoot.getElementById("change-name").removeEventListener('click', this.changeName);
+        const nameButton = this.shadowRoot.getElementById("change-name");
+        if (nameButton) nameButton.removeEventListener('click', this.changeName);
     }
 }
 
