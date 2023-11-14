@@ -50,6 +50,9 @@ const user = await getCurrentUser();
     onClick() {
         this.shadowRoot.getElementById('profile').classList.toggle('show');
     }
+    /**
+     * Prompt the user to change their name and reload the page if the user enters a name.
+     */
     async changeName() {
         const name = await Popup.prompt("Change my name to: ");
         if (name) {
