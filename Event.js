@@ -84,13 +84,13 @@ router.get("/makeEvent", async function(request, response) {
     response.send("" + eventid);
 });
 
-function createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval) {
+function createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval, timezoneOffsetMS) {
     let current = startDate;
     while (current < endDate) {
         const currentEndDate = new Date(endDate);
         currentEndDate.setFullYear(current.getFullYear(), current.getMonth(), current.getDate());
         asyncRunWithID('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
-            [businessId, name, description, current.getTime() / 1000, currentEndDate.getTime() / 1000, repeatId]);
+            [businessId, name, description, (current.getTime() + timezoneOffsetMS) / 1000, (currentEndDate.getTime() + timezoneOffsetMS) / 1000, repeatId]);
         if (frequency === "daily")
             current.setDate(current.getDate() + interval);
         else if (frequency === "weekly")
@@ -110,6 +110,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
  * @queryParams frequency - the unit of time to repeat (daily, weekly, monthly)
  * @queryParams interval - the number of frequency units between events
  * @queryParams daysoftheweek - comma-separated values from 0-6 indicating the day of the week starting from Sunday
+ * @queryParams timezoneOffsetMS - the timezone offset in milliseconds
  * @requiredPrivileges write access for the business
  * @response id of the newly created event.
  */
@@ -120,8 +121,9 @@ router.get("/makeRecurringEvent", async function(request, response) {
     const businessId = request.query.businessId;
     const name = request.query.name;
     const description = request.query.description;
-    const startDate = new Date(parseInt(request.query.starttimestamp)*1000);
-    const endDate = new Date(parseInt(request.query.endtimestamp)*1000);
+    const timezoneOffsetMS = parseInt(request.query.timezoneOffsetMS) - new Date().getTimezoneOffset() * 60 * 1000; // actual offset includes server offset
+    const startDate = new Date(parseInt(request.query.starttimestamp)*1000 - timezoneOffsetMS);
+    const endDate = new Date(parseInt(request.query.endtimestamp)*1000 - timezoneOffsetMS);
     const frequency = request.query.frequency;
     const interval = parseInt(request.query.interval);
     const daysoftheweek = request.query.daysoftheweek;
@@ -132,10 +134,10 @@ router.get("/makeRecurringEvent", async function(request, response) {
             const newStartDate = new Date(startDate);
             const daysToAdd = (7 + parseInt(day) - newStartDate.getDay()) % 7;
             newStartDate.setDate(newStartDate.getDate() + daysToAdd);
-            createEventSequence(newStartDate, endDate, businessId, name, description, repeatId, frequency, interval);
+            createEventSequence(newStartDate, endDate, businessId, name, description, repeatId, frequency, interval, timezoneOffsetMS);
         }
     } else {
-        createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval);
+        createEventSequence(startDate, endDate, businessId, name, description, repeatId, frequency, interval, timezoneOffsetMS);
     }
 
     response.sendStatus(200);
