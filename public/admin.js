@@ -107,11 +107,13 @@ document.getElementById('submitevent').addEventListener('click', () => {
         GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(() => {
             showSuccessDialog('new-event-success');
             updateEvents();
+            runTable();
         });
     } else {
         GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(() => { 
             showSuccessDialog('new-event-success');
             updateEvents();
+            runTable();
         });
     }
 });
