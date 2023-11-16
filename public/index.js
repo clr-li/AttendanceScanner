@@ -1,5 +1,5 @@
 import { getCurrentUser } from "./util/Auth.js";
-const user = getCurrentUser();
+const user = await getCurrentUser();
 
 if (user) {
     const QRCode = (await import('./components/QRCode.js')).QRCode;

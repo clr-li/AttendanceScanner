@@ -78,6 +78,8 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
     const isRepeating = document.getElementById("repeat").checked;
+    console.log("timestamps", starttimestamp, endtimestamp)
+    console.log("dates", startdate, enddate)
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
