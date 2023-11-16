@@ -112,7 +112,7 @@ function createEventSequence(startDate, endDate, businessId, name, description, 
  * @queryParams daysoftheweek - comma-separated values from 0-6 indicating the day of the week starting from Sunday
  * @queryParams timezoneOffsetMS - the timezone offset in milliseconds
  * @requiredPrivileges write access for the business
- * @response id of the newly created event.
+ * @response 200 OK
  */
 router.get("/makeRecurringEvent", async function(request, response) {
     const uid = await handleAuth(request, response, request.query.businessId, { write: true });

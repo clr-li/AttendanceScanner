@@ -109,15 +109,10 @@ document.getElementById('submitevent').addEventListener('click', () => {
             updateEvents();
         });
     } else {
-        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
-            console.log(res.status);
+        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(() => { 
             showSuccessDialog('new-event-success');
-            const id = res.json();
-            const startDate = new Date(starttimestamp*1000);
-            const endDate = new Date(endtimestamp*1000);
-            eventSelector.addOption(name + " (" + id + ")", startDate.toDateString() + " to " + endDate.toDateString(), {"data-id": id});
+            updateEvents();
         });
-        location.assign("/admin.html#eventform");
     }
 });
 
