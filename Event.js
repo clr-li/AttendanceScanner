@@ -5,6 +5,8 @@ const express = require('express'),
 const { asyncGet, asyncAll, asyncRun, asyncRunWithID } = require('./Database');
 // user auth
 const { handleAuth } = require('./Auth');
+// random universal unique ids for joincodes
+const uuid = require('uuid');
 
 // ============================ READ EVENTS ============================
 
