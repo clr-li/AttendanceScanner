@@ -105,16 +105,24 @@ document.getElementById('submitevent').addEventListener('click', () => {
             }
             counter++;
         }
-        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(() => {
-            showSuccessDialog('new-event-success');
-            updateEvents();
-            runTable();
+        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(async (res) => {
+            if (res.ok) {
+                showSuccessDialog('new-event-success');
+                updateEvents();
+                runTable();
+            } else {
+                Popup.alert(await res.text(), 'var(--error)');
+            }
         });
     } else {
-        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(() => { 
-            showSuccessDialog('new-event-success');
-            updateEvents();
-            runTable();
+        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
+            if (res.ok) {
+                showSuccessDialog('new-event-success');
+                updateEvents();
+                runTable();
+            } else {
+                Popup.alert(await res.text(), 'var(--error)');
+            }
         });
     }
 });
@@ -181,9 +189,12 @@ function getEventData() {
             const starttime = document.getElementById('update-starttime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
 
-            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
-                console.log(res.status);
-                updateEvents();
+            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then(async (res) => {
+                if (res.ok) {
+                    updateEvents();
+                } else {
+                    Popup.alert(await res.text(), 'var(--error)');
+                }
             });
         };
         document.getElementById('update').onclick = () => {
@@ -211,9 +222,12 @@ function getEventData() {
                 return;
             }
 
-            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
-                console.log(res.status);
-                updateEvents();
+            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then(async (res) => {
+                if (res.ok) {
+                    updateEvents();
+                } else {
+                    Popup.alert(await res.text(), 'var(--error)');
+                }
             });
         }
     }));

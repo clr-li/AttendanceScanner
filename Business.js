@@ -182,14 +182,18 @@ router.get('/assignRole', async (request, response) => {
     const role = request.query.role;
 
     if (role === "owner") {
-        response.sendStatus(403);
+        response.status(403).send("Cannot assign owner role");
         return;
     }
 
     const changes = await asyncRunWithChanges(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? AND role != 'owner'`,
         [role, businessId, userid]);
     
-    response.sendStatus(changes == 0 ? 403 : 200);
+    if (changes != 0) {
+        response.status(200).send("Role assigned");
+    } else {
+        response.status(403).send("Role not changed. Check your role and its privileges.");
+    }
 });
 
 // ============================ USER ROUTES ============================
