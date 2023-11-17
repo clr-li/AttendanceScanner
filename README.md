@@ -3,6 +3,7 @@
 [![](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner?category=files)](https://github.com/clr-li/AttendanceScanner)
 [![](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F
 )](https://github.com/clr-li/AttendanceScanner)
+<img alt="gitleaks badge" src="https://img.shields.io/badge/protected%20by-gitleaks-blue">
 
 This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. 
 URL: https://attendancescannerqr.web.app
