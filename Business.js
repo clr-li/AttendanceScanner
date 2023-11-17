@@ -80,8 +80,7 @@ router.get("/join", async (request, response) => {
     await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
     response.sendStatus(200);
   } else {
-    response.statusMessage = "Incorrect joincode";
-    response.sendStatus(403);
+    response.status(403).send("Incorrect joincode");
   }
 });
 
@@ -113,8 +112,7 @@ router.get('/removeMember', async (request, response) => {
         await asyncRun(`DELETE FROM Members WHERE business_id = ? AND user_id = ?`, [businessId, userId]);
         response.sendStatus(200);
     } else {
-        response.statusMessage = "Cannot remove non-members or owners";
-        response.sendStatus(400);
+        response.status(400).send("Cannot remove non-members or owners");
     }
 });
 

@@ -42,7 +42,7 @@
                     <a href="/groups.html" class="button">Back to Home</a>
                 `;
             } else {
-                console.error(res.status, res.statusText);
+                console.error(res.status, await res.text());
                 document.getElementById('content').innerHTML = /* html */`
                     <h1>Hi, ${user.name}</h1>
                     <p>This attendance code has expired, please ask your organization to create a new one.</p>
