@@ -101,7 +101,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             Popup.alert(await res.text(), 'var(--error)');
         } else {
             if (fileMode)
-                Popup.alert(`Successfully recorded attendance!`, 'var(--success)', 2000);
+                Popup.alert(`Successfully recorded attendance!`, 'var(--success)', 3000);
         }
         if (!fileMode) html5QrcodeScanner.resume();
         lastUserId = decodedText;
