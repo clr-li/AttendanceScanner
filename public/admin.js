@@ -16,7 +16,7 @@ const { get: getBusinessId } = await initBusinessSelector("businessId", async ()
 });
 
 let events;
-const { get: getEventId, selector: eventSelector, updateEvents } = await initEventSelector("eventId", getBusinessId, async () => {
+const { get: getEventId, updateEvents } = await initEventSelector("eventId", getBusinessId, async () => {
     getEventData();
 }, async (newEvents, newOptions, newEventNames) => {
     events = newEvents;
@@ -78,8 +78,6 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
     const endtimestamp = (new Date(enddate + 'T' + endtime)).getTime() / 1000;
     const isRepeating = document.getElementById("repeat").checked;
-    console.log("timestamps", starttimestamp, endtimestamp)
-    console.log("dates", startdate, enddate)
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
@@ -93,6 +91,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
     if (isRepeating) {
         const frequency = document.getElementById("frequency").value.toLowerCase();
         const interval = document.getElementById("interval").value;
+        const timezoneOffsetMS = new Date().getTimezoneOffset() * 60 * 1000;
         let daysoftheweek = [];
         let counter = 0;
         if (interval < 1) {
@@ -105,20 +104,17 @@ document.getElementById('submitevent').addEventListener('click', () => {
             }
             counter++;
         }
-        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}`).then(() => {
+        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(() => {
             showSuccessDialog('new-event-success');
             updateEvents();
+            runTable();
         });
     } else {
-        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
-            console.log(res.status);
+        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(() => { 
             showSuccessDialog('new-event-success');
-            const id = res.json();
-            const startDate = new Date(starttimestamp*1000);
-            const endDate = new Date(endtimestamp*1000);
-            eventSelector.addOption(name + " (" + id + ")", startDate.toDateString() + " to " + endDate.toDateString(), {"data-id": id});
+            updateEvents();
+            runTable();
         });
-        location.assign("/admin.html#eventform");
     }
 });
 
