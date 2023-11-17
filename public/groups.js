@@ -13,9 +13,10 @@ async function joinFromUrl(urlstr) {
         console.log("joined: " + businessId + "_" + joincode);
         const res = await GET(`/join?businessId=${businessId}&code=${joincode}`);
         if (!res.ok) {
-            await Popup.alert(`Incorrect join link. Please check for typos or reach out to your group admin.`)
-        } else 
-        location.assign("/groups.html");
+            await Popup.alert(await res.text(), 'var(--error)');
+        } else {
+            location.assign("/groups.html");
+        }
     }
 }
 joinFromUrl(window.location.href);

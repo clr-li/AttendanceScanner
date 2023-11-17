@@ -110,6 +110,7 @@ export class Popup extends Component {
      * @param {string} message 
      * @param {string} color
      * @param {number} timout_ms 
+     * @returns {Promise<void>} a Promise that resolves when the popup is closed.
      */
     static alert(message, color, timout_ms=null) {
         return new Promise((resolve, reject) => {
@@ -122,7 +123,7 @@ export class Popup extends Component {
                 popup.shadowRoot.getElementById('popup').style.animation = "fadeInAndOut " + timout_ms + "ms";
                 setTimeout(() => {
                     popup.close();
-                    resolve(false);
+                    resolve();
                 }, timout_ms);
             }
             document.body.appendChild(popup);
@@ -130,8 +131,10 @@ export class Popup extends Component {
                 const crossButton = popup.shadowRoot.getElementById('cross');
                 crossButton.removeEventListener('click', handleCancel);
                 popup.remove();
-                resolve(false);
-        }});
+                resolve();
+            };
+            cancelBtn.addEventListener('click', handleCancel);
+        });
     }
 
     /**
