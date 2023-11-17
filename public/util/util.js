@@ -36,6 +36,21 @@ function LevenshteinDistance(str1, str2) {
   return matrix[str1.length][str2.length];
 }
 
+const p = document.createElement('p');
+/**
+ * Removes all HTML tags from the given text.
+ * @param {string} text the text to sanitize.
+ * @returns the sanitized text with all HTML tags removed.
+ */
+export function sanitizeText(text) {
+  p.innerHTML = text;
+  return p.textContent;
+}
+
+export function escapeQuotes(text) {
+  return text.replace(/[`'"\\]/g, '\\$&');
+}
+
 /**
  * Escapes characters with special meaning in RegEx.
  *

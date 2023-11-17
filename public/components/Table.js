@@ -1,6 +1,6 @@
 import { Component } from "../util/Component.js";
 import { Popup } from "./Popup.js";
-import { calcSimilarity } from '../util/util.js';
+import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { GET } from '../util/Client.js';
 
 /**
@@ -44,9 +44,6 @@ export class Table extends Component {
                 <p>success</p>
             </dialog>
             <button type="button" class="button" id="export">Export to CSV</button>
-            <style>
-                
-            </style>
         `;
     }
 
@@ -72,7 +69,7 @@ export class Table extends Component {
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp*1000);
             var endDate = new Date(events[i].endtimestamp*1000);
-            html += `<th class="cell" data-time="${events[i].starttimestamp}" data-name="${events[i].name}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
+            html += `<th class="cell" data-time="${sanitizeText(events[i].starttimestamp)}" data-name="${sanitizeText(events[i].name)}">${sanitizeText(events[i].name)}: ${sanitizeText(startDate.toLocaleDateString())} to ${sanitizeText(endDate.toLocaleDateString())}</th>`;
         }
         html += "</tr>";
         for (let i = 0; i < [...map.keys()].length; i++) {
@@ -90,7 +87,7 @@ export class Table extends Component {
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
-            html += `<tr id="row-${userid}"><td><input type="checkbox" id="select-${userid}" class="selectedrows"></td><td>${records[0].name} (${userid.substr(0,4)}`;
+            html += `<tr id="row-${sanitizeText(userid)}"><td><input type="checkbox" id="select-${sanitizeText(userid)}" class="selectedrows"></td><td>${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0,4))}`;
             if (records[0].role != 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -102,14 +99,14 @@ export class Table extends Component {
                 for (let k = 0; k < records.length; k++) {
                     if (records[k].event_id == events[j].id) {
                         let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" GMT-")[0];
-                        html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}-${recordTimestamp}</td>`;
+                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">${sanitizeText(records[k].status)}-${sanitizeText(recordTimestamp)}</td>`;
                         statusupdate = true;
                         break;
                     }
                 }
                 if (!statusupdate) {
                     const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
-                    html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${status}</td>`;
+                    html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">${status}</td>`;
                 }
             }
             html += "</tr>";

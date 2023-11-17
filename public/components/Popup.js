@@ -133,7 +133,7 @@ export class Popup extends Component {
                 popup.remove();
                 resolve();
             };
-            cancelBtn.addEventListener('click', handleCancel);
+            popup.handleCancel = handleCancel;
         });
     }
 

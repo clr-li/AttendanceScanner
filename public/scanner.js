@@ -4,6 +4,7 @@ import { Popup } from './components/Popup.js';
 import { QRCode } from './components/QRCode.js';
 import { useURL } from './util/StateManager.js';
 import { initBusinessSelector, initEventSelector } from './util/selectors.js';
+import { sanitizeText } from './util/util.js';
 await requireLogin();
 
 const { get: getEventid, set: setEventId } = useURL('eventId');
@@ -98,7 +99,7 @@ async function onScanSuccess(decodedText, decodedResult) {
         const res = await GET(`/recordAttendance?eventid=${getEventid()}&userid=${decodedText}&status=${getStatus()}&businessId=${getBusinessId()}`);
         console.log(res.status);
         if (!res.ok) {
-            Popup.alert(await res.text(), 'var(--error)');
+            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
         } else {
             if (fileMode)
                 Popup.alert(`Successfully recorded attendance!`, 'var(--success)', 3000);
@@ -152,7 +153,7 @@ const { get: getExpiration, set: setExpiration } = useURL('expiration', 300_000)
 async function refreshTempAttendanceCode() {
     const res = await GET(`/refreshTempAttendanceCode?eventid=${getEventid()}&businessId=${getBusinessId()}&expiration=${getExpiration()}&code=${code}`);
     if (!res.ok) {
-        Popup.alert(await res.text(), 'var(--error)');
+        Popup.alert(sanitizeText(await res.text()), 'var(--error)');
     }
 }
 

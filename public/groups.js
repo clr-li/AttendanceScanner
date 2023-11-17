@@ -1,6 +1,7 @@
 import { requireLogin } from './util/Auth.js';
 import { GET } from './util/Client.js';
 import { Popup } from './components/Popup.js';
+import { sanitizeText } from './util/util.js';
 await requireLogin();
 
 // ================== Join Logic ==================
@@ -59,7 +60,7 @@ async function handleBusinessLoad(business) {
         if (shouldLeave) {
             const res = await GET(`/leave?businessId=${business.id}`);
             if (!res.ok) {
-                Popup.alert(`<h1>Failed to leave ${business.name}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
+                Popup.alert(`<h1>Failed to leave ${sanitizeText(business.name)}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
             }
             location.assign("/groups.html");
         }
@@ -69,7 +70,7 @@ async function handleBusinessLoad(business) {
     
     const description = document.getElementById('description-' + business.id);
     description.classList.remove('load-wrapper');
-    description.innerHTML = `<span style="white-space: nowrap; margin: 30px">Created by ${userdata.ownerName}</span> <span style="white-space: nowrap;">With ${userdata.numUsers} current members</span> <span style="white-space: nowrap; margin: 30px">And ${userdata.userEvents.length} planned events!</span>`;
+    description.innerHTML = `<span style="white-space: nowrap; margin: 30px">Created by ${sanitizeText(userdata.ownerName)}</span> <span style="white-space: nowrap;">With ${sanitizeText(userdata.numUsers)} current members</span> <span style="white-space: nowrap; margin: 30px">And ${sanitizeText(userdata.userEvents.length)} planned events!</span>`;
 
     let absentCount = 0, presentCount = 0, lateCount = 0;
     const dayOfTheWeekAbsentCounts = [0, 0, 0, 0, 0, 0, 0];
@@ -161,7 +162,7 @@ async function handleBusinessLoad(business) {
         <br>
         <ul style="width: fit-content; margin: auto; list-style-type: none">
             ${
-                userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + ev.name + ' - ' + (new Date(ev.starttimestamp * 1000)).toDateString() + '</li>').join('')
+                userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + sanitizeText(ev.name) + ' - ' + sanitizeText((new Date(ev.starttimestamp * 1000)).toDateString()) + '</li>').join('')
             }
         </ul>
         <br>
@@ -174,6 +175,9 @@ async function handleBusinessLoad(business) {
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
 userBusinesses.forEach((business) => {
+    business.id = sanitizeText(business.id);
+    business.name = sanitizeText(business.name);
+    business.role = sanitizeText(business.role);
     businessHTML += /* html */ `
         <div class="business-card" id="card-${business.id}">
             <button id="leave-${business.id}" class="button delete" style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>

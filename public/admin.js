@@ -2,6 +2,7 @@ import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { initBusinessSelector, initEventSelector } from './util/selectors.js';
+import { sanitizeText } from './util/util.js';
 await requireLogin();
 
 const attendanceTable = document.getElementById("table");
@@ -124,15 +125,15 @@ function getEventData() {
         var endDate = new Date(eventinfo.endtimestamp*1000);
         document.getElementById("eventdetails").innerHTML = /* html */`
             <label for="update-name">Name:</label>
-            <input type="text" value="${eventinfo.name}" id="update-name"><br>
+            <input type="text" value="${sanitizeText(eventinfo.name)}" id="update-name"><br>
             <label for="update-startdate">Start Date:</label>
-            <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
+            <input type="date" value="${sanitizeText(startDate.toLocaleDateString('en-CA'))}" id="update-startdate">
             <label for="update-starttime">Start Time:</label>
-            <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
+            <input type="time" value="${sanitizeText((startDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + startDate.getMinutes()).padStart(2, '0'))}" id="update-starttime"><br>
             <label for="update-enddate">End Date:</label>
-            <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
+            <input type="date" value="${sanitizeText(endDate.toLocaleDateString('en-CA'))}" id="update-enddate">
             <label for="update-endtime">End Time:</label>
-            <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
+            <input type="time" value="${sanitizeText((endDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + endDate.getMinutes()).padStart(2, '0'))}" id="update-endtime"><br>
             <label for="update-description">Description: </label>
             <input type="text" value="${eventinfo.description}" id="update-description"><br>
             <div class="radios">
