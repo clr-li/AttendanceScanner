@@ -112,18 +112,26 @@ export class Popup extends Component {
      * @param {number} timout_ms 
      */
     static alert(message, color, timout_ms=null) {
-        const popup = document.createElement('pop-up');
-        if (color) {
-            popup.setAttribute('color', color);
-        }
-        popup.innerHTML = message;
-        if (timout_ms) {
-            popup.shadowRoot.getElementById('popup').style.animation = "fadeInAndOut " + timout_ms + "ms";
-            setTimeout(() => {
-                popup.close();
-            }, timout_ms);
-        }
-        document.body.appendChild(popup);
+        return new Promise((resolve, reject) => {
+            const popup = document.createElement('pop-up');
+            if (color) {
+                popup.setAttribute('color', color);
+            }
+            popup.innerHTML = message;
+            if (timout_ms) {
+                popup.shadowRoot.getElementById('popup').style.animation = "fadeInAndOut " + timout_ms + "ms";
+                setTimeout(() => {
+                    popup.close();
+                    resolve(false);
+                }, timout_ms);
+            }
+            document.body.appendChild(popup);
+            const handleCancel = () => {
+                const crossButton = popup.shadowRoot.getElementById('cross');
+                crossButton.removeEventListener('click', handleCancel);
+                popup.remove();
+                resolve(false);
+        }});
     }
 
     /**

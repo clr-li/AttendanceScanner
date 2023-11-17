@@ -11,7 +11,10 @@ async function joinFromUrl(urlstr) {
     const joincode = params.get('code');
     if (businessId && joincode) {
         console.log("joined: " + businessId + "_" + joincode);
-        await GET(`/join?businessId=${businessId}&code=${joincode}`);
+        const res = await GET(`/join?businessId=${businessId}&code=${joincode}`);
+        if (!res.ok) {
+            await Popup.alert(`Incorrect join link. Please check for typos or reach out to your group admin.`)
+        } else 
         location.assign("/groups.html");
     }
 }
