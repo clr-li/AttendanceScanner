@@ -4,8 +4,8 @@
   "description": "QR code based attendance with SQLite, Express, Firebase Auth, and Braintree",
   "main": "server.js",
   "scripts": {
-    "start": "TZ='Etc/UTC' node server.js",
-    "dev": "TZ='Etc/UTC' DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
+    "start": "node server.js",
+    "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master --force",
     "predeploy": "git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
@@ -23,7 +23,7 @@
     "uuid": "^9.0.0"
   },
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   },
   "repository": {
     "url": "https://github.com/clr-li/AttendanceScanner"

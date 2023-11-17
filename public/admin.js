@@ -16,7 +16,7 @@ const { get: getBusinessId } = await initBusinessSelector("businessId", async ()
 });
 
 let events;
-const { get: getEventId, selector: eventSelector, updateEvents } = await initEventSelector("eventId", getBusinessId, async () => {
+const { get: getEventId, updateEvents } = await initEventSelector("eventId", getBusinessId, async () => {
     getEventData();
 }, async (newEvents, newOptions, newEventNames) => {
     events = newEvents;
