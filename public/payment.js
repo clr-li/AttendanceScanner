@@ -91,7 +91,7 @@ form.addEventListener('submit', async event => {
         if (res.ok) {
             location.assign("/admin.html?businessId=" + (await res.json()).businessId);
         } else {
-            Popup.alert(res.statusText, "var(--error)");
+            Popup.alert(await res.text(), "var(--error)");
         }
     } finally {
         showSubscriptions();

@@ -139,13 +139,13 @@ export class Table extends Component {
                     });
                 });
                 allKickButtons[button_index].addEventListener('click', () => {
-                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then((res) => {
+                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async (res) => {
                         console.log(res.status);
                         if (res.status === 200) {
                             this.showSuccessDialog('success');
                             this.shadowRoot.getElementById("row-" + id).remove();
                         } else {
-                            Popup.alert(res.statusText, 'var(--error)');
+                            Popup.alert(await res.text(), 'var(--error)');
                         }
                     });
                 });

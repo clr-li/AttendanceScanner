@@ -113,12 +113,10 @@ router.post("/checkout", async (request, response) => {
     const TYPE = request.body.subscriptionType;
 
     if (!TYPE) {
-        response.statusMessage = "No subscription type specified";
-        response.sendStatus(400);
+        response.status(400).send("No subscription type specified");
         return;
     } else if (!businessName) {
-        response.statusMessage = "No business name specified";
-        response.sendStatus(400);
+        response.status(400).send("No business name specified");
         return;
     }
     const user = await asyncGet(`SELECT customer_id, name FROM Users WHERE id = ?`, [uid]);
@@ -135,8 +133,7 @@ router.post("/checkout", async (request, response) => {
         }
         });
         if (!result.success) {
-            response.statusMessage = "Customer validation failed: customer validations, payment method validations or card verification is NOT in order";
-            response.sendStatus(401);
+            response.status(401).send( "Customer validation failed: customer validations, payment method validations or card verification is NOT in order");
             return;
         }
         paymentToken = result.paymentMethod.token;
@@ -149,9 +146,7 @@ router.post("/checkout", async (request, response) => {
         deviceData: deviceData
         });
         if (!result.success) {
-
-            response.statusMessage = "Customer creation failed: customer validations, payment method validations or card verification is NOT in order";
-            response.sendStatus(401);
+            response.status(401).send("Customer creation failed: customer validations, payment method validations or card verification is NOT in order");
             return;
         }
         const customer = result.customer;
@@ -170,8 +165,7 @@ router.post("/checkout", async (request, response) => {
     });
 
     if (!subscriptionResult.success) {
-        response.statusMessage = "Subscription creation failed: customer validations, payment method validations or card verification is NOT in order";
-        response.sendStatus(401);
+        response.status(401).send("Subscription creation failed: customer validations, payment method validations or card verification is NOT in order");
         return;
     }
     console.log("Added subscription via paymentToken: " + paymentToken)
@@ -188,8 +182,7 @@ router.get("/subscriptions", async (request, response) => {
         
     const customerId = await getCustomerId(uid);
     if (!customerId) {
-        response.statusMessage = "customer not registered in database";
-        response.sendStatus(401);
+        response.status(401).send("Customer not registered in database");
         return;
     }
     const customer = await gateway.customer.find("" + customerId);
@@ -222,8 +215,7 @@ router.get("/cancelSubscription", async (request, response) => {
 
     const customerId = await getCustomerId(uid);
     if (!customerId) {
-        response.statusMessage = "customer not registered in database";
-        response.sendStatus(401);
+        response.status(401).send("Customer not registered in database");
         return;
     }
     const customer = await gateway.customer.find("" + customerId);
