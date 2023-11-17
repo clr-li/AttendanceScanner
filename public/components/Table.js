@@ -131,17 +131,19 @@ export class Table extends Component {
                 allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
                 allRoleSelects[button_index].addEventListener('change', () => {
                     let role = allRoleSelects[b_id].value;
-                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then((res) => {
+                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then(async (res) => {
                         console.log(res.status);
-                        if (res.status === 200) {
+                        if (res.ok) {
                             this.showSuccessDialog('role-success');
+                        } else {
+                            Popup.alert(await res.text(), 'var(--error)');
                         }
                     });
                 });
                 allKickButtons[button_index].addEventListener('click', () => {
                     GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async (res) => {
                         console.log(res.status);
-                        if (res.status === 200) {
+                        if (res.ok) {
                             this.showSuccessDialog('success');
                             this.shadowRoot.getElementById("row-" + id).remove();
                         } else {
@@ -160,9 +162,13 @@ export class Table extends Component {
                     ids_to_alter.push(checkbox.id.split("-")[1]);
                 }
             }
-            await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
-            const event = new CustomEvent('reloadTable', {});
-            this.dispatchEvent(event);
+            const res = await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
+            if (res.ok) {
+                const event = new CustomEvent('reloadTable', {});
+                this.dispatchEvent(event);
+            } else {
+                Popup.alert(await res.text(), 'var(--error)');
+            }
         });
     }
 
