@@ -80,7 +80,7 @@ router.get("/join", async (request, response) => {
     await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
     response.sendStatus(200);
   } else {
-    response.status(403).send("Incorrect joincode");
+    response.status(403).send("Incorrect joincode. Please check for typos or reach out to your group admin.");
   }
 });
 
