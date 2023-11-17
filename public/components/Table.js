@@ -38,6 +38,9 @@ export class Table extends Component {
             </type-select>
             <button class="button" id="alter-button">Alter Checked</button><br>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
+                <p>role changed</p>
+            </dialog>
+            <dialog id="success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>success</p>
             </dialog>
             <button type="button" class="button" id="export">Export to CSV</button>
@@ -84,7 +87,6 @@ export class Table extends Component {
                     <option value="scanner">scanner</option>
                     <option value="user">user</option>
                 </select>
-                <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
@@ -119,7 +121,6 @@ export class Table extends Component {
                 checkbox.checked = e.target.checked;
             }
         });
-        const allRoleButtons = attendance.getElementsByClassName('changerole');
         const allRoleSelects = attendance.getElementsByClassName('newrole');
         const allKickButtons = attendance.getElementsByClassName('kickuser');
         let button_index = 0;
@@ -128,7 +129,7 @@ export class Table extends Component {
                 let id = userIds[i];
                 let b_id = button_index;
                 allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
-                allRoleButtons[button_index].addEventListener('click', () => {
+                allRoleSelects[button_index].addEventListener('change', () => {
                     let role = allRoleSelects[b_id].value;
                     GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then((res) => {
                         console.log(res.status);
@@ -141,7 +142,7 @@ export class Table extends Component {
                     GET(`/removeMember?businessId=${businessID}&userId=${id}`).then((res) => {
                         console.log(res.status);
                         if (res.status === 200) {
-                            this.showSuccessDialog('role-success');
+                            this.showSuccessDialog('success');
                             this.shadowRoot.getElementById("row-" + id).remove();
                         } else {
                             Popup.alert(res.statusText, 'var(--error)');
