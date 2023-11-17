@@ -133,7 +133,7 @@ export class Table extends Component {
                         if (res.ok) {
                             this.showSuccessDialog('role-success');
                         } else {
-                            Popup.alert(await res.text(), 'var(--error)');
+                            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                         }
                     });
                 });
@@ -144,7 +144,7 @@ export class Table extends Component {
                             this.showSuccessDialog('success');
                             this.shadowRoot.getElementById("row-" + id).remove();
                         } else {
-                            Popup.alert(await res.text(), 'var(--error)');
+                            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                         }
                     });
                 });
@@ -164,7 +164,7 @@ export class Table extends Component {
                 const event = new CustomEvent('reloadTable', {});
                 this.dispatchEvent(event);
             } else {
-                Popup.alert(await res.text(), 'var(--error)');
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }
         });
     }

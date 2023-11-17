@@ -111,7 +111,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
                 updateEvents();
                 runTable();
             } else {
-                Popup.alert(await res.text(), 'var(--error)');
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }
         });
     } else {
@@ -121,7 +121,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
                 updateEvents();
                 runTable();
             } else {
-                Popup.alert(await res.text(), 'var(--error)');
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }
         });
     }
@@ -193,7 +193,7 @@ function getEventData() {
                 if (res.ok) {
                     updateEvents();
                 } else {
-                    Popup.alert(await res.text(), 'var(--error)');
+                    Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                 }
             });
         };
@@ -226,7 +226,7 @@ function getEventData() {
                 if (res.ok) {
                     updateEvents();
                 } else {
-                    Popup.alert(await res.text(), 'var(--error)');
+                    Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                 }
             });
         }
