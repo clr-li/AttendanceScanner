@@ -1,5 +1,5 @@
 import { Component } from "../util/Component.js";
-import { getPattern } from "../util/util.js";
+import { sanitizeText, getPattern, escapeQuotes } from "../util/util.js";
 
 /**
  * The TypeSelect component allows selection of its children option tags through text search or a dropdown select.
@@ -14,10 +14,10 @@ import { getPattern } from "../util/util.js";
         super(false); // each instance has its own html
     }
     initialHTML() {
-        const labelText = this.getAttribute("label") ?? "";
-        const name = this.getAttribute("name") ?? "selector";
-        const placeholder = this.getAttribute("placeholder") ?? "Type to search/Click to select";
-        const value = this.getAttribute("value") ?? "";
+        const labelText = sanitizeText(this.getAttribute("label")) ?? "";
+        const name = sanitizeText(this.getAttribute("name")) ?? "selector";
+        const placeholder = sanitizeText(this.getAttribute("placeholder")) ?? "Type to search/Click to select";
+        const value = sanitizeText(this.getAttribute("value")) ?? "";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/inputs.css">
@@ -71,7 +71,7 @@ import { getPattern } from "../util/util.js";
      */
     _onChange(e) {
         if (e.target.validity.patternMismatch) return;
-        const event = new CustomEvent('select', { detail: (!e.target.value) ? null : this.querySelector(`option[value="${e.target.value}"]`) });
+        const event = new CustomEvent('select', { detail: (!e.target.value) ? null : this.querySelector(`option[value="${escapeQuotes(e.target.value)}"]`) });
         this.dispatchEvent(event);
     }
     connectedCallback() {
@@ -85,7 +85,7 @@ import { getPattern } from "../util/util.js";
         this.observer = new MutationObserver((mutationsRecords, observer) => {
             for (const mutationRecord of mutationsRecords) {
                 for (const nodeToRemove of mutationRecord.removedNodes) {
-                    this.shadowRoot.querySelector('option[value="' + nodeToRemove.value + '"]').remove();
+                    this.shadowRoot.querySelector('option[value="' + escapeQuotes(nodeToRemove.value) + '"]').remove();
                 }
                 this.shadowRoot.getElementById("options").append(...Array.from(mutationRecord.addedNodes, elem => elem.cloneNode(true)));
             }
@@ -120,7 +120,7 @@ import { getPattern } from "../util/util.js";
      * Sets the value of this input to the first option with the specified attribute.
      */
     setValue(attribute, value) {
-        const option = this.querySelector(`option[${attribute}="${value}"]`);
+        const option = this.querySelector(`option[${attribute}="${escapeQuotes(value)}"]`);
         if (!option) return this.shadowRoot.getElementById("select").value;
         this.setAttribute("value", option.value);
         return option.value;

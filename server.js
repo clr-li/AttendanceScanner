@@ -20,6 +20,11 @@ app.use(cors(corsOptions))
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
+// ============================ DATABASE ============================
+const dbFile = "./.data/ATT.db"; // filepath for the database
+const schemaFile = "./databaseSchema.sql"; // filepath for the database schema
+require('./Database').reinitializeIfNotExists(dbFile, schemaFile);
+
 // ============================ AUTHENTICATION ============================
 const { authRouter } = require('./Auth');
 app.use('/', authRouter);
@@ -42,6 +47,7 @@ app.use('/', eventRouter);
 
 // ============================ SERVER ============================
 // listen for requests :)
-var listener = app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${listener.address().port}`);
+module.exports.app = app;
+module.exports.listener = app.listen(process.env.PORT, () => {
+  console.log(`Your app is listening on port ${module.exports.listener.address().port}`);
 });

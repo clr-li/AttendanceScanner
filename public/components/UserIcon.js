@@ -2,6 +2,7 @@ import { Component } from "../util/Component.js";
 import { getCurrentUser } from '../util/Auth.js';
 import { Popup } from "./Popup.js";
 import { GET } from "../util/Client.js";
+import { sanitizeText } from "../util/util.js";
 
 const user = await getCurrentUser();
 
@@ -29,9 +30,9 @@ const user = await getCurrentUser();
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <div class="container">
-                <img src="${user.picture}" referrerpolicy="no-referrer">
+                <img src="${sanitizeText(user.picture)}" referrerpolicy="no-referrer">
                 <span id="profile" class="popup">
-                    <p>Hi ${user.name}!</p>
+                    <p>Hi ${sanitizeText(user.name)}!</p>
                     <button class="button" id="change-name">Change Name</button>
                     <button class="button" onclick="import('./util/Auth.js').then(m => {m.logout().then(() => {location.href = '/login.html?redirect=/'})});">
                         Switch Accounts

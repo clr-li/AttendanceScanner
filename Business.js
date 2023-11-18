@@ -80,8 +80,7 @@ router.get("/join", async (request, response) => {
     await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
     response.sendStatus(200);
   } else {
-    response.statusMessage = "Incorrect joincode";
-    response.sendStatus(403);
+    response.status(403).send("Incorrect joincode. Please check for typos or reach out to your group admin.");
   }
 });
 
@@ -113,8 +112,7 @@ router.get('/removeMember', async (request, response) => {
         await asyncRun(`DELETE FROM Members WHERE business_id = ? AND user_id = ?`, [businessId, userId]);
         response.sendStatus(200);
     } else {
-        response.statusMessage = "Cannot remove non-members or owners";
-        response.sendStatus(400);
+        response.status(400).send("Cannot remove non-members or owners");
     }
 });
 
@@ -184,14 +182,18 @@ router.get('/assignRole', async (request, response) => {
     const role = request.query.role;
 
     if (role === "owner") {
-        response.sendStatus(403);
+        response.status(403).send("Cannot assign owner role");
         return;
     }
 
     const changes = await asyncRunWithChanges(`UPDATE Members SET role = ? WHERE business_id = ? AND user_id = ? AND role != 'owner'`,
         [role, businessId, userid]);
     
-    response.sendStatus(changes == 0 ? 403 : 200);
+    if (changes != 0) {
+        response.status(200).send("Role assigned");
+    } else {
+        response.status(403).send("Role not changed. Check your role and its privileges.");
+    }
 });
 
 // ============================ USER ROUTES ============================

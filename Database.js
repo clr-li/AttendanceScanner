@@ -1,22 +1,27 @@
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
-// ============================ DATABASE SETTINGS ============================
-const dbFile = "./.data/ATT.db"; // filepath for the database
-
 // ============================ INIT SQLite DATABASE ============================
-const exists = fs.existsSync(dbFile);
-const db = new sqlite3.Database(dbFile);
-if (!exists) {
-    console.log("no database file found, writing a new one!");
-    const schema = fs.readFileSync('./databaseSchema.sql', 'utf8');
-    db.serialize(() => {
-        for (const sql of schema.split(";")) {
-            if (sql) db.run(sql, (err) => {
-                if (err) console.error("Failed to initialize database: " + err + "\n SQL: " + sql);
-            });
-        }
+/** @type { import('sqlite3').Database } */
+let db;
+function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSchema.sql') {
+    const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
+    if (db) db.close((err) => {
+        if (err) console.error("Failed to close previous database connection: " + err);
+        console.log("Closed previous database connection");
     });
+    db = new sqlite3.Database(dbFile);
+    if (!exists) {
+        console.log("No database file found, writing a new one!");
+        const schema = fs.readFileSync(schemaFile, 'utf8');
+        db.serialize(() => {
+            for (const sql of schema.split(";")) {
+                if (sql) db.run(sql, (err) => {
+                    if (err) console.error("Failed to initialize database: " + err + "\n SQL: " + sql);
+                });
+            }
+        });
+    }
 }
 
 // ============================ ASYNC DATABASE FUNCTIONS ============================
@@ -81,6 +86,13 @@ function asyncRunWithID(sql, params=[]) {
     });
 };
 
+/**
+ * Runs a sql query on the database and gets the number of rows changed.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @requires sql should be an INSERT, UPDATE, or DELETE statement
+ * @returns a Promise of the number of rows changed by the sql query.
+ */
 function asyncRunWithChanges(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
@@ -91,8 +103,9 @@ function asyncRunWithChanges(sql, params=[]) {
 }
 
 // ============================ MODULE EXPORTS ============================
-exports.asyncGet = asyncGet
-exports.asyncAll = asyncAll
-exports.asyncRun = asyncRun
+exports.reinitializeIfNotExists = reinitializeIfNotExists;
+exports.asyncGet = asyncGet;
+exports.asyncAll = asyncAll;
+exports.asyncRun = asyncRun;
 exports.asyncRunWithChanges = asyncRunWithChanges;
-exports.asyncRunWithID = asyncRunWithID
+exports.asyncRunWithID = asyncRunWithID;

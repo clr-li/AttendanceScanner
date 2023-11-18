@@ -38,13 +38,13 @@ function parseJwt(token) {
  * @param {boolean} registerIfNewUser adds the user to the database if their uid is not in the database yet
  * @returns the uid of the user represented by the idToken if the user is logged in and the token is valid, otherwise returns false.
  */
-async function getUID(idToken, registerIfNewUser=true) {
+module.exports.getUID = async function getUID(idToken, registerIfNewUser=true) {
     if (typeof idToken !== "string" || idToken === "null") return false;
     try {
         let truename;
         let uid;
         if (TOKEN_VERIFICATION) {
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await admin.auth().verifyIdToken(idToken, true);
             uid = decodedToken.uid; 
             truename = decodedToken.name;
         } else {
@@ -98,20 +98,17 @@ async function getAccess(userid, businessid, requiredPrivileges={}) {
  * @effects sends response status error codes for failed auth
  */
 async function handleAuth(request, response, businessid=false, requiredPrivileges={}) {
-  if (!request.headers.idtoken) { 
-    response.statusMessage = "no idtoken provided, user does not appear to be signed in";
-    response.sendStatus(400);
+  if (!request.headers.idtoken) {
+    response.status(400).send("No idtoken provided, user does not appear to be signed in");
     return false;
   }
-  const uid = await getUID(request.headers.idtoken);
+  const uid = await module.exports.getUID(request.headers.idtoken);
   if (!uid) {
-    response.statusMessage = "idtoken is invalid, login has likely expired";
-    response.sendStatus(401);
+    response.status(401).send("Idtoken is invalid, login has likely expired");
     return false;
   }
   if (businessid && !(await getAccess(uid, businessid, requiredPrivileges))) {
-    response.statusMessage = "access denied, user does not have the necessary privileges for this endpoint";
-    response.sendStatus(403);
+    response.status(403).send("Access denied, user does not have the necessary privileges for this endpoint");
     return false;
   }
   return uid;
@@ -132,3 +129,4 @@ router.get("/isLoggedIn", async (request, response) => {
 exports.authRouter = router;
 exports.handleAuth = handleAuth;
 exports.getAccess = getAccess;
+exports.parseJwt = parseJwt;
