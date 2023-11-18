@@ -21,9 +21,6 @@ console.log = async (message) => {
 console.error = console.log
 console.log('# Test logs created on ' + new Date().toISOString())
 
-// // close the default server that server.js starts so that we can start our own server for testing
-// await new Promise((resolve, reject) => listener.close(resolve));
-
 // ============================ TESTS ============================
 describe('Server', () => {
     before(async () => {
@@ -32,7 +29,8 @@ describe('Server', () => {
     });
 
     after(async () => {
-        await close();
+        // close the last db connection after all tests are done
+        await new Promise((resolve, reject) => close(resolve));
     });
 
     describe('General Functionality', () => {
