@@ -174,10 +174,18 @@ async function handleBusinessLoad(business) {
 
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
+let ownerIds = [];
 userBusinesses.forEach((business) => {
     business.id = sanitizeText(business.id);
     business.name = sanitizeText(business.name);
     business.role = sanitizeText(business.role);
+    let renameHTML = '';
+    if (business.role === 'owner') {
+        renameHTML = /* html */`
+            <button id="${business.id}" type="button" style="background: none; border: none;"><i class="fa-regular fa-pen-to-square" style="font-size: 1rem;"></i></button>
+        `;
+        ownerIds.push(business.id);
+    }
     businessHTML += /* html */ `
         <div class="business-card" id="card-${business.id}">
             <button id="leave-${business.id}" class="button delete" style="position: absolute; right: 6px; top: 6px; min-width: 0">Leave&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></button>
@@ -189,6 +197,7 @@ userBusinesses.forEach((business) => {
                     : 
                         business.role
                 })</span>
+                ${renameHTML}
             </h1>
             <hr>
             <div style="min-height: 1.5rem;" class="load-wrapper">
@@ -216,6 +225,23 @@ userBusinesses.forEach((business) => {
     });
 })
 document.getElementById("businesses").innerHTML = businessHTML;
+for (const ownerId of ownerIds) {
+    document.getElementById(ownerId).addEventListener('click', async () => {
+        const newName = await Popup.prompt("Enter a new name for your group");
+        if (newName) {
+            console.log("new name: " + newName)
+            const res = await GET(`/renameBusiness?businessId=${ownerId}&name=${newName}`);
+            if (!res.ok) {
+                Popup.alert(res.statusText, "var(--error)")
+            } else {
+                await Popup.alert("Successfully renamed group to " + newName, "var(--success)", 2000);
+            }
+            location.assign("/groups.html");
+        } else {
+            Popup.alert("Please enter a valid name.", "var(--error)", 2000);
+        }
+    });
+}
 
 // smooth load (keep previous page visible until content loaded)
 // requires the body to start with opacity: 0, and this should be the last script run.

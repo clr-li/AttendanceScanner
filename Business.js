@@ -47,6 +47,17 @@ router.get("/businesses", async (request, response) => {
   response.send(rows);
 });
 
+router.get("/renameBusiness", async (request, response) => {
+  const uid = await handleAuth(request, response, request.query.businessId, { owner: true });
+  if (!uid) return;
+
+  const name = request.query.name;
+  const businessId = request.query.businessId;
+
+  await asyncRun("UPDATE Businesses SET name = ? WHERE id = ?", [name, businessId]);
+  response.sendStatus(200);
+}); 
+
 /**
  * Gets the joincode of the specified business.
  * @queryParams businessId - id of the business to get the joincode for
