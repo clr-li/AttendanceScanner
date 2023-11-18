@@ -6,7 +6,7 @@ const { v4 } = require("uuid");
 
 // import code to test
 const { app, listener } = require('../server.js');
-const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists, close } = require('../Database.js');
+const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists } = require('../Database.js');
 const auth = require('../Auth.js');
 
 // ============================ SETUP ============================
@@ -26,12 +26,6 @@ describe('Server', () => {
     before(async () => {
         // close the default server that server.js starts so that we can start our own server for testing
         await new Promise((resolve, reject) => listener.close(resolve));
-        await close();
-    });
-
-    after(async () => {
-        // close the last db connection after all tests are done
-        await close();
     });
 
     describe('General Functionality', () => {
