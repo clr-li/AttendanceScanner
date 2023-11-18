@@ -1,12 +1,10 @@
 'use strict';
 
-const { clear } = require("console");
 const fs = require("fs");
-const { set } = require("node-persist");
 const sqlite3 = require('sqlite3').verbose();
 
 class TimoutPromise extends Promise {
-    constructor(executor, timeout=2000) {
+    constructor(executor, timeout=4000) {
         let resolveClosure = null;
         let rejectClosure = null;
         super((resolve, reject) => {
