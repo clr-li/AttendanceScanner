@@ -45,7 +45,10 @@ describe('Server', () => {
         });
 
         afterEach(async () => {
-            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve()));
+            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
+                setTimeout(resolve, 2000);
+                fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
+            });
         });
 
         it('Should not return a value when asyncRun called', async () => {
@@ -97,7 +100,10 @@ describe('Server', () => {
         });
 
         afterEach(async () => {
-            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve()));
+            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
+                setTimeout(resolve, 2000);
+                fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
+            });
         });
 
         it('Should return 400 Invalid Input when no token is provided', (t, done) => {
