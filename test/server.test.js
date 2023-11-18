@@ -22,7 +22,7 @@ console.log = async (message) => {
 console.error = console.log
 console.log('# Test logs created on ' + new Date().toISOString())
 
-const TEST_DB_FILE = './ATT_test.db';
+const TEST_DB_FILE = ':memory:';
 // ============================ TESTS ============================
 describe('Server', () => {
     before(async () => {
@@ -44,11 +44,11 @@ describe('Server', () => {
             await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
         });
 
-        afterEach(async () => {
-            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
-                fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
-            });
-        });
+        // afterEach(async () => {
+        //     if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
+        //         fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
+        //     });
+        // });
 
         it('Should not return a value when asyncRun called', async () => {
             const result = await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid', 'testname', 'testcustomerid']);
@@ -98,12 +98,11 @@ describe('Server', () => {
             await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
         });
 
-        afterEach(async () => {
-            if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
-                setTimeout(resolve, 2000);
-                fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
-            });
-        });
+        // afterEach(async () => {
+        //     if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
+        //         fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
+        //     });
+        // });
 
         it('Should return 400 Invalid Input when no token is provided', (t, done) => {
             request(app)
