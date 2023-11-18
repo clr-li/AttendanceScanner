@@ -1,0 +1,26 @@
+name: Automated Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: npm ci
+      - name: Create SA key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
+      - name: Run tests
+        run: npm test
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: "gcloud.json"
+          MERCHANTID: ${{ secrets.MERCHANTID }}
+          MERCHANTPUBLIC: ${{ secrets.MERCHANTPUBLIC }}
+          MERCHANTPRIVATE: ${{ secrets.MERCHANTPRIVATE }}
