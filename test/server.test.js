@@ -26,11 +26,12 @@ describe('Server', () => {
     before(async () => {
         // close the default server that server.js starts so that we can start our own server for testing
         await new Promise((resolve, reject) => listener.close(resolve));
+        await close();
     });
 
     after(async () => {
         // close the last db connection after all tests are done
-        await new Promise((resolve, reject) => close(resolve));
+        await close();
     });
 
     describe('General Functionality', () => {

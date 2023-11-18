@@ -102,8 +102,13 @@ function asyncRunWithChanges(sql, params=[]) {
     });
 }
 
+/**
+ * Closes the current database connection.
+ * @returns a Promise of the database connection closing.
+ */
 async function close() {
     return new Promise((resolve, reject) => {
+        if (!db) resolve();
         db.close((err) => {
             if (err) reject(err);
             else resolve();
