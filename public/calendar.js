@@ -7,8 +7,21 @@ $("#calendar").evoCalendar();
 const resBusiness = await GET('/businesses');
 const businesses = await resBusiness.json();
 
+let calendarClicked = false;
+const calendar = document.getElementById("calendar");
+const sidebar = document.getElementsByClassName("calendar-events");
+
+let sidebarHTML = /* html */`
+    <div id="legend"><hr><br>
+`;
+
 const colors = ["blue", "red", "purple", "green", "orange", "hotpink", "yellow", "turquoise", "indigo", "maroon", "lime"];
 for (const [i, business] of Object.entries(businesses)) {
+    const eventColor = colors[i%colors.length];
+    sidebarHTML += /* html */`
+        <p aria-role="presentation" style="color: ${eventColor}; display: inline; font-size: 1.2rem; margin-left: 1.5rem;" id="${sanitizeText(business.id)}">&#9632;</p>
+        <p style="display: inline; font-size: 1.2rem;">${sanitizeText(business.name)}</p><br>
+    `;
     const resEvent = await GET('/userEvents?businessId=' + business.id);
     const events = await resEvent.json();
     events.forEach(event => {
@@ -28,7 +41,6 @@ for (const [i, business] of Object.entries(businesses)) {
             endtime = endDate.getHours() + ":0" + endDate.getMinutes();
         else
             endtime = endDate.getHours() + ":" + endDate.getMinutes();
-        const eventColor = colors[i%colors.length];
         if (event.status == null && Date.now() > event.endtimestamp * 1000) {
             status = "ABSENT";
         }
@@ -52,6 +64,16 @@ for (const [i, business] of Object.entries(businesses)) {
           ]);
     });
 }
+sidebarHTML += /* html */`
+    </div>
+`;
+// const originalSidebar = sidebar[0].innerHTML;
+calendar.addEventListener("click", (e) => {
+    console.log("clicked");
+    calendarClicked = true;
+    // sidebar[0].innerHTML = originalSidebar;
+});
+sidebar[0].innerHTML += sidebarHTML;
 
 // smooth load (keep previous page visible until content loaded)
 // requires the body to start with opacity: 0, and this should be the last script run.

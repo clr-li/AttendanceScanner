@@ -14,7 +14,6 @@ export class Table extends Component {
             <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/styles/tables.css">
             <h1>Event Table</h1>
-            <button class="button" onclick="window.location.href='/calendar.html';">Calendar View</button><br><br>
             <form id="filterform" class="form">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
