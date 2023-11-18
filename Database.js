@@ -13,18 +13,30 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSc
             resolve();
         });
     });
-    db = new sqlite3.Database(dbFile);
+    await new Promise((resolve, reject) => {
+        db = new sqlite3.Database(dbFile, (err) => {
+            if (err) reject("Failed to open database: " + err);
+            else resolve();
+        });
+    });
     if (!exists) {
         await new Promise((resolve, reject) => {
             console.log("No database file found, writing a new one!");
             const schema = fs.readFileSync(schemaFile, 'utf8');
             db.serialize(() => {
+                let resolvedCount = 0;
+                let shouldResolveCount = schema.split(";").filter(x => x).length;
                 for (const sql of schema.split(";")) {
-                    if (sql) db.run(sql, (err) => {
-                        if (err) reject("Failed to initialize database: " + err + "\n SQL: " + sql);
-                    });
+                    if (sql) {
+                        db.run(sql, (err) => {
+                            if (err) reject("Failed to initialize database: " + err + "\n SQL: " + sql);
+                            else {
+                                resolvedCount++;
+                                if (resolvedCount == shouldResolveCount) resolve();
+                            }
+                        });
+                    }
                 }
-                resolve();
             });
         });
     }
