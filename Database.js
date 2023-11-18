@@ -3,48 +3,26 @@
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
-class TimoutPromise extends Promise {
-    constructor(executor, timeout=1000) {
-        let resolveClosure = null;
-        let rejectClosure = null;
-        super((resolve, reject) => {
-            resolveClosure = resolve;
-            rejectClosure = reject;
-            executor((...args) => {
-                if (this._timeout) clearTimeout(this._timeout);
-                resolve(...args);
-            }, (...args) => {
-                if (this._timeout) clearTimeout(this._timeout);
-                reject(...args);
-            });
-        });
-        this._timeout = setTimeout(() => {
-            this._timeout = null;
-            rejectClosure(new Error("Timed out"));
-        }, timeout);
-    }
-}
-
 // ============================ INIT SQLite DATABASE ============================
 /** @type { import('sqlite3').Database } */
 let db;
 async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSchema.sql') {
     const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
-    if (db) await new TimoutPromise((resolve, reject) => {
+    if (db) await new Promise((resolve, reject) => {
         db.close((err) => {
             if (err) console.error("Failed to close previous database connection: " + err);
             else console.log("Closed previous database connection");
             resolve();
         });
     });
-    await new TimoutPromise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         db = new sqlite3.Database(dbFile, (err) => {
             if (err) console.error("Failed to open database: " + err);
             resolve();
         });
     });
     if (!exists) {
-        await new TimoutPromise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             console.log("No database file found, writing a new one!");
             const schema = fs.readFileSync(schemaFile, 'utf8');
             db.serialize(() => {
@@ -70,7 +48,7 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSc
  * @returns a Promise of an object representing the first result of the sql query.
  */
 function asyncGet(sql, params=[]) {
-    return new TimoutPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.get(sql, params, (err, result) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
             else resolve(result);
@@ -85,7 +63,7 @@ function asyncGet(sql, params=[]) {
  * @returns a Promise of an array representing all the results of the sql query.
  */
 function asyncAll(sql, params=[]) {
-    return new TimoutPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.all(sql, params, (err, result) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
             else resolve(result);
@@ -100,7 +78,7 @@ function asyncAll(sql, params=[]) {
  * @returns Promise<void>
  */
 function asyncRun(sql, params=[]) {
-    return new TimoutPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.run(sql, params, (err) => {
             if (err) { console.log("sql error: " + sql); reject(err); }
             else resolve();
@@ -116,7 +94,7 @@ function asyncRun(sql, params=[]) {
  * @returns a Promise of the id of the last inserted row (if the sql query was an INSERT statement!).
  */
 function asyncRunWithID(sql, params=[]) {
-    return new TimoutPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
             if (err) { console.log("sql error: " + sql); reject(err); }
             else resolve(this.lastID);
@@ -132,7 +110,7 @@ function asyncRunWithID(sql, params=[]) {
  * @returns a Promise of the number of rows changed by the sql query.
  */
 function asyncRunWithChanges(sql, params=[]) {
-    return new TimoutPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
             if (err) { console.log("sql error: " + sql); reject(err); }
             else resolve(this.changes);

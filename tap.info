@@ -5,97 +5,97 @@ TAP version 13
         # Subtest: Should return a 404 when route is invalid
         ok 1 - Should return a 404 when route is invalid
           ---
-          duration_ms: 17.650959
+          duration_ms: 25.005916
           ...
         1..1
     ok 1 - General Functionality
       ---
-      duration_ms: 18.094917
+      duration_ms: 25.402167
       type: 'suite'
       ...
     # Subtest: Database
         # Subtest: Should not return a value when asyncRun called
         ok 1 - Should not return a value when asyncRun called
           ---
-          duration_ms: 11.441542
+          duration_ms: 8.562208
           ...
         # Subtest: Should return a value when asyncGet called
         ok 2 - Should return a value when asyncGet called
           ---
-          duration_ms: 3.5275
+          duration_ms: 3.236666
           ...
         # Subtest: Should return the rowid when asyncRunWithID called
         ok 3 - Should return the rowid when asyncRunWithID called
           ---
-          duration_ms: 4.626
+          duration_ms: 4.752625
           ...
         # Subtest: Should return the number of rows changed when asyncRunWithChanges called
         ok 4 - Should return the number of rows changed when asyncRunWithChanges called
           ---
-          duration_ms: 4.038583
+          duration_ms: 4.187709
           ...
         # Subtest: Should get all the correct rows when asyncAll called
         ok 5 - Should get all the correct rows when asyncAll called
           ---
-          duration_ms: 4.512375
+          duration_ms: 4.504542
           ...
         1..5
     ok 2 - Database
       ---
-      duration_ms: 28.456542
+      duration_ms: 25.532917
       type: 'suite'
       ...
     # Subtest: Authentication
         # Subtest: Should return 400 Invalid Input when no token is provided
         ok 1 - Should return 400 Invalid Input when no token is provided
           ---
-          duration_ms: 7.682875
+          duration_ms: 7.495458
           ...
         # Subtest: Should return 401 Unauthorized when an invalid token is provided
         ok 2 - Should return 401 Unauthorized when an invalid token is provided
           ---
-          duration_ms: 79.816666
+          duration_ms: 67.349459
           ...
         # Subtest: Should return 401 Unauthorized when a valid but expired token is provided
         ok 3 - Should return 401 Unauthorized when a valid but expired token is provided
           ---
-          duration_ms: 63.606166
+          duration_ms: 66.997083
           ...
         # Subtest: Should return 200 OK and the correct userid when a valid token is provided
         ok 4 - Should return 200 OK and the correct userid when a valid token is provided
           ---
-          duration_ms: 4.819583
+          duration_ms: 5.462125
           ...
         # Subtest: Should correctly enforce single privileges when getAccess is called
         ok 5 - Should correctly enforce single privileges when getAccess is called
           ---
-          duration_ms: 4.857125
+          duration_ms: 4.667208
           ...
         # Subtest: Should correctly enforce multiple privileges when getAccess is called
         ok 6 - Should correctly enforce multiple privileges when getAccess is called
           ---
-          duration_ms: 10.063792
+          duration_ms: 4.628292
           ...
         # Subtest: Should correctly return false when getAccess is called with invalid privileges
         ok 7 - Should correctly return false when getAccess is called with invalid privileges
           ---
-          duration_ms: 8.529834
+          duration_ms: 5.529583
           ...
         # Subtest: Should return 403 Access denied when /joincode is called as a user
         ok 8 - Should return 403 Access denied when /joincode is called as a user
           ---
-          duration_ms: 8.505292
+          duration_ms: 9.897208
           ...
         1..8
     ok 3 - Authentication
       ---
-      duration_ms: 188.337167
+      duration_ms: 172.452708
       type: 'suite'
       ...
     1..3
 ok 1 - Server
   ---
-  duration_ms: 236.713417
+  duration_ms: 224.988334
   type: 'suite'
   ...
 1..1
@@ -106,7 +106,7 @@ ok 1 - Server
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 2661.271625
+# duration_ms 2574.874625
 # start of coverage report
 # file | line % | branch % | funcs % | uncovered lines
 # Attendance.js | 50.00 | 100.00 | 0.00 | 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184
