@@ -16,7 +16,6 @@ jobs:
       - run: npm ci
       - name: Create SA key
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
-        working-directory: functions
       - name: Run tests
         run: npm test
         env:
