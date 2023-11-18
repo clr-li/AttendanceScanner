@@ -102,8 +102,18 @@ function asyncRunWithChanges(sql, params=[]) {
     });
 }
 
+async function close() {
+    return new Promise((resolve, reject) => {
+        db.close((err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
+
 // ============================ MODULE EXPORTS ============================
 exports.reinitializeIfNotExists = reinitializeIfNotExists;
+exports.close = close;
 exports.asyncGet = asyncGet;
 exports.asyncAll = asyncAll;
 exports.asyncRun = asyncRun;
