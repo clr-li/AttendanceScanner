@@ -1,0 +1,24 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.12'
+      - run: npm ci
+      - name: Run tests
+        run: npm test
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          MERCHANTID: ${{ secrets.MERCHANTID }}
+          MERCHANTPUBLIC: ${{ secrets.MERCHANTPUBLIC }}
+          MERCHANTPRIVATE: ${{ secrets.MERCHANTPRIVATE }}
