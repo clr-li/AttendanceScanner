@@ -19,8 +19,8 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSc
         });
     });
     await new Promise((resolve, reject) => {
+        setTimeout(resolve, 2000);
         db = new sqlite3.Database(dbFile, (err) => {
-            setTimeout(resolve, 2000);
             if (err) reject("Failed to open database: " + err);
             else resolve();
         });
