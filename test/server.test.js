@@ -1,12 +1,13 @@
 // import test utils
-const { describe, it, after, before, beforeEach } = require('node:test'); // read about the builtin Node.js test framework here: https://nodejs.org/docs/latest-v18.x/api/test.html
+const { describe, it, after, afterEach, before, beforeEach } = require('node:test'); // read about the builtin Node.js test framework here: https://nodejs.org/docs/latest-v18.x/api/test.html
 const assert = require('node:assert');
 const request = require('supertest'); // we use supertest to test HTTP requests/responses. Read more here: https://github.com/ladjs/supertest
 const { v4 } = require("uuid");
+const fs = require('fs');
 
 // import code to test
 const { app, listener } = require('../server.js');
-const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists, close } = require('../Database.js');
+const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists } = require('../Database.js');
 const auth = require('../Auth.js');
 
 // ============================ SETUP ============================
@@ -21,17 +22,12 @@ console.log = async (message) => {
 console.error = console.log
 console.log('# Test logs created on ' + new Date().toISOString())
 
+const TEST_DB_FILE = './.data/ATT_test.db';
 // ============================ TESTS ============================
 describe('Server', () => {
     before(async () => {
         // close the default server that server.js starts so that we can start our own server for testing
         await new Promise((resolve, reject) => listener.close(resolve));
-        await close();
-    });
-
-    after(async () => {
-        // close the last db connection after all tests are done
-        await close();
     });
 
     describe('General Functionality', () => {
@@ -44,9 +40,12 @@ describe('Server', () => {
     });
 
     describe('Database', () => {
-        beforeEach(() => {
-            // use an in-memory database for testing that is reinitialized before each test
-            reinitializeIfNotExists(':memory:', './databaseSchema.sql');
+        beforeEach(async () => {
+            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+        });
+
+        afterEach(async () => {
+            await new Promise((resolve, reject) => fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve()));
         });
 
         it('Should not return a value when asyncRun called', async () => {
@@ -93,8 +92,12 @@ describe('Server', () => {
         const VALID_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk1MWMwOGM1MTZhZTM1MmI4OWU0ZDJlMGUxNDA5NmY3MzQ5NDJhODciLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWxleGFuZGVyIE1ldHpnZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1MEs1SW5aZElPYmhWTW95UDVtaWFzQkxMeFlPRV9KalI4aXg4Y1o9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1ZCI6ImF0dGVuZGFuY2VzY2FubmVycXIiLCJhdXRoX3RpbWUiOjE2Njk5NjEzMTUsInVzZXJfaWQiOiJmRlN1dkVuSFpiaGtwYUU0Y1F2eWJDUElPUlYyIiwic3ViIjoiZkZTdXZFbkhaYmhrcGFFNGNRdnliQ1BJT1JWMiIsImlhdCI6MTY2OTk2MTMxNSwiZXhwIjoxNjY5OTY0OTE1LCJlbWFpbCI6ImFsZXhhbmRlci5sZUBvdXRsb29rLmRrIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDc5NzQzODUyNDExMjU1ODQwODUiXSwiZW1haWwiOlsiYWxleGFuZGVyLmxlQG91dGxvb2suZGsiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.r50SDswArj53NJbwO8vWAYjWVq7uvo_56RBRyt2ZLKyLrHAOWDsj8Muxg1N2OuAOX5ZOZscXttqPb9wwvnh79tYlciZru5GuBcDXYHuMM18HsOBTkqsdWQlnsneDLawMZYP4u5U9dx2NZSCQIpDmfv8CckPfav7izCcdUxAZaKs6ngzBjpz9O7dpKW8pFscaWtncqyH9PXGtChlDd4kOdYO-YJWkA3-ZZ7_S_AviCHbAG-veyTzoacyCPdDJrNzNq9tiWGvILFtmClpMLqf9v9GdvlRt0dPTHx7p-Q6uTlhXvFGIG8ggqbIxbVxVr_sonbV4Nl47lsoDp0icLLjEuQ";
         const VALID_AUTH = auth.parseJwt(VALID_TOKEN);
 
-        beforeEach(() => {
-            reinitializeIfNotExists(':memory:', './databaseSchema.sql');
+        beforeEach(async () => {
+            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+        });
+
+        afterEach(async () => {
+            await new Promise((resolve, reject) => fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve()));
         });
 
         it('Should return 400 Invalid Input when no token is provided', (t, done) => {
