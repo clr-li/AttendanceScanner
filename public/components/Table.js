@@ -56,6 +56,7 @@ export class Table extends Component {
     async updateTable(attendancearr, events, businessID) {
         let map = new Map();
         let userIds = [];
+        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray"}
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id)
                 attendancearr[i].id = attendancearr[i].user_id;
@@ -95,17 +96,24 @@ export class Table extends Component {
             html += "</td>";
             for (let j = 0; j < events.length; j++) {   
                 let statusupdate = false;
+                let color = "lightgray";
                 for (let k = 0; k < records.length; k++) {
                     if (records[k].event_id == events[j].id) {
+                        if (statusColor[records[k].status]) {
+                            color = statusColor[records[k].status];
+                        }
                         let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" GMT-")[0];
-                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">${sanitizeText(records[k].status)}-${sanitizeText(recordTimestamp)}</td>`;
+                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}"><p style="color: ${color}; font-weight: bold;">${sanitizeText(records[k].status)}</p>-${sanitizeText(recordTimestamp)}</td>`;
                         statusupdate = true;
                         break;
                     }
                 }
                 if (!statusupdate) {
                     const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
-                    html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">${status}</td>`;
+                    if (statusColor[status]) {
+                        color = statusColor[status];
+                    }
+                    html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
                 }
             }
             html += "</tr>";

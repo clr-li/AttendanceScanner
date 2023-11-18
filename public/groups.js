@@ -53,14 +53,14 @@ document.getElementById('join').addEventListener('click', (e) => {
 async function handleBusinessLoad(business) {
     document.getElementById('leave-' + business.id).addEventListener('click', async () => {
         if (business.role === 'owner') {
-            Popup.alert(`<h1>Warning!</h1>Can't leave a group you own. Please go to <a href="/payment.html" class="button">manage groups</a> if you want to delete the group.`);
+            Popup.alert(`<h1>Warning!</h1>Can't leave a group you own. Please go to <a href="/payment.html" class="button">manage groups</a> if you want to delete the group.`, "var(--error)");
             return;
         }
         const shouldLeave = await Popup.confirm("Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.");
         if (shouldLeave) {
             const res = await GET(`/leave?businessId=${business.id}`);
             if (!res.ok) {
-                Popup.alert(`<h1>Failed to leave ${sanitizeText(business.name)}</h1> Try again later or <a href="/" class="button">Contact Us</a>`)
+                Popup.alert(`<h1>Failed to leave ${sanitizeText(business.name)}</h1> Try again later or <a href="/" class="button">Contact Us</a>`, "var(--error)");
             }
             location.assign("/groups.html");
         }
