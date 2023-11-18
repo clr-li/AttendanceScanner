@@ -1,0 +1,31 @@
+# Test logs created on 2023-11-18T05:54:00.384Z
+Your app is listening on port 53114
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+getUID error: Error: Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+No database file found, writing a new one!
+Closed previous database connection
+Closed previous database connection
+getUID error: Error: Firebase ID token has "kid" claim which does not correspond to a known public key. Most likely the ID token is expired, so get a fresh token from your client app and try again.
+No database file found, writing a new one!
+Closed previous database connection
+logged in: fFSuvEnHZbhkpaE4cQvybCPIORV2
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection
+No database file found, writing a new one!
+Closed previous database connection

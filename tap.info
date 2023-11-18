@@ -1,0 +1,121 @@
+TAP version 13
+# TOKEN VERIFICATION: true
+# Subtest: Server
+    # Subtest: General Functionality
+        # Subtest: Should return a 404 when route is invalid
+        ok 1 - Should return a 404 when route is invalid
+          ---
+          duration_ms: 14.965625
+          ...
+        1..1
+    ok 1 - General Functionality
+      ---
+      duration_ms: 15.354958
+      type: 'suite'
+      ...
+    # Subtest: Database
+        # Subtest: Should not return a value when asyncRun called
+        ok 1 - Should not return a value when asyncRun called
+          ---
+          duration_ms: 3.608542
+          ...
+        # Subtest: Should return a value when asyncGet called
+        ok 2 - Should return a value when asyncGet called
+          ---
+          duration_ms: 1.37875
+          ...
+        # Subtest: Should return the rowid when asyncRunWithID called
+        ok 3 - Should return the rowid when asyncRunWithID called
+          ---
+          duration_ms: 1.44575
+          ...
+        # Subtest: Should return the number of rows changed when asyncRunWithChanges called
+        ok 4 - Should return the number of rows changed when asyncRunWithChanges called
+          ---
+          duration_ms: 1.57175
+          ...
+        # Subtest: Should get all the correct rows when asyncAll called
+        ok 5 - Should get all the correct rows when asyncAll called
+          ---
+          duration_ms: 1.365417
+          ...
+        1..5
+    ok 2 - Database
+      ---
+      duration_ms: 9.604334
+      type: 'suite'
+      ...
+    # Subtest: Authentication
+        # Subtest: Should return 400 Invalid Input when no token is provided
+        ok 1 - Should return 400 Invalid Input when no token is provided
+          ---
+          duration_ms: 4.44
+          ...
+        # Subtest: Should return 401 Unauthorized when an invalid token is provided
+        ok 2 - Should return 401 Unauthorized when an invalid token is provided
+          ---
+          duration_ms: 38.318583
+          ...
+        # Subtest: Should return 401 Unauthorized when a valid but expired token is provided
+        ok 3 - Should return 401 Unauthorized when a valid but expired token is provided
+          ---
+          duration_ms: 51.891167
+          ...
+        # Subtest: Should return 200 OK and the correct userid when a valid token is provided
+        ok 4 - Should return 200 OK and the correct userid when a valid token is provided
+          ---
+          duration_ms: 2.354542
+          ...
+        # Subtest: Should correctly enforce single privileges when getAccess is called
+        ok 5 - Should correctly enforce single privileges when getAccess is called
+          ---
+          duration_ms: 2.442584
+          ...
+        # Subtest: Should correctly enforce multiple privileges when getAccess is called
+        ok 6 - Should correctly enforce multiple privileges when getAccess is called
+          ---
+          duration_ms: 1.936875
+          ...
+        # Subtest: Should correctly return false when getAccess is called with invalid privileges
+        ok 7 - Should correctly return false when getAccess is called with invalid privileges
+          ---
+          duration_ms: 1.331833
+          ...
+        # Subtest: Should return 403 Access denied when /joincode is called as a user
+        ok 8 - Should return 403 Access denied when /joincode is called as a user
+          ---
+          duration_ms: 3.667166
+          ...
+        1..8
+    ok 3 - Authentication
+      ---
+      duration_ms: 106.705667
+      type: 'suite'
+      ...
+    1..3
+ok 1 - Server
+  ---
+  duration_ms: 133.005709
+  type: 'suite'
+  ...
+1..1
+# tests 14
+# suites 4
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 386.395458
+# start of coverage report
+# file | line % | branch % | funcs % | uncovered lines
+# Attendance.js | 50.00 | 100.00 | 0.00 | 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184
+# Auth.js | 87.12 | 80.00 | 100.00 | 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 85, 86, 87
+# Business.js | 48.48 | 66.67 | 8.33 | 19, 20, 21, 22, 23, 24, 30, 31, 32, 33, 34, 35, 36, 43, 44, 45, 46, 47, 58, 59, 60, 61, 62, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 206, 207, 208, 209, 210, 211, 212, 221, 222, 223, 224, 225
+# Database.js | 100.00 | 78.13 | 100.00 | 
+# Event.js | 45.29 | 100.00 | 0.00 | 20, 21, 22, 23, 24, 25, 36, 37, 38, 39, 40, 41, 42, 43, 53, 54, 55, 56, 57, 58, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219
+# Payment.js | 28.40 | 100.00 | 11.11 | 33, 34, 35, 36, 37, 44, 45, 46, 47, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 95, 96, 97, 98, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239
+# server.js | 100.00 | 100.00 | 100.00 | 
+# test/server.test.js | 100.00 | 89.66 | 100.00 | 
+# all files | 61.04 | 83.33 | 61.18 |
+# end of coverage report
