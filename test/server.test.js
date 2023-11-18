@@ -12,15 +12,15 @@ const auth = require('../Auth.js');
 
 // ============================ SETUP ============================
 /** Capture console log output in a separate file so it doesn't conflict with test output */
-const { createWriteStream } = require('fs');
-createWriteStream('./test.log', {flags: 'w'}).write('')
-console.log = async (message) => {
-  const tty = createWriteStream('./test.log', {flags: 'a'});
-  const msg = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
-  return tty.write(msg + '\n')
-}
-console.error = console.log
-console.log('# Test logs created on ' + new Date().toISOString())
+// const { createWriteStream } = require('fs');
+// createWriteStream('./test.log', {flags: 'w'}).write('')
+// console.log = async (message) => {
+//   const tty = createWriteStream('./test.log', {flags: 'a'});
+//   const msg = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+//   return tty.write(msg + '\n')
+// }
+// console.error = console.log
+// console.log('# Test logs created on ' + new Date().toISOString())
 
 const TEST_DB_FILE = './.data/ATT_test.db';
 // ============================ TESTS ============================
@@ -46,7 +46,6 @@ describe('Server', () => {
 
         afterEach(async () => {
             if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
-                setTimeout(resolve, 2000);
                 fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
             });
         });
