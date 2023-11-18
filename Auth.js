@@ -38,13 +38,13 @@ function parseJwt(token) {
  * @param {boolean} registerIfNewUser adds the user to the database if their uid is not in the database yet
  * @returns the uid of the user represented by the idToken if the user is logged in and the token is valid, otherwise returns false.
  */
-async function getUID(idToken, registerIfNewUser=true) {
+module.exports.getUID = async function getUID(idToken, registerIfNewUser=true) {
     if (typeof idToken !== "string" || idToken === "null") return false;
     try {
         let truename;
         let uid;
         if (TOKEN_VERIFICATION) {
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await admin.auth().verifyIdToken(idToken, true);
             uid = decodedToken.uid; 
             truename = decodedToken.name;
         } else {
@@ -102,7 +102,7 @@ async function handleAuth(request, response, businessid=false, requiredPrivilege
     response.status(400).send("No idtoken provided, user does not appear to be signed in");
     return false;
   }
-  const uid = await getUID(request.headers.idtoken);
+  const uid = await module.exports.getUID(request.headers.idtoken);
   if (!uid) {
     response.status(401).send("Idtoken is invalid, login has likely expired");
     return false;
@@ -129,3 +129,4 @@ router.get("/isLoggedIn", async (request, response) => {
 exports.authRouter = router;
 exports.handleAuth = handleAuth;
 exports.getAccess = getAccess;
+exports.parseJwt = parseJwt;
