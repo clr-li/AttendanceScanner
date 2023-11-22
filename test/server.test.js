@@ -39,9 +39,9 @@ describe('Server', () => {
     // });
 
     describe('Database', () => {
-        // beforeEach(async () => {
-        //     await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
-        // });
+        beforeEach(async () => {
+            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+        });
 
         it('Should not return a value when asyncRun called', async () => {
             const result = await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid', 'testname', 'testcustomerid']);
