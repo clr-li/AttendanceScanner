@@ -20,8 +20,7 @@ jobs:
       - name: Create Service Account key for Firebase
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
       - name: Run tests with safari and chrome
-        run: SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=safari npm test
-        run: SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=chrome npm test
+        run: SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=safari npm test && SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=chrome npm test
         env:
           TOKEN: ${{ secrets.TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: "gcloud.json"
