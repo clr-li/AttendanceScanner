@@ -7,8 +7,6 @@ $("#calendar").evoCalendar();
 const resBusiness = await GET('/businesses');
 const businesses = await resBusiness.json();
 
-let calendarClicked = false;
-const calendar = document.getElementById("calendar");
 const sidebar = document.getElementsByClassName("calendar-events");
 
 let sidebarHTML = /* html */`
@@ -67,12 +65,6 @@ for (const [i, business] of Object.entries(businesses)) {
 sidebarHTML += /* html */`
     </div>
 `;
-// const originalSidebar = sidebar[0].innerHTML;
-calendar.addEventListener("click", (e) => {
-    console.log("clicked");
-    calendarClicked = true;
-    // sidebar[0].innerHTML = originalSidebar;
-});
 sidebar[0].innerHTML += sidebarHTML;
 
 // smooth load (keep previous page visible until content loaded)
