@@ -7,12 +7,20 @@ import { htmlToElements } from "../util/Component.js";
 export class CircleLoader extends HTMLElement {
     constructor() {
         super(); // initialize component (should always be called first)
+        const tips = ["Have one member/account in the group just for scanning for a more secure business", 
+        "Download your QR code on your phone so you don’t have to login every time",
+        "Change your name by clicking on your profile icon",
+        "If you are an owner, you can change your business name on the Groups page"]
+        const randomTip = Math.floor(Math.random() * tips.length);
 
         // Create the shadow root (root of the shadow DOM representing the DOM nodes of this component)
         const shadow = this.attachShadow({ mode: "closed" }); // sets and returns 'this.shadowRoot'; mode: "open" means the internal HTML is accessible outside the component, "closed" means it is not
-        
+
         // Create HTML for this component
         const html = htmlToElements(/* html */`
+            <div class="center">
+                <div class="tip"><p style="font-size: 18px;"><span style="color: var(--secondary); font-size: 22px; font-weight: 1000">&#9432;&#160;&#160;</span>${tips[randomTip]}</p></div>
+            </div>
             <div class="container">
                 <div class="lds-default">${/* html */`<div></div>`.repeat(12)}</div>
             </div>
@@ -25,6 +33,25 @@ export class CircleLoader extends HTMLElement {
 }
 
 const CSS = /* css */`
+.tip {
+    border-radius: 5px;
+    border-left: 10px solid var(--secondary);
+    color: white;
+    background-color: var(--dark-background);
+    width: fit-content;
+    height: fit-content;
+    text-align: center;
+    padding: 15px;
+}
+.center {
+    z-index: 9999999; 
+    width: 100%;
+    position: absolute;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    bottom: 60%;
+}
 .container {
     z-index: 999999; 
     position: absolute;
@@ -32,7 +59,7 @@ const CSS = /* css */`
     width: 100vw; height: 100vh; 
     top: 0; left: 0; 
     background-color: black; 
-    opacity: 0.3; 
+    opacity: 0.3;
     display: flex; 
     justify-content: center; 
     align-items: center;
