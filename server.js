@@ -21,9 +21,8 @@ app.use(cors(corsOptions))
 app.use(express.static("public"));
 
 // ============================ DATABASE ============================
-const dbFile = "./.data/ATT.db"; // filepath for the database
 const schemaFile = "./databaseSchema.sql"; // filepath for the database schema
-require('./Database').reinitializeIfNotExists(dbFile, schemaFile);
+require('./Database').reinitializeIfNotExists(process.env.DB_FILE, schemaFile);
 
 // ============================ AUTHENTICATION ============================
 const { authRouter } = require('./Auth');

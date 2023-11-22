@@ -8,6 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 let db;
 async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSchema.sql') {
     const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
+    if (exists) console.log("Database file found: " + dbFile);
     if (db) await new Promise((resolve, reject) => {
         db.close((err) => {
             if (err) console.error("Failed to close previous database connection: " + err);
@@ -23,7 +24,7 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSc
     });
     if (!exists) {
         await new Promise((resolve, reject) => {
-            console.log("No database file found, writing a new one!");
+            console.log("No database file found, writing a new one using the schema file: " + schemaFile + " and the database file: " + dbFile + "!");
             const schema = fs.readFileSync(schemaFile, 'utf8');
             db.serialize(() => {
                 let resolvedCount = 0;

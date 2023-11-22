@@ -4,13 +4,13 @@
   "description": "QR code based attendance with SQLite, Express, Firebase Auth, and Braintree",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
+    "start": "DB_FILE=./.data/ATT.db node server.js",
+    "dev": "DB_FILE=./.data/ATT.db DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master --force",
     "predeploy": "git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
     "deploy": "npm run glitch && npm run fire && git checkout main",
-    "test": "node -r dotenv/config --test --experimental-test-coverage --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=tap.info"
+    "test": "DB_FILE=:memory: node -r dotenv/config --test --experimental-test-coverage --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=tap.info"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
