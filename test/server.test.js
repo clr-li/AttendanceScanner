@@ -3,7 +3,6 @@ const { describe, it, after, afterEach, before, beforeEach } = require('node:tes
 const assert = require('node:assert');
 const request = require('supertest'); // we use supertest to test HTTP requests/responses. Read more here: https://github.com/ladjs/supertest
 const { v4 } = require("uuid");
-const fs = require('fs');
 
 // import code to test
 const { app, listener } = require('../server.js');
@@ -17,10 +16,10 @@ createWriteStream('./test.log', {flags: 'w'}).write('')
 console.log = async (message) => {
   const tty = createWriteStream('./test.log', {flags: 'a'});
   const msg = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
-  return tty.write(msg + '\n')
+  return tty.write(msg + '\n');
 }
-console.error = console.log
-console.log('# Test logs created on ' + new Date().toISOString())
+console.error = console.log;
+console.log('# Test logs created on ' + new Date().toISOString());
 
 const TEST_DB_FILE = ':memory:';
 // ============================ TESTS ============================
@@ -43,12 +42,6 @@ describe('Server', () => {
         beforeEach(async () => {
             await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
         });
-
-        // afterEach(async () => {
-        //     if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
-        //         fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
-        //     });
-        // });
 
         it('Should not return a value when asyncRun called', async () => {
             const result = await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid', 'testname', 'testcustomerid']);
@@ -94,15 +87,21 @@ describe('Server', () => {
         const VALID_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk1MWMwOGM1MTZhZTM1MmI4OWU0ZDJlMGUxNDA5NmY3MzQ5NDJhODciLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWxleGFuZGVyIE1ldHpnZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1MEs1SW5aZElPYmhWTW95UDVtaWFzQkxMeFlPRV9KalI4aXg4Y1o9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1ZCI6ImF0dGVuZGFuY2VzY2FubmVycXIiLCJhdXRoX3RpbWUiOjE2Njk5NjEzMTUsInVzZXJfaWQiOiJmRlN1dkVuSFpiaGtwYUU0Y1F2eWJDUElPUlYyIiwic3ViIjoiZkZTdXZFbkhaYmhrcGFFNGNRdnliQ1BJT1JWMiIsImlhdCI6MTY2OTk2MTMxNSwiZXhwIjoxNjY5OTY0OTE1LCJlbWFpbCI6ImFsZXhhbmRlci5sZUBvdXRsb29rLmRrIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDc5NzQzODUyNDExMjU1ODQwODUiXSwiZW1haWwiOlsiYWxleGFuZGVyLmxlQG91dGxvb2suZGsiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.r50SDswArj53NJbwO8vWAYjWVq7uvo_56RBRyt2ZLKyLrHAOWDsj8Muxg1N2OuAOX5ZOZscXttqPb9wwvnh79tYlciZru5GuBcDXYHuMM18HsOBTkqsdWQlnsneDLawMZYP4u5U9dx2NZSCQIpDmfv8CckPfav7izCcdUxAZaKs6ngzBjpz9O7dpKW8pFscaWtncqyH9PXGtChlDd4kOdYO-YJWkA3-ZZ7_S_AviCHbAG-veyTzoacyCPdDJrNzNq9tiWGvILFtmClpMLqf9v9GdvlRt0dPTHx7p-Q6uTlhXvFGIG8ggqbIxbVxVr_sonbV4Nl47lsoDp0icLLjEuQ";
         const VALID_AUTH = auth.parseJwt(VALID_TOKEN);
 
+        /**
+         * Mock the verifyIdToken method once so that it doesn't verify the token with firebase when our special "VALID_TOKEN" is used
+         * @param {TestContext} t the test context of the test method to mock within
+         */
+        function mockToken(t) {
+            const _verifyIdToken = auth.verifyIdToken;
+            t.mock.method(auth, 'verifyIdToken', (idToken) => {
+                if (idToken === VALID_TOKEN) return [VALID_AUTH.user_id, VALID_AUTH.name];
+                else return _verifyIdToken(idToken);
+            }, { times: 1 });
+        }
+
         beforeEach(async () => {
             await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
         });
-
-        // afterEach(async () => {
-        //     if (fs.existsSync(TEST_DB_FILE)) await new Promise((resolve, reject) => {
-        //         fs.rm(TEST_DB_FILE, (err) => err ? reject(err) : resolve())
-        //     });
-        // });
 
         it('Should return 400 Invalid Input when no token is provided', (t, done) => {
             request(app)
@@ -125,8 +124,7 @@ describe('Server', () => {
                 .end(done);
         });
         it('Should return 200 OK and the correct userid when a valid token is provided', (t, done) => {
-            // we mock the getUID method once so that it doesn't verify the token with firebase
-            t.mock.method(auth, 'getUID', (idToken) => idToken === VALID_TOKEN ? VALID_AUTH.user_id : false, { times: 1 });
+            mockToken(t);
             request(app)
                 .get('/isLoggedIn')
                 .set('idToken', VALID_TOKEN)
@@ -164,8 +162,7 @@ describe('Server', () => {
             assert.strictEqual(await auth.getAccess(VALID_AUTH.user_id, 1, { owner: true, scanner: true, invalid: true }), false);
         });
         it("Should return 403 Access denied when /joincode is called as a user", async (t) => {
-            // we mock the getUID method once so that it doesn't verify the token with firebase
-            t.mock.method(auth, 'getUID', (idToken) => idToken === VALID_TOKEN ? VALID_AUTH.user_id : false, { times: 1 });
+            mockToken(t);
             await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [VALID_AUTH.user_id, VALID_AUTH.name, VALID_AUTH.user_id]);
             await asyncRun('INSERT INTO Businesses (id, name, joincode, subscriptionId) VALUES (?, ?, ?, ?)', [1, 'testbusiness', 'testjoincode', 'testsubscriptionid']);
             await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [VALID_AUTH.user_id, 1, 'user']);
@@ -174,6 +171,17 @@ describe('Server', () => {
                 .set('idToken', VALID_TOKEN)
                 .query({ businessId: 1 })
                 .expect(403);
+        });
+        it("Should create a new user when handleAuth is called with a valid but unseen userid", async (t) => {
+            mockToken(t);
+            await request(app)
+                .get('/isLoggedIn')
+                .set('idToken', VALID_TOKEN)
+                .expect(200)
+                .expect('Content-Type', /text/)
+                .expect(VALID_AUTH.user_id);
+            const result = await asyncAll('SELECT COUNT(*) FROM Users');
+            assert.strictEqual(result[0]['COUNT(*)'], 1);
         });
     });
 });
