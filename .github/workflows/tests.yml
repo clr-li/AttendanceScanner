@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -18,12 +18,20 @@ jobs:
       - name: Give permission to selenoid (Selenium server)
         run: chmod +x ./cm
       - name: Start selenoid (Selenium server)
-        run: ./cm selenoid start --browsers 'chrome' --last-versions 1
+        run: ./cm selenoid start --browsers 'chrome;safari' --last-versions 1
       - name: Install dependencies
         run: npm ci
       - name: Create Service Account key for Firebase
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
-      - name: Run tests with safari and chrome
+      - name: Run tests with safari
+        run: SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=safari npm test
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: "gcloud.json"
+          MERCHANTID: ${{ secrets.MERCHANTID }}
+          MERCHANTPUBLIC: ${{ secrets.MERCHANTPUBLIC }}
+          MERCHANTPRIVATE: ${{ secrets.MERCHANTPRIVATE }}
+      - name: Run tests with chrome
         run: SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=chrome npm test
         env:
           TOKEN: ${{ secrets.TOKEN }}
