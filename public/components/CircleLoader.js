@@ -8,7 +8,7 @@ export class CircleLoader extends HTMLElement {
     constructor() {
         super(); // initialize component (should always be called first)
         const tips = ["Have one member/account in the group just for scanning for a more secure business", 
-        "Download your QR code on your phone so you don’t have to login every time",
+        "Download your QR code on your phone so you don't have to login every time",
         "Change your name by clicking on your profile icon",
         "If you are an owner, you can change your business name on the Groups page"]
         const randomTip = Math.floor(Math.random() * tips.length);
