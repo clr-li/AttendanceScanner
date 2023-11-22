@@ -87,7 +87,7 @@ export class Table extends Component {
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
-            html += `<tr id="row-${sanitizeText(userid)}"><td><input type="checkbox" id="select-${sanitizeText(userid)}" class="selectedrows"></td><td>${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0,4))}`;
+            html += `<tr id="row-${sanitizeText(userid)}"><td><input type="checkbox" id="select-${sanitizeText(userid)}" class="selectedrows"></td><td data-name="${records[0].name}">${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0,4))}`;
             if (records[0].role != 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -197,10 +197,18 @@ export class Table extends Component {
                 shouldSwitch = false;
                 /* Get the two elements you want to compare,
                 one from current row and one from the next: */
-                x = rows[i].getElementsByTagName("TD")[0];
-                y = rows[i + 1].getElementsByTagName("TD")[0];
+                x = rows[i].getElementsByTagName("TD")[1];
+                y = rows[i + 1].getElementsByTagName("TD")[1];
+                /** @type {string} */
+                let xName = x.dataset.name.toLowerCase();
+                let yName = y.dataset.name.toLowerCase();
                 // Check if the two rows should switch place:
-                if (calcSimilarity(x.innerHTML.split('<br>')[0].toLowerCase(), searchword) > calcSimilarity(y.innerHTML.split('<br>')[0].toLowerCase(), searchword)) {
+                if (!xName.includes(searchword) && yName.includes(searchword)) {
+                    shouldSwitch = true;
+                    break;
+                } else if (xName.includes(searchword) && !yName.includes(searchword)) {
+                    // Do nothing
+                } else if (calcSimilarity(xName, searchword) < calcSimilarity(yName, searchword)) {
                     // If so, mark as a switch and break the loop:
                     shouldSwitch = true;
                     break;
