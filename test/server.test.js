@@ -51,34 +51,34 @@ describe('Server', () => {
             const result = await asyncGet('SELECT 1');
             assert.strictEqual(result['1'], 1);
         });
-        // it('Should return the rowid when asyncRunWithID called', async () => {
-        //     const result1 = await asyncRunWithID('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname1', 'testcustomerid1']);
-        //     assert.strictEqual(result1, 1);
-        //     const result2 = await asyncRunWithID('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname2', 'testcustomerid2']);
-        //     assert.strictEqual(result2, 2);
-        // });
-        // it("Should return the number of rows changed when asyncRunWithChanges called", async () => {
-        //     const result1 = await asyncRunWithChanges('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname', 'testcustomerid1']);
-        //     assert.strictEqual(result1, 1);
-        //     const result2 = await asyncRunWithChanges('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname', 'testcustomerid2']);
-        //     assert.strictEqual(result2, 1);
-        //     const result3 = await asyncRunWithChanges('UPDATE Users SET name = ? WHERE name = ?', ['testname_changed', 'testname']);
-        //     assert.strictEqual(result3, 2);
-        // });
-        // it("Should get all the correct rows when asyncAll called", async () => {
-        //     const result1 = await asyncAll('SELECT * FROM Users');
-        //     assert.strictEqual(result1.length, 0);
-        //     await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname1', 'testcustomerid1']);
-        //     await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname2', 'testcustomerid2']);
-        //     const result2 = await asyncAll('SELECT * FROM Users');
-        //     assert.strictEqual(result2.length, 2);
-        //     assert.strictEqual(result2[0].id, 'testid1');
-        //     assert.strictEqual(result2[0].name, 'testname1');
-        //     assert.strictEqual(result2[0].customer_id, 'testcustomerid1');
-        //     assert.strictEqual(result2[1].id, 'testid2');
-        //     assert.strictEqual(result2[1].name, 'testname2');
-        //     assert.strictEqual(result2[1].customer_id, 'testcustomerid2');
-        // });
+        it('Should return the rowid when asyncRunWithID called', async () => {
+            const result1 = await asyncRunWithID('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname1', 'testcustomerid1']);
+            assert.strictEqual(result1, 1);
+            const result2 = await asyncRunWithID('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname2', 'testcustomerid2']);
+            assert.strictEqual(result2, 2);
+        });
+        it("Should return the number of rows changed when asyncRunWithChanges called", async () => {
+            const result1 = await asyncRunWithChanges('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname', 'testcustomerid1']);
+            assert.strictEqual(result1, 1);
+            const result2 = await asyncRunWithChanges('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname', 'testcustomerid2']);
+            assert.strictEqual(result2, 1);
+            const result3 = await asyncRunWithChanges('UPDATE Users SET name = ? WHERE name = ?', ['testname_changed', 'testname']);
+            assert.strictEqual(result3, 2);
+        });
+        it("Should get all the correct rows when asyncAll called", async () => {
+            const result1 = await asyncAll('SELECT * FROM Users');
+            assert.strictEqual(result1.length, 0);
+            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname1', 'testcustomerid1']);
+            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid2', 'testname2', 'testcustomerid2']);
+            const result2 = await asyncAll('SELECT * FROM Users');
+            assert.strictEqual(result2.length, 2);
+            assert.strictEqual(result2[0].id, 'testid1');
+            assert.strictEqual(result2[0].name, 'testname1');
+            assert.strictEqual(result2[0].customer_id, 'testcustomerid1');
+            assert.strictEqual(result2[1].id, 'testid2');
+            assert.strictEqual(result2[1].name, 'testname2');
+            assert.strictEqual(result2[1].customer_id, 'testcustomerid2');
+        });
     });
 
     // describe('Authentication', () => {
