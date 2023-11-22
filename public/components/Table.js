@@ -14,7 +14,7 @@ export class Table extends Component {
             <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/styles/tables.css">
             <h1>Event Table</h1>
-            <form id="filterform" class="form">
+            <form id="filterform" class="form" onsubmit="return false;">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
                 <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select><br>
