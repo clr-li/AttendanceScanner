@@ -3,7 +3,6 @@
 [![](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner?category=files)](https://github.com/clr-li/AttendanceScanner)
 [![](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F
 )](https://github.com/clr-li/AttendanceScanner)
-<img alt="gitleaks badge" src="https://img.shields.io/badge/protected%20by-gitleaks-blue">
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
 ![Coverage](./public/assets/coverage.svg)
 
