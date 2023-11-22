@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
@@ -8,23 +10,31 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSc
     const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
     if (db) await new Promise((resolve, reject) => {
         db.close((err) => {
-            if (err) reject("Failed to close previous database connection: " + err);
+            if (err) console.error("Failed to close previous database connection: " + err);
             else console.log("Closed previous database connection");
             resolve();
         });
     });
-    db = new sqlite3.Database(dbFile);
+    await new Promise((resolve, reject) => {
+        db = new sqlite3.Database(dbFile, (err) => {
+            if (err) console.error("Failed to open database: " + err);
+            resolve();
+        });
+    });
     if (!exists) {
         await new Promise((resolve, reject) => {
             console.log("No database file found, writing a new one!");
             const schema = fs.readFileSync(schemaFile, 'utf8');
             db.serialize(() => {
+                let resolvedCount = 0;
+                let shouldResolveCount = schema.split(";").filter(x => x).length;
                 for (const sql of schema.split(";")) {
                     if (sql) db.run(sql, (err) => {
-                        if (err) reject("Failed to initialize database: " + err + "\n SQL: " + sql);
+                        if (err) console.error("Failed to initialize database: " + err + "\n SQL: " + sql);
+                        resolvedCount++;
+                        if (resolvedCount == shouldResolveCount) resolve();
                     });
                 }
-                resolve();
             });
         });
     }
