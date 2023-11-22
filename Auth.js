@@ -33,25 +33,30 @@ function parseJwt(token) {
 }
 
 /**
+ * Exported token verification logic for testing purposes.
+ * @param {string} idToken Bearer token to verify
+ * @returns [ uid, name ] if the token is valid, otherwise throws an error.
+ */
+module.exports.verifyIdToken = async function verifyIdToken(idToken) {
+  if (TOKEN_VERIFICATION) {
+      const decodedToken = await admin.auth().verifyIdToken(idToken, true);
+      return [ decodedToken.uid,  decodedToken.name ];
+  } else {
+      const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
+      return [ decodedToken.user_id,  decodedToken.name ];
+  }
+};
+
+/**
  * Gets the uid of the currently logged in user.
  * @param {string} idToken Firebase access token from the client app to get the current user from
  * @param {boolean} registerIfNewUser adds the user to the database if their uid is not in the database yet
  * @returns the uid of the user represented by the idToken if the user is logged in and the token is valid, otherwise returns false.
  */
-module.exports.getUID = async function getUID(idToken, registerIfNewUser=true) {
+async function getUID(idToken, registerIfNewUser=true) {
     if (typeof idToken !== "string" || idToken === "null") return false;
     try {
-        let truename;
-        let uid;
-        if (TOKEN_VERIFICATION) {
-            const decodedToken = await admin.auth().verifyIdToken(idToken, true);
-            uid = decodedToken.uid; 
-            truename = decodedToken.name;
-        } else {
-            const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-            uid = decodedToken.user_id;
-            truename = decodedToken.name;
-        }
+        const [uid, truename] = await module.exports.verifyIdToken(idToken);
         if (registerIfNewUser) {
             let name = await asyncGet(`SELECT name FROM Users WHERE id = ?`, [uid]);
             if (!name) {
@@ -102,7 +107,7 @@ async function handleAuth(request, response, businessid=false, requiredPrivilege
     response.status(400).send("No idtoken provided, user does not appear to be signed in");
     return false;
   }
-  const uid = await module.exports.getUID(request.headers.idtoken);
+  const uid = await getUID(request.headers.idtoken);
   if (!uid) {
     response.status(401).send("Idtoken is invalid, login has likely expired");
     return false;

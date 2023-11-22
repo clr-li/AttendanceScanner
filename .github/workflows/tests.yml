@@ -13,7 +13,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.17'
-      - run: npm ci
+      - run: sqlite3 --version
+      - run: npm ci --include=dev
       - name: Create SA key
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
       - name: Run tests
