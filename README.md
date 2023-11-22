@@ -50,6 +50,30 @@ URL: https://attendancescannerqr.web.app
  - To make updates while keeping the existing data, add an update script to the `migrations` folder with the version number and date in its name. Then run it on Glitch.
  - To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
 
+## Automated Testing
+1. Before running tests, run `npm install` (freshly installs dependencies from package.json) or `npm ci` (install specific dependency versions from package-lock) to make sure dependencies are installed.
+
+2. Then run `npm test` and check the output in the console for the status of the tests. Console logs during test execution will pipe to `test.log` instead of standard out so you wont see logs in the terminal.
+
+3. Tests live in the `/test` directory and use the builtin [Node Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html) framework. New tests are always welcome!
+
+### Github Action
+The tests will automatically run in an environment closely mirroring the production environment when commits are pushed or branches merged. See `.github/workflows/tests.yml` for details. The status of these tests can be seen in the badge at the top of this readme. The coverage badge shows the percentage of lines, branches, and functions covered by the automated tests and will update everytime tests are run locally. 
+
+### Server Side Tests
+Server-side tests live in `server.test.js` and are unit tests of exported functions and endpoints. The endpoints are tested using [Supertest](https://www.npmjs.com/package/supertest) to spin up temporary instances of the HTTPServer to make fast test requests to. The tests use [in-memory SQLite databases](https://www.sqlite.org/inmemorydb.html) so they can easily be cleared between tests (SQLite automatically clears the previous in-memory database when a new one is instantiated). Firebase token verification is mocked since the full OAuth flow can only meaningfully be tested using a client which falls into the next category of tests.
+
+### Cross Browser Client Side Tests
+We use [Selenium](https://www.npmjs.com/package/selenium-webdriver) for cross browser tests of the web interface and client side components. By default, tests are run with `chrome` but running tests via `SELENIUM_BROWSER=[insert browser name] npm test` where `[insert browser name]` is replaced with `safari`, `edge`, `firefox`, `opera`, or `ie` (Internet Explorer requires Windows) will test with those respective browsers (make sure to have the browser installed and on path before running tests). The github action tests have been configured to run with `safari` and `chrome`.
+
+#### Setup Safari Tests
+0. Use a mac (with Safari on it) and doublecheck `npm ci` has been run
+1. Run `sudo safaridriver --enable` in your terminal and enter your computer password as prompted
+2. Enable the 'Allow Remote Automation' option in Safari's Develop menu
+
+#### Setup Tests of the OAuth Flow
+By default tests mock the Firebase Authentication layer (to run faster and not require storing Google account credentials). To test with a real Google account, run tests with `REAL_LOGIN=true npm test` and the tests will pause and open a browser window for you to login with a google account in. You can provide an account email (`TEST_EMAIL=xxxx@xxxx.xxx`) and password (`TEST_PASSWORD=xxxx`) in the `.env` file to attempt automatic login for these test, but they may still require manual input during the login phase if your account has MFA enabled or other security settings that interfere.
+
 ## Glitch Development
 Preferably don't edit directly on Glitch except to change the production `.data` or `.env`. If necessary,
 1. Make changes on Glitch
