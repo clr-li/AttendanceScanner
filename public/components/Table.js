@@ -69,7 +69,7 @@ export class Table extends Component {
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp*1000);
             var endDate = new Date(events[i].endtimestamp*1000);
-            html += `<th class="cell" data-time="${sanitizeText(events[i].starttimestamp)}" data-name="${sanitizeText(events[i].name)}">${sanitizeText(events[i].name)}: ${sanitizeText(startDate.toLocaleDateString())} to ${sanitizeText(endDate.toLocaleDateString())}</th>`;
+            html += `<th class="cell" data-time="${sanitizeText(events[i].starttimestamp)}" data-name="${sanitizeText(events[i].name)}"><b>${sanitizeText(events[i].name || "[Unnamed]")}</b><br><p class="smaller-text">${sanitizeText(startDate.toLocaleDateString())} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
         }
         html += "</tr>";
         for (let i = 0; i < [...map.keys()].length; i++) {
@@ -102,8 +102,11 @@ export class Table extends Component {
                         if (statusColor[records[k].status]) {
                             color = statusColor[records[k].status];
                         }
-                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" GMT-")[0];
-                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}"><p style="color: ${color}; font-weight: bold;">${sanitizeText(records[k].status)}</p>-${sanitizeText(recordTimestamp)}</td>`;
+                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" ").slice(1, 5).toString().replace(",", " ").replaceAll(",", ", ");
+                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">
+                            <p style="color: ${color}; font-weight: bold;">${sanitizeText(records[k].status)}</p>
+                            <p class="smaller-text">${sanitizeText(recordTimestamp)}</p>
+                        </td>`;
                         statusupdate = true;
                         break;
                     }

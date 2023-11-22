@@ -1,9 +1,26 @@
+.calendar {
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
 .calendar > table, th, td {
     border: 2px solid;
     padding: 0.5rem;
     font-size: 1.2rem;
     background-color: white;
     color: black;
+    table-layout: fixed;
+}
+
+.calendar th:nth-child(2), .calendar td:nth-child(2) {
+    --width: 150px;
+    min-width: var(--width);
+    width: var(--width);
+    max-width: var(--width);
+}
+
+.smaller-text {
+    font-size: 0.8rem;
 }
 
 .scroll {
