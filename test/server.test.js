@@ -47,10 +47,10 @@ describe('Server', () => {
             const result = await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid', 'testname', 'testcustomerid']);
             assert.strictEqual(result, undefined);
         });
-        // it('Should return a value when asyncGet called', async () => {
-        //     const result = await asyncGet('SELECT 1');
-        //     assert.strictEqual(result['1'], 1);
-        // });
+        it('Should return a value when asyncGet called', async () => {
+            const result = await asyncGet('SELECT 1');
+            assert.strictEqual(result['1'], 1);
+        });
         // it('Should return the rowid when asyncRunWithID called', async () => {
         //     const result1 = await asyncRunWithID('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', ['testid1', 'testname1', 'testcustomerid1']);
         //     assert.strictEqual(result1, 1);
