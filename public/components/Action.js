@@ -13,14 +13,17 @@ import { sanitizeText } from "../util/util.js";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
-            <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer; width: 190px;">
-                <i class="${actionIcon} actions" onclick="location.assign('${link}')"></i>
-                    <h3>${actionName}
-                        <span style="position: relative;">
-                            <i id="info-btn" class="fa-solid fa-circle-info smaller-text"></i>
-                            <dialog id="info-dialog" class="action-info">${description}</dialog>
-                        </span>
-                    </h3>
+            <div class="cols" style="margin-bottom: 16px; width: 190px;">
+                <div role="link" class="actions" onclick="location.assign('${link}')">
+                    <i class="${actionIcon}"></i>
+                </div>
+                
+                <h3>${actionName}
+                    <span style="position: relative;">
+                        <i role="button" id="info-btn" class="fa-solid fa-circle-info smaller-text"></i>
+                        <dialog id="info-dialog" class="action-info">${description}</dialog>
+                    </span>
+                </h3>
             </div>
             <style>${CSS}</style>
         `;
@@ -60,21 +63,44 @@ h3 {
 
 .cols {
     margin: auto;
+    text-align: center;
+}
+
+#info-btn {
+    cursor: pointer;
 }
 
 .actions {
     font-size: 80px;
     color: var(--accent);
-    border: 3px solid black;
-    border-radius: 8px;
-    padding: 5px;
-    background-color: whitesmoke;
-    min-width: 125px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 120px;
+    padding: 20px;
+    aspect-ratio: 1/1;
+    box-shadow: rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, rgba(58, 65, 111, .5) 0 -3px 0 inset;
+    margin-bottom: 8px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform .15s;
+    background-color: var(--secondary);
 }
 
-.actions:hover {
-    color: var(--primary);
-    background-color: var(--accent-lighter);
+.actions > i {
+    background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 3px var(--accent);
+}
+
+.actions:hover:not(:active) {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, rgba(58, 65, 111, .5) 0 -3px 0 inset;
+    transform: translateY(-2px);
+}
+
+.actions:active {
+    transform: translateY(2px);
 }
 
 .action-info {
