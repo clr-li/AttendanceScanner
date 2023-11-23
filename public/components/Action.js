@@ -13,7 +13,7 @@ import { sanitizeText } from "../util/util.js";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
-            <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer;">
+            <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer; width: 190px;">
                 <i class="${actionIcon} actions" onclick="location.assign('${link}')"></i>
                     <h3>${actionName}
                         <span style="position: relative;">
