@@ -43,6 +43,8 @@
     margin-left: 0.5em;
     margin-right: 0.5em;
     vertical-align: top;
+    height: 100%;
+    position: relative;
 }
 .rows {
     padding-top: 10px;

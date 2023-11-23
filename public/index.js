@@ -17,6 +17,25 @@ if (user) {
     for (const element of document.getElementsByClassName('not-logged-in')) {
         element.style.display = 'none';
     };
+    let infoBtns = document.getElementsByClassName('smaller-text');
+    let actionInfo = document.getElementsByClassName('action-info');
+    for (let i = 0; i < infoBtns.length; i++) {
+        console.log("For loop")
+        infoBtns[i].addEventListener('click', () => {
+            if (actionInfo[i].open) {
+                actionInfo[i].close();
+            } else {
+                actionInfo[i].show();
+            }
+        });
+    }
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() !== 'i') {
+            for (const element of document.getElementsByClassName('action-info')) {
+                element.close();
+            }
+        }
+    });
 }
 
 // smooth load (keep previous page visible until content loaded)

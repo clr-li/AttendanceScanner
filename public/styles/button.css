@@ -105,3 +105,24 @@
     background-color: var(--accent);
     color: white;
 }
+
+.actions {
+    font-size: 100px;
+    color: var(--accent);
+    border: 3px solid black;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: whitesmoke;
+}
+
+.actions:hover {
+    color: var(--primary);
+    background-color: var(--accent-lighter);
+}
+
+.action-info {
+    width: 160px;
+    border-radius: 6px;
+    padding: 10px 0;
+    position: absolute;
+}
