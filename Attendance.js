@@ -37,8 +37,7 @@ router.get("/recordAttendance", async (request, response) => {
   const status = request.query.status;
 
   if (!(await getAccess(userid, businessid, {}))) {
-    response.statusMessage = "Cannot take attendance for non-member";
-    response.sendStatus(400);
+    response.status(400).send("Cannot take attendance for non-member");
     return;
   }
 
@@ -118,13 +117,11 @@ router.get("/refreshTempAttendanceCode", async (request, response) => {
 
   const code = await storage.getItem(key) || clientCode;
   if (clientCode && clientCode !== code) {
-    response.statusMessage = "Invalid code, perhaps it was updated in another tab?";
-    response.sendStatus(400);
+    response.status(400).send("Invalid code, perhaps it was updated in another tab?");
     return;
   }
   if (!code) {
-    response.statusMessage = "No code to refresh";
-    response.sendStatus(400);
+    response.status(400).send("No code to refresh");
     return;
   }
   storage.setItem(key, code, { ttl: expiration });
@@ -179,8 +176,7 @@ router.get("/recordMyAttendance", async (request, response) => {
   const key = eventid + "-" + businessId;
 
   if (await storage.getItem(key) !== code || !code) {
-    response.statusMessage = "Invalid/Expired code";
-    response.sendStatus(400);
+    response.status(400).send("Invalid/Expired code");
     return;
   }
 

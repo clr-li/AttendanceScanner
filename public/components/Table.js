@@ -1,6 +1,6 @@
 import { Component } from "../util/Component.js";
 import { Popup } from "./Popup.js";
-import { calcSimilarity } from '../util/util.js';
+import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { GET } from '../util/Client.js';
 
 /**
@@ -14,8 +14,7 @@ export class Table extends Component {
             <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/styles/tables.css">
             <h1>Event Table</h1>
-            <button class="button" onclick="window.location.href='/calendar.html';">Calendar View</button><br><br>
-            <form id="filterform" class="form">
+            <form id="filterform" class="form" onsubmit="return false;">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
                 <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select><br>
@@ -38,12 +37,12 @@ export class Table extends Component {
             </type-select>
             <button class="button" id="alter-button">Alter Checked</button><br>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
+                <p>role changed</p>
+            </dialog>
+            <dialog id="success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>success</p>
             </dialog>
             <button type="button" class="button" id="export">Export to CSV</button>
-            <style>
-                
-            </style>
         `;
     }
 
@@ -57,6 +56,7 @@ export class Table extends Component {
     async updateTable(attendancearr, events, businessID) {
         let map = new Map();
         let userIds = [];
+        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray"}
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id)
                 attendancearr[i].id = attendancearr[i].user_id;
@@ -69,7 +69,7 @@ export class Table extends Component {
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp*1000);
             var endDate = new Date(events[i].endtimestamp*1000);
-            html += `<th class="cell" data-time="${events[i].starttimestamp}" data-name="${events[i].name}">${events[i].name}: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</th>`;
+            html += `<th class="cell" data-time="${sanitizeText(events[i].starttimestamp)}" data-name="${sanitizeText(events[i].name)}"><b>${sanitizeText(events[i].name || "[Unnamed]")}</b><br><p class="smaller-text">${sanitizeText(startDate.toLocaleDateString())} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
         }
         html += "</tr>";
         for (let i = 0; i < [...map.keys()].length; i++) {
@@ -84,11 +84,10 @@ export class Table extends Component {
                     <option value="scanner">scanner</option>
                     <option value="user">user</option>
                 </select>
-                <button type="button" class="changerole" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-pen-to-square"></i></button>
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
-            html += `<tr id="row-${userid}"><td><input type="checkbox" id="select-${userid}" class="selectedrows"></td><td>${records[0].name} (${userid.substr(0,4)}`;
+            html += `<tr id="row-${sanitizeText(userid)}"><td><input type="checkbox" id="select-${sanitizeText(userid)}" class="selectedrows"></td><td data-name="${records[0].name}">${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0,4))}`;
             if (records[0].role != 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -97,17 +96,27 @@ export class Table extends Component {
             html += "</td>";
             for (let j = 0; j < events.length; j++) {   
                 let statusupdate = false;
+                let color = "lightgray";
                 for (let k = 0; k < records.length; k++) {
                     if (records[k].event_id == events[j].id) {
-                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" GMT-")[0];
-                        html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${records[k].status}-${recordTimestamp}</td>`;
+                        if (statusColor[records[k].status]) {
+                            color = statusColor[records[k].status];
+                        }
+                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" ").slice(1, 5).toString().replace(",", " ").replaceAll(",", ", ");
+                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">
+                            <p style="color: ${color}; font-weight: bold;">${sanitizeText(records[k].status)}</p>
+                            <p class="smaller-text">${sanitizeText(recordTimestamp)}</p>
+                        </td>`;
                         statusupdate = true;
                         break;
                     }
                 }
                 if (!statusupdate) {
                     const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
-                    html += `<td class="cell" data-time="${events[j].starttimestamp}" data-name="${events[j].name}">${status}</td>`;
+                    if (statusColor[status]) {
+                        color = statusColor[status];
+                    }
+                    html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
                 }
             }
             html += "</tr>";
@@ -119,7 +128,6 @@ export class Table extends Component {
                 checkbox.checked = e.target.checked;
             }
         });
-        const allRoleButtons = attendance.getElementsByClassName('changerole');
         const allRoleSelects = attendance.getElementsByClassName('newrole');
         const allKickButtons = attendance.getElementsByClassName('kickuser');
         let button_index = 0;
@@ -128,23 +136,25 @@ export class Table extends Component {
                 let id = userIds[i];
                 let b_id = button_index;
                 allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
-                allRoleButtons[button_index].addEventListener('click', () => {
+                allRoleSelects[button_index].addEventListener('change', () => {
                     let role = allRoleSelects[b_id].value;
-                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then((res) => {
+                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then(async (res) => {
                         console.log(res.status);
-                        if (res.status === 200) {
+                        if (res.ok) {
                             this.showSuccessDialog('role-success');
+                        } else {
+                            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                         }
                     });
                 });
                 allKickButtons[button_index].addEventListener('click', () => {
-                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then((res) => {
+                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async (res) => {
                         console.log(res.status);
-                        if (res.status === 200) {
-                            this.showSuccessDialog('role-success');
+                        if (res.ok) {
+                            this.showSuccessDialog('success');
                             this.shadowRoot.getElementById("row-" + id).remove();
                         } else {
-                            Popup.alert(res.statusText, 'var(--error)');
+                            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                         }
                     });
                 });
@@ -159,9 +169,13 @@ export class Table extends Component {
                     ids_to_alter.push(checkbox.id.split("-")[1]);
                 }
             }
-            await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
-            const event = new CustomEvent('reloadTable', {});
-            this.dispatchEvent(event);
+            const res = await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
+            if (res.ok) {
+                const event = new CustomEvent('reloadTable', {});
+                this.dispatchEvent(event);
+            } else {
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+            }
         });
     }
 
@@ -183,10 +197,18 @@ export class Table extends Component {
                 shouldSwitch = false;
                 /* Get the two elements you want to compare,
                 one from current row and one from the next: */
-                x = rows[i].getElementsByTagName("TD")[0];
-                y = rows[i + 1].getElementsByTagName("TD")[0];
+                x = rows[i].getElementsByTagName("TD")[1];
+                y = rows[i + 1].getElementsByTagName("TD")[1];
+                /** @type {string} */
+                let xName = x.dataset.name.toLowerCase();
+                let yName = y.dataset.name.toLowerCase();
                 // Check if the two rows should switch place:
-                if (calcSimilarity(x.innerHTML.split('<br>')[0].toLowerCase(), searchword) > calcSimilarity(y.innerHTML.split('<br>')[0].toLowerCase(), searchword)) {
+                if (!xName.includes(searchword) && yName.includes(searchword)) {
+                    shouldSwitch = true;
+                    break;
+                } else if (xName.includes(searchword) && !yName.includes(searchword)) {
+                    // Do nothing
+                } else if (calcSimilarity(xName, searchword) < calcSimilarity(yName, searchword)) {
                     // If so, mark as a switch and break the loop:
                     shouldSwitch = true;
                     break;

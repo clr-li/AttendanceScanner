@@ -2,6 +2,7 @@ import { GET } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { initBusinessSelector, initEventSelector } from './util/selectors.js';
+import { sanitizeText } from './util/util.js';
 await requireLogin();
 
 const attendanceTable = document.getElementById("table");
@@ -104,16 +105,24 @@ document.getElementById('submitevent').addEventListener('click', () => {
             }
             counter++;
         }
-        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(() => {
-            showSuccessDialog('new-event-success');
-            updateEvents();
-            runTable();
+        GET(`/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(',')}&timezoneOffsetMS=${timezoneOffsetMS}`).then(async (res) => {
+            if (res.ok) {
+                showSuccessDialog('new-event-success');
+                updateEvents();
+                runTable();
+            } else {
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+            }
         });
     } else {
-        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(() => { 
-            showSuccessDialog('new-event-success');
-            updateEvents();
-            runTable();
+        GET(`/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`).then(async (res) => { 
+            if (res.ok) {
+                showSuccessDialog('new-event-success');
+                updateEvents();
+                runTable();
+            } else {
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+            }
         });
     }
 });
@@ -124,15 +133,15 @@ function getEventData() {
         var endDate = new Date(eventinfo.endtimestamp*1000);
         document.getElementById("eventdetails").innerHTML = /* html */`
             <label for="update-name">Name:</label>
-            <input type="text" value="${eventinfo.name}" id="update-name"><br>
+            <input type="text" value="${sanitizeText(eventinfo.name)}" id="update-name"><br>
             <label for="update-startdate">Start Date:</label>
-            <input type="date" value="${startDate.toLocaleDateString('en-CA')}" id="update-startdate">
+            <input type="date" value="${sanitizeText(startDate.toLocaleDateString('en-CA'))}" id="update-startdate">
             <label for="update-starttime">Start Time:</label>
-            <input type="time" value="${(startDate.getHours()+100+"").substr(-2)}:${("" + startDate.getMinutes()).padStart(2, '0')}" id="update-starttime"><br>
+            <input type="time" value="${sanitizeText((startDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + startDate.getMinutes()).padStart(2, '0'))}" id="update-starttime"><br>
             <label for="update-enddate">End Date:</label>
-            <input type="date" value="${endDate.toLocaleDateString('en-CA')}" id="update-enddate">
+            <input type="date" value="${sanitizeText(endDate.toLocaleDateString('en-CA'))}" id="update-enddate">
             <label for="update-endtime">End Time:</label>
-            <input type="time" value="${(endDate.getHours()+100+"").substr(-2)}:${("" + endDate.getMinutes()).padStart(2, '0')}" id="update-endtime"><br>
+            <input type="time" value="${sanitizeText((endDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + endDate.getMinutes()).padStart(2, '0'))}" id="update-endtime"><br>
             <label for="update-description">Description: </label>
             <input type="text" value="${eventinfo.description}" id="update-description"><br>
             <div class="radios">
@@ -180,9 +189,12 @@ function getEventData() {
             const starttime = document.getElementById('update-starttime').value;
             const starttimestamp = (new Date(startdate + 'T' + starttime)).getTime() / 1000;
 
-            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then((res) => {
-                console.log(res.status);
-                updateEvents();
+            GET(`/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${eventinfo.repeat_id}`).then(async (res) => {
+                if (res.ok) {
+                    updateEvents();
+                } else {
+                    Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+                }
             });
         };
         document.getElementById('update').onclick = () => {
@@ -210,9 +222,12 @@ function getEventData() {
                 return;
             }
 
-            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then((res) => {
-                console.log(res.status);
-                updateEvents();
+            GET(`/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${eventinfo.repeat_id}&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`).then(async (res) => {
+                if (res.ok) {
+                    updateEvents();
+                } else {
+                    Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+                }
             });
         }
     }));

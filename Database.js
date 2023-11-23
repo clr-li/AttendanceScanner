@@ -1,22 +1,44 @@
+'use strict';
+
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
-// ============================ DATABASE SETTINGS ============================
-const dbFile = "./.data/ATT.db"; // filepath for the database
-
 // ============================ INIT SQLite DATABASE ============================
-const exists = fs.existsSync(dbFile);
-const db = new sqlite3.Database(dbFile);
-if (!exists) {
-    console.log("no database file found, writing a new one!");
-    const schema = fs.readFileSync('./databaseSchema.sql', 'utf8');
-    db.serialize(() => {
-        for (const sql of schema.split(";")) {
-            if (sql) db.run(sql, (err) => {
-                if (err) console.error("Failed to initialize database: " + err + "\n SQL: " + sql);
-            });
-        }
+/** @type { import('sqlite3').Database } */
+let db;
+async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSchema.sql') {
+    const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
+    if (exists) console.log("Database file found: " + dbFile);
+    if (db) await new Promise((resolve, reject) => {
+        db.close((err) => {
+            if (err) console.error("Failed to close previous database connection: " + err);
+            else console.log("Closed previous database connection");
+            resolve();
+        });
     });
+    await new Promise((resolve, reject) => {
+        db = new sqlite3.Database(dbFile, (err) => {
+            if (err) console.error("Failed to open database: " + err);
+            resolve();
+        });
+    });
+    if (!exists) {
+        await new Promise((resolve, reject) => {
+            console.log("No database file found, writing a new one using the schema file: " + schemaFile + " and the database file: " + dbFile + "!");
+            const schema = fs.readFileSync(schemaFile, 'utf8');
+            db.serialize(() => {
+                let resolvedCount = 0;
+                let shouldResolveCount = schema.split(";").filter(x => x).length;
+                for (const sql of schema.split(";")) {
+                    if (sql) db.run(sql, (err) => {
+                        if (err) console.error("Failed to initialize database: " + err + "\n SQL: " + sql);
+                        resolvedCount++;
+                        if (resolvedCount == shouldResolveCount) resolve();
+                    });
+                }
+            });
+        });
+    }
 }
 
 // ============================ ASYNC DATABASE FUNCTIONS ============================
@@ -33,7 +55,7 @@ function asyncGet(sql, params=[]) {
             else resolve(result);
         });
     });
-};
+}
 
 /**
  * Gets all the results of the sql query on the database.
@@ -48,7 +70,7 @@ function asyncAll(sql, params=[]) {
             else resolve(result);
         });
     });
-};
+}
 
 /**
  * Runs a sql query on the database.
@@ -63,7 +85,7 @@ function asyncRun(sql, params=[]) {
             else resolve();
         });
     });
-};
+}
 
 /**
  * Runs a sql query on the database and gets the id of the last inserted row.
@@ -79,8 +101,15 @@ function asyncRunWithID(sql, params=[]) {
             else resolve(this.lastID);
         });
     });
-};
+}
 
+/**
+ * Runs a sql query on the database and gets the number of rows changed.
+ * @param {string} sql the query to perform
+ * @param {any[]} params optional list of sql parameters
+ * @requires sql should be an INSERT, UPDATE, or DELETE statement
+ * @returns a Promise of the number of rows changed by the sql query.
+ */
 function asyncRunWithChanges(sql, params=[]) {
     return new Promise((resolve, reject) => {
         db.run(sql, params, function (err) {
@@ -91,8 +120,9 @@ function asyncRunWithChanges(sql, params=[]) {
 }
 
 // ============================ MODULE EXPORTS ============================
-exports.asyncGet = asyncGet
-exports.asyncAll = asyncAll
-exports.asyncRun = asyncRun
+exports.reinitializeIfNotExists = reinitializeIfNotExists;
+exports.asyncGet = asyncGet;
+exports.asyncAll = asyncAll;
+exports.asyncRun = asyncRun;
 exports.asyncRunWithChanges = asyncRunWithChanges;
-exports.asyncRunWithID = asyncRunWithID
+exports.asyncRunWithID = asyncRunWithID;

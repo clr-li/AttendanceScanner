@@ -4,12 +4,14 @@
   "description": "QR code based attendance with SQLite, Express, Firebase Auth, and Braintree",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
+    "start": "DB_FILE=./.data/ATT.db node server.js",
+    "dev": "DB_FILE=./.data/ATT.db DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master --force",
     "predeploy": "git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
-    "deploy": "npm run glitch && npm run fire && git checkout main"
+    "deploy": "npm run glitch && npm run fire && git checkout main",
+    "test": "DB_FILE=:memory: node -r dotenv/config --test --experimental-test-coverage --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=tap.info && npm run badges",
+    "badges": "node badges.js"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
@@ -17,13 +19,13 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "firebase-admin": "^11.3.0",
-    "firebase-tools": "^11.16.0",
+    "firebase-tools": "^12.9.1",
     "node-persist": "^3.1.3",
     "sqlite3": "^5.1.2",
     "uuid": "^9.0.0"
   },
   "engines": {
-    "node": "16.x"
+    "node": "16.x||^18.17"
   },
   "repository": {
     "url": "https://github.com/clr-li/AttendanceScanner"
@@ -36,6 +38,8 @@
   ],
   "devDependencies": {
     "dotenv": "^16.0.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.1",
+    "selenium-webdriver": "^4.15.0",
+    "supertest": "^6.3.3"
   }
 }

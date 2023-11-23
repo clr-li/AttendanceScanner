@@ -41,7 +41,7 @@ class ContactForm extends Component {
         let message = this.shadowRoot.getElementById('message').value;
         let url = getGoogleFormURL(name, email, message);
         submitGoogleForm(url);
-        Popup.alert('<h1>Success!</h1>Form submitted. We will reach out to you by email.');
+        Popup.alert('<h1>Success!</h1>Form submitted. We will reach out to you by email.', "var(--success");
     }
 
     connectedCallback() {

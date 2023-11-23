@@ -1,6 +1,7 @@
 import { GET, POST } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
+import { sanitizeText } from './util/util.js';
 await requireLogin();
 
 let subscriptionType = null;
@@ -34,12 +35,12 @@ async function showSubscriptions() {
         const div = document.createElement("div");
         div.id = sub.id;
         div.innerHTML = /* html */`
-        <h3 style="margin-bottom: 5px;">${sub.plan} PLAN</h3>
+        <h3 style="margin-bottom: 5px;">${sanitizeText(sub.plan)} PLAN</h3>
         <div style="text-align: center; max-width: 28%; margin: auto;">
-            <li style="text-align: left; margin-bottom: 3px;">Business: ${sub.businessName}</li>
-            <li style="text-align: left; margin-bottom: 3px;">Status: ${sub.status}</li>
-            <li style="text-align: left; margin-bottom: 3px;">Next Billing Date: ${new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate))}</li>
-            <li style="text-align: left; margin-bottom: 3px;">Next Billing Amount: ${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount))}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Business: ${sanitizeText(sub.businessName)}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Status: ${sanitizeText(sub.status)}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Next Billing Date: ${sanitizeText(new Intl.DateTimeFormat(undefined).format(new Date(sub.nextBillingDate)))}</li>
+            <li style="text-align: left; margin-bottom: 3px;">Next Billing Amount: ${sanitizeText(new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(parseInt(sub.nextBillAmount)))}</li>
         </div>
         <button aria-label="delete" id="btn-${sub.id}" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0">❌</button>
         `;
@@ -91,7 +92,7 @@ form.addEventListener('submit', async event => {
         if (res.ok) {
             location.assign("/admin.html?businessId=" + (await res.json()).businessId);
         } else {
-            Popup.alert(res.statusText, "var(--error)");
+            Popup.alert(sanitizeText(await res.text()), "var(--error)");
         }
     } finally {
         showSubscriptions();
