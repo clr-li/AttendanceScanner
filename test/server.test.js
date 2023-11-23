@@ -21,7 +21,7 @@ console.log = async (message) => {
 console.error = console.log;
 console.log('# Test logs created on ' + new Date().toISOString());
 
-const TEST_DB_FILE = ':memory:';
+const TEST_DB_FILE = process.env.DB_FILE || ':memory:';
 // ============================ TESTS ============================
 describe('Server', () => {
     before(async () => {
