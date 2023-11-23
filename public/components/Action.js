@@ -54,6 +54,14 @@ import { sanitizeText } from "../util/util.js";
 }
 
 const CSS = /* css */`
+h3 {
+    white-space: nowrap;
+}
+
+.cols {
+    margin: auto;
+}
+
 .actions {
     font-size: 80px;
     color: var(--accent);
