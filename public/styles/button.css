@@ -105,36 +105,3 @@
     background-color: var(--accent);
     color: white;
 }
-
-.actions {
-    font-size: 100px;
-    color: var(--accent);
-    border: 3px solid black;
-    border-radius: 8px;
-    padding: 5px;
-    background-color: whitesmoke;
-}
-
-.actions:hover {
-    color: var(--primary);
-    background-color: var(--accent-lighter);
-}
-
-.action-info {
-    width: 150px;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 5;
-}
-
-.action-info::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 78%;
-    margin-left: -4px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent transparent black transparent;
-}

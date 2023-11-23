@@ -17,6 +17,7 @@
         <!-- Custom Components -->
         <script type="module" src="components/Navigation.js"></script>
         <script type="module" src="components/ContactForm.js"></script>
+        <script type="module" src="components/Action.js"></script>
 
         <style>
             /* smooth load */
@@ -80,33 +81,9 @@
                 <h1>Actions</h1>
                 <p>Click below to navigate to the specified features!</p>
                 <div class="rows">
-                    <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer;">
-                        <i class="fa-solid fa-person-running actions" onclick="location.assign('scanner.html#new')"></i>
-                            <h3>Quick Attendance 
-                                <span style="position: relative; width: fit-content;">
-                                    <i class="fa-solid fa-circle-info smaller-text"></i>
-                                    <dialog class="action-info" style="margin-left: -900%">Automatically creates an event to be able to start taking attendance immediately.</dialog>
-                                </span>
-                            </h3>
-                    </div>
-                    <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer;">
-                        <i class="fa-solid fa-camera actions" onclick="location.assign('scanner.html')"></i>
-                            <h3>Take Attendance 
-                                <span style="position: relative; width: fit-content;">
-                                    <i class="fa-solid fa-circle-info smaller-text"></i>
-                                    <dialog class="action-info" style="margin-left: -900%">Pick a business and event to start taking attendance or create a new event.</dialog>
-                                </span>
-                            </h3>
-                    </div>
-                    <div role="link" class="cols" style="margin-bottom: 16px; cursor: pointer;">
-                        <i class="fa-solid fa-users actions" onclick="location.assign('payment.html')"></i>
-                            <h3>Start a Group 
-                                <span style="position: relative; width: fit-content;">
-                                    <i class="fa-solid fa-circle-info smaller-text"></i>
-                                    <dialog class="action-info" style="margin-left: -900%">Start a group to record attendance for your business.</dialog>
-                                </span>
-                            </h3>
-                    </div>
+                    <action-icon name="Quick Attendance" icon="fa-solid fa-person-running" link="scanner.html#new" description="Automatically creates an event to be able to start taking attendance immediately."></action-icon>
+                    <action-icon name="Take Attendance" icon="fa-solid fa-camera" link="scanner.html" description="Pick a business and event to start taking attendance or create a new event."></action-icon>
+                    <action-icon name="Start a Group" icon="fa-solid fa-user-group" link="payment.html" description="Start a group to record attendance for your business."></action-icon>
                 </div>
             </section>
             <section class="not-logged-in medium-section">
