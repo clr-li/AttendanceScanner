@@ -7,10 +7,13 @@ import { htmlToElements } from "../util/Component.js";
 export class CircleLoader extends HTMLElement {
     constructor() {
         super(); // initialize component (should always be called first)
-        const tips = ["Have one member/account in the group just for scanning for a more secure business", 
-        "Download your QR code on your phone so you don't have to login every time",
-        "Change your name by clicking on your profile icon",
-        "If you are an owner, you can change your business name on the Groups page"]
+        const tips = [
+            "Have one member/account in the group just for scanning for a more secure business", 
+            "Download your QR code on your phone so you don't have to login every time",
+            "Change your name by clicking on your profile icon",
+            "If you are an owner, you can change your business name on the Groups page",
+            "Filter by attendance status on the Groups page by clicking the status labels",
+        ];
         const randomTip = Math.floor(Math.random() * tips.length);
 
         // Create the shadow root (root of the shadow DOM representing the DOM nodes of this component)
