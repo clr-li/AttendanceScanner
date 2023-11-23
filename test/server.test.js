@@ -1,3 +1,4 @@
+/* node:coverage disable */
 // import test utils
 const { describe, it, after, afterEach, before, beforeEach } = require('node:test'); // read about the builtin Node.js test framework here: https://nodejs.org/docs/latest-v18.x/api/test.html
 const assert = require('node:assert');
