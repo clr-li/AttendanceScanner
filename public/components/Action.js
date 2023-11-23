@@ -77,6 +77,15 @@ const CSS = /* css */`
     z-index: 5;
     margin-left: -900%;
     margin-top: 35%;
+    border: none;
+    border-left: 10px solid var(--secondary);
+    color: white;
+    background-color: var(--dark-background);
+    font-size: 0.8em;
+}
+
+.action-info:focus {
+    outline: none;
 }
 
 .action-info::after {
@@ -84,10 +93,10 @@ const CSS = /* css */`
     position: absolute;
     bottom: 100%;
     left: 78%;
-    margin-left: -3px;
+    margin-left: -7px;
     border-width: 10px;
     border-style: solid;
-    border-color: transparent transparent black transparent;
+    border-color: transparent transparent var(--dark-background) transparent;
 }
 `;
 
