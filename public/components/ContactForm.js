@@ -23,7 +23,7 @@ class ContactForm extends Component {
                 <label for="email">Email</label><br>
                 <input id="email" type="email" required><br>
                 <label for="message">What would you like to say to us?</label><br>
-                <textarea style="resize: vertical;" id="message" rows="3" required></textarea><br><br>
+                <textarea style="resize: vertical;" id="message" rows="3" required></textarea><br>
                 <button class="button">Submit</button>
             </form>
         </div>
@@ -53,6 +53,9 @@ class ContactForm extends Component {
             }
             input:focus, textarea:focus {
                 outline: 2px solid var(--accent);
+            }
+            .form input, .form input[type="text"], .form textarea {
+                margin-bottom: 1rem;
             }
         </style>
         `;
