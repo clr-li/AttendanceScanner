@@ -14,7 +14,7 @@ class ContactForm extends Component {
             <hr><br>
             <p>Experiencing any technological issues with the service? Have a question or feature request? We're happy to hear from you!</p>
             <br>
-            <p>NOTE: You'll have to contact the groups you're part of directly to dispute attendance records since we don't decide whether or you should be marked absent.</p>
+            <p>NOTE: You'll have to contact the groups you're part of directly to dispute attendance records since we don't decide whether or not you should be marked absent.</p>
             <br>
             <form class="form" id="contactform">
                 <label for="name">Name</label><br>
