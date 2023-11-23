@@ -113,7 +113,7 @@ h3 {
     margin-left: -900%;
     margin-top: 35%;
     border: none;
-    border-left: 10px solid var(--secondary);
+    border-left: 10px solid var(--primary);
     color: white;
     background-color: var(--dark-background);
     font-size: 0.8em;
