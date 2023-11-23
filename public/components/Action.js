@@ -78,6 +78,7 @@ h3 {
 }
 
 .action-info {
+    white-space: normal;
     width: 150px;
     border-radius: 6px;
     padding: 8px;
