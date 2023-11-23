@@ -162,7 +162,7 @@ async function handleBusinessLoad(business) {
         <br>
         <ul style="width: fit-content; margin: auto; list-style-type: none">
             ${
-                userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + sanitizeText(ev.name) + ' - ' + sanitizeText((new Date(ev.starttimestamp * 1000)).toDateString()) + '</li>').join('')
+                userdata.userEvents.sort((a, b) => a.starttimestamp - b.starttimestamp).filter(ev => ev.starttimestamp * 1000 >= now).slice(0, 10).map(ev => '<li>' + sanitizeText(ev.name) + ' - ' + sanitizeText((new Date(ev.starttimestamp * 1000)).toDateString()) + '</li>').join('') || "No upcoming events"
             }
         </ul>
         <br>
