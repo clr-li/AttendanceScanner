@@ -1,3 +1,4 @@
+/* node:coverage disable */
 const {Builder, Browser, By, Key, until} = require('selenium-webdriver');
 
 (async function example() {

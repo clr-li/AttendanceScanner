@@ -1,10 +1,12 @@
 # Attendance Scanner 
-[![LineCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner)](https://github.com/clr-li/AttendanceScanner)
-[![FileCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner?category=files)](https://github.com/clr-li/AttendanceScanner)
+<!-- [![LineCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner)](https://github.com/clr-li/AttendanceScanner)
+[![FileCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner?category=files)](https://github.com/clr-li/AttendanceScanner) -->
+[![LOC](./.badges/lines-of-code.svg)](https://github.com/clr-li/AttendanceScanner)
+[![FileCount](./.badges/file-count.svg)](https://github.com/clr-li/AttendanceScanner)
 [![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F
 )](https://github.com/clr-li/AttendanceScanner)
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
-[![Coverage](./public/assets/coverage.svg)](https://raw.githubusercontent.com/clr-li/AttendanceScanner/main/public/assets/coverage.svg)
+[![Coverage](./.badges/coverage.svg)](https://raw.githubusercontent.com/clr-li/AttendanceScanner/main/public/assets/coverage.svg)
 
 This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and CI/CD run through Github Actions.
 URL: https://attendancescannerqr.web.app
