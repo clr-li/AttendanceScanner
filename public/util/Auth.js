@@ -4,7 +4,7 @@ import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider,
 
 // Initialize the current auth session and Firebase app
 const app = initializeApp({
-    apiKey: "AIzaSyBwrJdz4Ht-QMAzWQ3q3Eb02l69QQAIR9c",  // Auth / General Use (see https://stackoverflow.com/questions/37482366/is-it-safe-to-expose-firebase-apikey-to-the-public#:~:text=The%20apiKey%20in%20this%20configuration,interact%20with%20your%20Firebase%20project.)
+    apiKey: "AIzaSyBwrJdz4Ht-QMAzWQ3q3Eb02l69QQAIR9c",  // gitleaks:allow -- Auth / General Use (see https://stackoverflow.com/questions/37482366/is-it-safe-to-expose-firebase-apikey-to-the-public#:~:text=The%20apiKey%20in%20this%20configuration,interact%20with%20your%20Firebase%20project.)
     projectId: "attendancescannerqr",                   // General Use
     authDomain: "attendancescannerqr.firebaseapp.com",  // Auth with
 });
