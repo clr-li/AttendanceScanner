@@ -8,6 +8,7 @@ const { v4 } = require("uuid");
 // import code to test
 const { app, listener } = require('../server.js');
 const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists } = require('../Database.js');
+const { createBusiness, deleteBusiness } = require('../Business.js');
 const auth = require('../Auth.js');
 
 // ============================ SETUP ============================
@@ -25,6 +26,38 @@ console.log('# Test logs created on ' + new Date().toISOString());
 const TEST_DB_FILE = process.env.DB_FILE || ':memory:';
 // ============================ TESTS ============================
 describe('Server', () => {
+    const EXPIRED_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImQwNWI0MDljNmYyMmM0MDNlMWY5MWY5ODY3YWM0OTJhOTA2MTk1NTgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQ2xhaXJlIENsaXV3QFVXLkVkdSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BRWRGVHA0d1R5UVJFNU13dVhNa1B1MGpkZV9ma1FHRllxTDlyTTE3cHBLZT1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hdHRlbmRhbmNlc2Nhbm5lcnFyIiwiYXVkIjoiYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1dGhfdGltZSI6MTY3NTIwNjM5MCwidXNlcl9pZCI6IkEySVN4WktRVU9nSlRhQkpmM2pHMEVjNUNMdzIiLCJzdWIiOiJBMklTeFpLUVVPZ0pUYUJKZjNqRzBFYzVDTHcyIiwiaWF0IjoxNjc1MjA2MzkwLCJleHAiOjE2NzUyMDk5OTAsImVtYWlsIjoiY2xpdXdAdXcuZWR1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDIzNDg1MDIyODIwMzg4OTQ5MzUiXSwiZW1haWwiOlsiY2xpdXdAdXcuZWR1Il19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.RA4rqYq1fGfU58OthW1zdb76zfSbvmYTf2al-gwQei8d0sZ5YgUKvXt-wHRAsYCzah1mUebmvfG8U2n_wFcIIZG5W48EN2G4idvHtKJNV149SA5H-QZ9MxaYK3FdY68wtKRcl9IExX0tNth7-4gKHfMWF15Yz8ja2MxH8Xp_RgXmEd1gxKD-86-hT0VADM7ccMbIrURK2d9GCpUoCjCgdzLJVuJ62CotCUjF5QoMwL2IeK-pIBwp2eyh-Hsy1BB3bwcgtxf926bD3MLuWjSNJNjntvcqTbtpD-38xt2TzyWIA6t9xkGHTRCMhFlm8dmv_CPXzN12nLqg6xjp-CYCnQ";
+    const INVALID_TOKEN = v4();
+    const VALID_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk1MWMwOGM1MTZhZTM1MmI4OWU0ZDJlMGUxNDA5NmY3MzQ5NDJhODciLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWxleGFuZGVyIE1ldHpnZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1MEs1SW5aZElPYmhWTW95UDVtaWFzQkxMeFlPRV9KalI4aXg4Y1o9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1ZCI6ImF0dGVuZGFuY2VzY2FubmVycXIiLCJhdXRoX3RpbWUiOjE2Njk5NjEzMTUsInVzZXJfaWQiOiJmRlN1dkVuSFpiaGtwYUU0Y1F2eWJDUElPUlYyIiwic3ViIjoiZkZTdXZFbkhaYmhrcGFFNGNRdnliQ1BJT1JWMiIsImlhdCI6MTY2OTk2MTMxNSwiZXhwIjoxNjY5OTY0OTE1LCJlbWFpbCI6ImFsZXhhbmRlci5sZUBvdXRsb29rLmRrIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDc5NzQzODUyNDExMjU1ODQwODUiXSwiZW1haWwiOlsiYWxleGFuZGVyLmxlQG91dGxvb2suZGsiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.r50SDswArj53NJbwO8vWAYjWVq7uvo_56RBRyt2ZLKyLrHAOWDsj8Muxg1N2OuAOX5ZOZscXttqPb9wwvnh79tYlciZru5GuBcDXYHuMM18HsOBTkqsdWQlnsneDLawMZYP4u5U9dx2NZSCQIpDmfv8CckPfav7izCcdUxAZaKs6ngzBjpz9O7dpKW8pFscaWtncqyH9PXGtChlDd4kOdYO-YJWkA3-ZZ7_S_AviCHbAG-veyTzoacyCPdDJrNzNq9tiWGvILFtmClpMLqf9v9GdvlRt0dPTHx7p-Q6uTlhXvFGIG8ggqbIxbVxVr_sonbV4Nl47lsoDp0icLLjEuQ";
+    const VALID_AUTH = auth.parseJwt(VALID_TOKEN);
+
+    /**
+     * Mock the verifyIdToken method once so that it doesn't verify the token with firebase when our special "VALID_TOKEN" is used
+     * @param {TestContext} t the test context of the test method to mock within
+     * @param {number} times the number of times to mock the method
+     */
+    function mockToken(t, times=1) {
+        const _verifyIdToken = auth.verifyIdToken;
+        t.mock.method(auth, 'verifyIdToken', (idToken) => {
+            if (idToken === VALID_TOKEN) return [VALID_AUTH.user_id, VALID_AUTH.name];
+            else return _verifyIdToken(idToken);
+        }, { times: times });
+    }
+
+    /**
+     * Skips the token verification step and returns the specified uid and name instead
+     * @param {TestContext} t the test context of the test method to mock within
+     * @param {string} uid the uid to return when the token is verified
+     * @param {string} name the name of the user to return when the token is verified
+     * @param {number} times the number of times to mock the method
+     */
+    function skipTokenVerification(t, uid, name, times=1) {
+        t.mock.method(auth, 'verifyIdToken', (idToken) => {
+            return [uid, name];
+        }, { times: times });
+    }
+
+
     before(async () => {
         // close the default server that server.js starts so that we can start our own server for testing
         await new Promise((resolve, reject) => listener.close(resolve));
@@ -83,23 +116,6 @@ describe('Server', () => {
     });
 
     describe('Authentication', () => {
-        const EXPIRED_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImQwNWI0MDljNmYyMmM0MDNlMWY5MWY5ODY3YWM0OTJhOTA2MTk1NTgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQ2xhaXJlIENsaXV3QFVXLkVkdSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BRWRGVHA0d1R5UVJFNU13dVhNa1B1MGpkZV9ma1FHRllxTDlyTTE3cHBLZT1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hdHRlbmRhbmNlc2Nhbm5lcnFyIiwiYXVkIjoiYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1dGhfdGltZSI6MTY3NTIwNjM5MCwidXNlcl9pZCI6IkEySVN4WktRVU9nSlRhQkpmM2pHMEVjNUNMdzIiLCJzdWIiOiJBMklTeFpLUVVPZ0pUYUJKZjNqRzBFYzVDTHcyIiwiaWF0IjoxNjc1MjA2MzkwLCJleHAiOjE2NzUyMDk5OTAsImVtYWlsIjoiY2xpdXdAdXcuZWR1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDIzNDg1MDIyODIwMzg4OTQ5MzUiXSwiZW1haWwiOlsiY2xpdXdAdXcuZWR1Il19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.RA4rqYq1fGfU58OthW1zdb76zfSbvmYTf2al-gwQei8d0sZ5YgUKvXt-wHRAsYCzah1mUebmvfG8U2n_wFcIIZG5W48EN2G4idvHtKJNV149SA5H-QZ9MxaYK3FdY68wtKRcl9IExX0tNth7-4gKHfMWF15Yz8ja2MxH8Xp_RgXmEd1gxKD-86-hT0VADM7ccMbIrURK2d9GCpUoCjCgdzLJVuJ62CotCUjF5QoMwL2IeK-pIBwp2eyh-Hsy1BB3bwcgtxf926bD3MLuWjSNJNjntvcqTbtpD-38xt2TzyWIA6t9xkGHTRCMhFlm8dmv_CPXzN12nLqg6xjp-CYCnQ";
-        const INVALID_TOKEN = v4();
-        const VALID_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk1MWMwOGM1MTZhZTM1MmI4OWU0ZDJlMGUxNDA5NmY3MzQ5NDJhODciLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWxleGFuZGVyIE1ldHpnZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1MEs1SW5aZElPYmhWTW95UDVtaWFzQkxMeFlPRV9KalI4aXg4Y1o9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vYXR0ZW5kYW5jZXNjYW5uZXJxciIsImF1ZCI6ImF0dGVuZGFuY2VzY2FubmVycXIiLCJhdXRoX3RpbWUiOjE2Njk5NjEzMTUsInVzZXJfaWQiOiJmRlN1dkVuSFpiaGtwYUU0Y1F2eWJDUElPUlYyIiwic3ViIjoiZkZTdXZFbkhaYmhrcGFFNGNRdnliQ1BJT1JWMiIsImlhdCI6MTY2OTk2MTMxNSwiZXhwIjoxNjY5OTY0OTE1LCJlbWFpbCI6ImFsZXhhbmRlci5sZUBvdXRsb29rLmRrIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDc5NzQzODUyNDExMjU1ODQwODUiXSwiZW1haWwiOlsiYWxleGFuZGVyLmxlQG91dGxvb2suZGsiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.r50SDswArj53NJbwO8vWAYjWVq7uvo_56RBRyt2ZLKyLrHAOWDsj8Muxg1N2OuAOX5ZOZscXttqPb9wwvnh79tYlciZru5GuBcDXYHuMM18HsOBTkqsdWQlnsneDLawMZYP4u5U9dx2NZSCQIpDmfv8CckPfav7izCcdUxAZaKs6ngzBjpz9O7dpKW8pFscaWtncqyH9PXGtChlDd4kOdYO-YJWkA3-ZZ7_S_AviCHbAG-veyTzoacyCPdDJrNzNq9tiWGvILFtmClpMLqf9v9GdvlRt0dPTHx7p-Q6uTlhXvFGIG8ggqbIxbVxVr_sonbV4Nl47lsoDp0icLLjEuQ";
-        const VALID_AUTH = auth.parseJwt(VALID_TOKEN);
-
-        /**
-         * Mock the verifyIdToken method once so that it doesn't verify the token with firebase when our special "VALID_TOKEN" is used
-         * @param {TestContext} t the test context of the test method to mock within
-         */
-        function mockToken(t) {
-            const _verifyIdToken = auth.verifyIdToken;
-            t.mock.method(auth, 'verifyIdToken', (idToken) => {
-                if (idToken === VALID_TOKEN) return [VALID_AUTH.user_id, VALID_AUTH.name];
-                else return _verifyIdToken(idToken);
-            }, { times: 1 });
-        }
-
         beforeEach(async () => {
             await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
         });
@@ -183,6 +199,278 @@ describe('Server', () => {
                 .expect(VALID_AUTH.user_id);
             const result = await asyncAll('SELECT COUNT(*) FROM Users');
             assert.strictEqual(result[0]['COUNT(*)'], 1);
+        });
+    });
+
+    describe('Business', () => {
+        beforeEach(async () => {
+            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+        });
+
+        it('Should create a business with the correct values when createBusiness called', async (t) => {
+            const businessId = await createBusiness('testuid', 'testname', 'testsubscriptionid');
+            const business = await asyncGet('SELECT * FROM Businesses WHERE id = ?', [businessId]);
+            assert.strictEqual(business.name, 'testname');
+            assert.strictEqual(business.joincode.length, 36);
+            assert.strictEqual(business.subscriptionId, 'testsubscriptionid');
+        });
+        it('Should automatically make the user an owner when createBusiness called', async (t) => {
+            const businessId = await createBusiness('testuid', 'testname', 'testsubscriptionid');
+            const members = await asyncAll('SELECT * FROM Members WHERE user_id = ? AND business_id = ?', ['testuid', businessId]);
+            assert.strictEqual(members[0].role, 'owner');
+            assert.strictEqual(members.length, 1);
+            assert.strictEqual(members[0].user_id, 'testuid');
+        });
+        it('Should delete the business, members, attendance records, and events when deleteBusiness called', async (t) => {
+            const businessId = await createBusiness('testuid', 'testname', 'testsubscriptionid');
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId, 'user']);
+            await asyncRun('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId, 'testevent', 'testdescription', 0, 0]);
+            await asyncRun('INSERT INTO Records (user_id, business_id, event_id, timestamp, status) VALUES (?, ?, ?, ?, ?)', ['testuid', businessId, 1, 0, 'teststatus']);
+            await deleteBusiness(businessId);
+            const business = await asyncGet('SELECT * FROM Businesses WHERE id = ?', [businessId]);
+            assert.strictEqual(business, undefined);
+            const members = await asyncAll('SELECT * FROM Members WHERE business_id = ?', [businessId]);
+            assert.strictEqual(members.length, 0);
+            const events = await asyncAll('SELECT * FROM Events WHERE business_id = ?', [businessId]);
+            assert.strictEqual(events.length, 0);
+            const records = await asyncAll('SELECT * FROM Records WHERE business_id = ?', [businessId]);
+            assert.strictEqual(records.length, 0);
+        });
+        it('Should get the businesses that the user is a member of when /businesses is requested', async (t) => {
+            const businessId1 = await createBusiness(VALID_AUTH.user_id, 'testname1', 'testsubscriptionid1');
+            const businessId2 = await createBusiness('testuid', 'testname2', 'testsubscriptionid2');
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [VALID_AUTH.user_id, businessId2, 'user']);
+            mockToken(t)
+            await request(app)
+                .get('/businesses')
+                .set('idToken', VALID_TOKEN)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .expect([{ id: businessId1, name: 'testname1', role: 'owner' }, { id: businessId2, name: 'testname2', role: 'user' }]);
+        });
+        it('Should require owner privileges when /renameBusiness is requested', async (t) => {
+            // works with owner privileges
+            const businessId1 = await createBusiness(VALID_AUTH.user_id, 'testname', 'testsubscriptionid1');
+            mockToken(t);
+            await request(app)
+                .get('/renameBusiness')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId1, name: 'testname2' })
+                .expect(200);
+            
+            // doesn't work when not a member
+            const businessId2 = await createBusiness('testuserid', 'testname', 'testsubscriptionid2');
+            mockToken(t);
+            await request(app)
+                .get('/renameBusiness')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId2, name: 'testname2' })
+                .expect(403);
+
+            // doesn't work with user privileges
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [VALID_AUTH.user_id, businessId2, 'user']);
+            mockToken(t);
+            await request(app)
+                .get('/renameBusiness')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId2, name: 'testname2' })
+                .expect(403);
+        });
+        it('Should join when /join is requested with the correct joincode even when multiple businesses exist', async (t) => {
+            await createBusiness('testuid', 'testname', 'testsubscriptionid1');
+            const businessId = await createBusiness('testuid', 'testname', 'testsubscriptionid2');
+            await createBusiness('testuid', 'testname', 'testsubscriptionid3');
+            skipTokenVerification(t, 'testuid', 'testname');
+            const res = await request(app)
+                .get('/joincode')
+                .set('idToken', 'testtoken')
+                .query({ businessId: businessId })
+                .expect(200)
+                .expect('Content-Type', /json/);
+            mockToken(t);
+            const joincode = JSON.parse(res.text).joincode;
+            await request(app)
+                .get('/join')
+                .set('idToken', VALID_TOKEN)
+                .query({ code: joincode, businessId: businessId })
+                .expect(200);
+            const members = await asyncAll('SELECT * FROM Members WHERE user_id = ? AND business_id = ?', [VALID_AUTH.user_id, businessId]);
+            assert.strictEqual(members.length, 1);
+            assert.strictEqual(members[0].role, 'user');
+        });
+        it('Should not join when /join is requested with the joincode of another business', async (t) => {
+            const businessId1 = await createBusiness('testuid', 'testname', 'testsubscriptionid1');
+            const businessId2 = await createBusiness('testuid', 'testname', 'testsubscriptionid2');
+            skipTokenVerification(t, 'testuid', 'testname');
+            const res = await request(app)
+                .get('/joincode')
+                .set('idToken', 'testtoken')
+                .query({ businessId: businessId1 })
+                .expect(200)
+                .expect('Content-Type', /json/);
+            mockToken(t);
+            const joincode = JSON.parse(res.text).joincode;
+            await request(app)
+                .get('/join')
+                .set('idToken', VALID_TOKEN)
+                .query({ code: joincode, businessId: businessId2 })
+                .expect(403);
+            const members = await asyncAll('SELECT * FROM Members WHERE user_id = ? AND business_id = ?', [VALID_AUTH.user_id, businessId1]);
+            assert.strictEqual(members.length, 0);
+        });
+        it('Should only allow non-owners to leave their business when /leave is requested', async (t) => {
+            const businessId1 = await createBusiness('testuid', 'testname', 'testsubscriptionid1');
+            const businessId2 = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid2');
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [VALID_AUTH.user_id, businessId1, 'user']);
+            mockToken(t, 2);
+            await request(app)
+                .get('/leave')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId1 })
+                .expect(200);
+            await request(app)
+                .get('/leave')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId2 })
+                .expect(403);
+        });
+        it('Should only allow kicking non-owner members when /removeMember is requested', async (t) => {
+            const businessId = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid1');
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId, 'user']);
+            mockToken(t, 3);
+            // owner can't be removed
+            await request(app)
+                .get('/removeMember')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: VALID_AUTH.user_id })
+                .expect(400);
+            // member can be removed
+            await request(app)
+                .get('/removeMember')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: 'testuid' })
+                .expect(200);
+            // non-member can't be removed
+            await request(app)
+                .get('/removeMember')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: 'testuid' })
+                .expect(400);
+        });
+        it('Should return the correct attendance data when /attendancedata is requested', async (t) => {
+            const businessId = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid1');
+            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId, 'user']);
+            await asyncRun('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId, 'testevent', 'testdescription', 0, 0]);
+            await asyncRun('INSERT INTO Records (user_id, business_id, event_id, timestamp, status) VALUES (?, ?, ?, ?, ?)', ['testuid', businessId, 1, 0, 'teststatus']);
+            await asyncRun('INSERT INTO Records (user_id, business_id, event_id, timestamp, status) VALUES (?, ?, ?, ?, ?)', [VALID_AUTH.user_id, businessId, 1, 0, 'teststatus']);
+            mockToken(t, 1);
+            await request(app)
+                .get('/attendancedata')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId })
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .expect([
+                    {
+                      name: VALID_AUTH.name,
+                      event_id: 1,
+                      business_id: businessId,
+                      user_id: VALID_AUTH.user_id,
+                      timestamp: '0',
+                      status: 'teststatus',
+                      role: 'owner'
+                    },
+                    {
+                      name: 'testname',
+                      event_id: 1,
+                      business_id: businessId,
+                      user_id: 'testuid',
+                      timestamp: '0',
+                      status: 'teststatus',
+                      role: 'user'
+                    },
+                    {
+                      name: VALID_AUTH.name,
+                      id: VALID_AUTH.user_id,
+                      role: 'owner'
+                    },
+                    { name: 'testname', id: 'testuid', role: 'user' }
+                ]);
+        });
+        it('Should return metadata when /userdata requested with multiple businesses', async (t) => {
+            const businessId1 = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid1');
+            const businessId2 = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid2');
+            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId1, 'user']);
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId2, 'user']);
+            await asyncRun('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId1, 'testevent', 'testdescription', 0, 0]);
+            await asyncRun('INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)', [businessId2, 'testevent', 'testdescription', 0, 0]);
+            await asyncRun('INSERT INTO Records (user_id, business_id, event_id, timestamp, status) VALUES (?, ?, ?, ?, ?)', [VALID_AUTH.user_id, businessId1, 1, 0, 'teststatus']);
+            await asyncRun('INSERT INTO Records (user_id, business_id, event_id, timestamp, status) VALUES (?, ?, ?, ?, ?)', ['testuid', businessId2, 2, 0, 'teststatus']);
+            mockToken(t, 1);
+            await request(app)
+                .get('/userdata')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId1 })
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .expect({
+                    numUsers: 2,
+                    ownerName: VALID_AUTH.name,
+                    userEvents: [
+                      {
+                        name: 'testevent',
+                        starttimestamp: '0',
+                        endtimestamp: '0',
+                        status: 'teststatus',
+                        timestamp: '0'
+                      }
+                    ]
+                });
+        });
+        it('Should assign the correct role when /assignRole is requested unless the role is owner', async (t) => {
+            const businessId = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid1');
+            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', ['testuid', businessId, 'user']);
+            mockToken(t, 3);
+            // don't allow setting owner role
+            await request(app)
+                .get('/assignRole')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: 'testuid', role: 'owner' })
+                .expect(403);
+            // don't allow changing the owner's role
+            await request(app)
+                .get('/assignRole')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: VALID_AUTH.user_id, role: 'admin' })
+                .expect(403);
+            // allow setting other roles
+            await request(app)
+                .get('/assignRole')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, userId: 'testuid', role: 'admin' })
+                .expect(200);
+            const members = await asyncAll('SELECT * FROM Members WHERE user_id = ? AND business_id = ?', ['testuid', businessId]);
+            assert.strictEqual(members.length, 1);
+            assert.strictEqual(members[0].role, 'admin');
+        });
+        it('Should return the name set with /changeName when /getName is requested', async (t) => {
+            const businessId = await createBusiness(VALID_AUTH.user_id, VALID_AUTH.name, 'testsubscriptionid1');
+            mockToken(t, 2);
+            await request(app)
+                .get('/changeName')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId, name: 'testname' })
+                .expect(200);
+            await request(app)
+                .get('/getName')
+                .set('idToken', VALID_TOKEN)
+                .query({ businessId: businessId })
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .expect({name: 'testname'});
         });
     });
 });
