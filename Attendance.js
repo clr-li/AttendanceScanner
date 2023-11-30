@@ -70,6 +70,24 @@ router.get("/alterAttendance", async (request, response) => {
   response.sendStatus(200);
 });
 
+/**
+ * Logged in user can mark themselves as absent for a future event.
+ * @queryParams event - id of the event to record attendance for
+ * @queryParams businessId - id of the business to record attendance for
+ * @requiredPrivileges member of the business
+ * @response 200 OK if successful
+ */
+router.get("/alterOwnAttendance", async (request, response) => {
+  const uid = await handleAuth(request, response, request.query.businessId, {});
+  if (!uid) return;
+  
+  const businessId = request.query.businessId;
+  const event = request.query.event;
+
+  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self)", businessId, event, uid, Math.round(Date.now() / 1000)]);
+
+  response.sendStatus(200);
+});
 
 // ============================ TEMPORARY ATTENDANCE CODES ============================
 /**
