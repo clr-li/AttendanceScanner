@@ -16,6 +16,7 @@
     --success-lighter: lightgreen;
     --success-darker: darkgreen;
     --max-width: min(1000px, 100vw);
+    --max-width-small: min(800px, 100vw);
     --delete: #f02828;
     --delete-lighter: #f87777; 
     --delete-darker: #d30707;
