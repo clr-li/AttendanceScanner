@@ -55,7 +55,7 @@ export class Table extends Component {
     async updateTable(attendancearr, events, businessID) {
         let map = new Map();
         let userIds = [];
-        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray", "ABSENT(self)": "#fc6060"}
+        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray", "ABSENT(self-marked)": "#fc6060"}
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id)
                 attendancearr[i].id = attendancearr[i].user_id;

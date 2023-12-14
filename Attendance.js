@@ -84,7 +84,7 @@ router.get("/alterOwnAttendance", async (request, response) => {
   const businessId = request.query.businessId;
   const event = request.query.event;
 
-  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self)", businessId, event, uid, Math.round(Date.now() / 1000)]);
+  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self-marked)", businessId, event, uid, Math.round(Date.now() / 1000)]);
 
   response.sendStatus(200);
 });
