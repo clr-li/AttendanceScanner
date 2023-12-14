@@ -74,7 +74,7 @@ We use [Selenium](https://www.npmjs.com/package/selenium-webdriver) for cross br
 2. Enable the 'Allow Remote Automation' option in Safari's Develop menu
 
 #### Setup Tests of the OAuth Flow
-By default tests mock the Firebase Authentication layer (to run faster and not require storing Google account credentials). To test with a real Google account, run tests with `REAL_LOGIN=true npm test` and the tests will pause and open a browser window for you to login with a google account in. You can provide an account email (`TEST_EMAIL=xxxx@xxxx.xxx`) and password (`TEST_PASSWORD=xxxx`) in the `.env` file to attempt automatic login for these test, but they may still require manual input during the login phase if your account has MFA enabled or other security settings that interfere.
+By default tests mock the Firebase Authentication layer (to run faster and not require storing Google account credentials). To test with a real Google account, run tests with an account email (`TEST_EMAIL=xxxx@xxxx.xxx`) and password (`TEST_PASSWORD=xxxx`) in the `.env` file. The tests will attempt to automatically login for these test, but they may still require manual input during the login phase if your account has MFA enabled or other security settings that interfere. Currently only supported for Google Chrome.
 
 ## Glitch Development
 Preferably don't edit directly on Glitch except to change the production `.data` or `.env`. If necessary,
