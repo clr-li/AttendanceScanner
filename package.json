@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "DB_FILE=./.data/ATT.db node server.js",
+    "predev": "open http://localhost:3000 || start chrome \"http://localhost:3000\" || google-chrome 'http://localhost:3000' || echo 'Could not open browser automatically. Please open http://localhost:3000 manually'",
     "dev": "DB_FILE=./.data/ATT.db DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config server.js",
     "fire": "node -r dotenv/config deploy.js",
     "glitch": "git checkout master && git pull origin main --no-rebase --no-edit && git push glitch --force && git push origin master --force",
