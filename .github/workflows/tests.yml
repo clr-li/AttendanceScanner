@@ -15,8 +15,8 @@ jobs:
           node-version: '18.17'
       - name: Setup Selenium Server
         run: docker pull selenium/standalone-chrome:latest
-      - name: Start Selenium Server
-        run: docker run -d -p 4444:4444 -v /dev/shm:/dev/shm --name selenium-server selenium/standalone-chrome
+      - name: Start Selenium Server with access to host's localhost
+        run: docker run -d -p 4444:4444 --network="host" --shm-size=2g selenium/standalone-chrome:latest
       # - name: Download selenoid (Selenium server)
       #   run: curl -s https://aerokube.com/cm/bash | bash
       # - name: Give permission to selenoid (Selenium server)
