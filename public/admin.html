@@ -32,40 +32,41 @@
                 <h1>
                     Dashboard 
                 </h1>
-                <br>
                 <type-select id="businessId" name="businesses" label="Group:"></type-select>
-                <br>
                 <div id="qrcode" class="img"></div>
-                <br>
-                <button id="joinlink" class="button">Copy Join Link</button><br><br>
+                <button id="joinlink" class="button">Copy Join Link</button><br>
             </section>
             <section class="light-section">
                 <h1>Events</h1>
-                <br>
                 <type-select id="eventId" name="events" label="Selected Event:"></type-select>
-                <br>
                 <form id="eventdetails" class="form"></form>
             </section>
-            <section class="light-section">
+            <section class="medium-section">
                 <h1>New Event</h1>
                 <form class="form" id="eventform">
-                    <label for="name">Event Name: </label>
-                    <input type="text" id="name" name="name">
-                    <label for="description">Description: </label>
-                    <input type="text" id="description" name="description"><br>
-                    <label for="startdate">Start Date: </label>
-                    <input type="date" id="startdate" name="startdate">
-                    <label for="starttime">Start Time: </label>
-                    <input type="time" id="starttime" name="starttime"><br>
-                    <label for="enddate">End Date: </label>
-                    <input type="date" id="enddate" name="enddate">
-                    <label for="endtime">End Time: </label>
-                    <input type="time" id="endtime" name="endtime"><br>
-                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-bottom: 12px;">
-                        <label style="font-size: 1.5rem; margin: 6px">Repeat</label>
+                    <label for="name">Name:</label><br>
+                    <input style="min-width: min(850px, calc(95vw));" type="text" id="name" name="name"><br>
+                    <label for="description">Description:</label><br>
+                    <textarea style="resize: vertical;" id="description" rows="2" name="description"></textarea><br>
+                    <div class="cols">
+                        <label for="startdate">Start:</label>
+                        <input type="date" id="startdate" name="startdate">
+                    </div>
+                    <div class="cols" style="justify-content: right;">
+                        <input type="time" id="starttime" name="starttime">
+                    </div>
+                    <div class="cols">
+                        <label for="enddate" class="table-cell table-label">End:</label>
+                        <input type="date" id="enddate" name="enddate">
+                    </div>
+                    <div class="cols" style="justify-content: right;">
+                        <input type="time" id="endtime" name="endtime">
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                        <label style="font-size: 1.5rem; padding: 0.2rem;">Repeat</label>
                         <div class="checkbox-wrapper-6">
                             <input id="repeat" class="tgl tgl-light" type="checkbox" onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'">
-                            <label class="tgl-btn" for="repeat"></label>
+                            <label class="tgl-btn" style="font-size: 16px;" for="repeat"></label>
                         </div>
                     </div>
                     <div id="repeatform" style="display: none;">
@@ -75,32 +76,33 @@
                             <option>Monthly</option>
                         </select>
                         <input type="number" id="interval" value="1">
-                        <div id="daysoftheweek" class="weekDays-selector" style="margin: 16px; margin-bottom: 0;">
+                        <div id="daysoftheweek" class="weekDays-selector">
                             <input type="checkbox" id="sunday" name="sunday" value="sunday" class="weekday" />
-                            <label for="sunday">S</label>
+                            <label for="sunday" style="padding: 0;">S</label>
                             <input type="checkbox" id="monday" name="monday" value="monday" class="weekday" />
-                            <label for="monday">M</label>
+                            <label for="monday" style="padding: 0;">M</label>
                             <input type="checkbox" id="tuesday" name="tuesday" value="tuesday" class="weekday" />
-                            <label for="tuesday">T</label>
+                            <label for="tuesday" style="padding: 0;">T</label>
                             <input type="checkbox" id="wednesday" name="wednesday" value="wednesday" class="weekday" />
-                            <label for="wednesday">W</label>
+                            <label for="wednesday" style="padding: 0;">W</label>
                             <input type="checkbox" id="thursday" name="thursday" value="thursday" class="weekday" />
-                            <label for="thursday">T</label>
+                            <label for="thursday" style="padding: 0;">T</label>
                             <input type="checkbox" id="friday" name="friday" value="friday" class="weekday" />
-                            <label for="friday">F</label>
+                            <label for="friday" style="padding: 0;">F</label>
                             <input type="checkbox" id="saturday" name="saturday" value="saturday" class="weekday" />
-                            <label for="saturday">S</label>
-                          </div>
-                    </div><br>
+                            <label for="saturday" style="padding: 0;">S</label>
+                          </div><br>
+                    </div>
                     <div style="width: fit-content; margin: auto; left: 0; right: 0; position: relative;">
-                        <dialog id="new-event-success" style="position: absolute; bottom: 100%; left: 0; right: 0; margin: auto; color: var(--success); background: none; border: none; animation: fadeInAndOut 3s; font-weight: bold;">
+                        <dialog id="new-event-success" style="position: absolute; bottom: 90%; left: 0; right: 0; margin: auto; color: var(--success); background: none; border: none; animation: fadeInAndOut 3s; font-weight: bold;">
                             <p>success</p>
                         </dialog>
                         <button type="button" id="submitevent" class="button">Submit</button>
                     </div>
                 </form>
             </section>
-            <section class="medium-section">
+            <section class="purple-section">
+                <h1>Event Table</h1>
                 <attendance-table id="table"></attendance-table>
             </section>
         </navigation-manager>
