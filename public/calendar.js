@@ -12,6 +12,14 @@ const resBusiness = await GET('/businesses');
 const businesses = await resBusiness.json();
 
 const sidebar = document.getElementsByClassName("calendar-events");
+
+const quickEventBtn = document.createElement("a");
+quickEventBtn.href = "/scanner.html#new";
+quickEventBtn.textContent = "Create Quick Event Now";
+quickEventBtn.className = "button";
+quickEventBtn.style = "text-align: center;";
+sidebar[0].appendChild(quickEventBtn);
+
 sidebar[0].innerHTML += /* html */`
     <hr><br>
     ${businesses.map((business, i) => /* html */`
