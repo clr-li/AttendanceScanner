@@ -21,9 +21,12 @@ quickEventBtn.style = "text-align: center; display: block; margin: 1rem auto;";
 sidebar[0].appendChild(quickEventBtn);
 
 sidebar[0].innerHTML += /* html */`
+    <h3 style="margin-top: 1rem;">Click to toggle which groups to show:</h3>
     ${businesses.map((business, i) => /* html */`
-        <p aria-role="presentation" style="color: ${colors[i%colors.length]}; display: inline; font-size: 1.2rem; margin-left: 1.5rem;" id="${sanitizeText(business.id)}">&#9632;</p>
-        <p style="display: inline; font-size: 1.2rem;">${sanitizeText(business.name)}</p>
+        <button style="background: transparent; color: inherit; border: none; opacity: 1;" id="business-legend-${i}" onclick="toggleBusinessEvents(${i})">
+            <p aria-role="presentation" style="color: ${colors[i%colors.length]}; display: inline; font-size: 1.2rem; margin-left: 1.5rem;" id="${sanitizeText(business.id)}">&#9632;</p>
+            <p style="display: inline; font-size: 1.2rem;">${sanitizeText(business.name)}</p>
+        </button>
     `).join('<br>')}
 `;
 
@@ -34,6 +37,7 @@ for (const [i, business] of Object.entries(businesses)) {
     events.sort((a, b) => {
         return a.starttimestamp - b.starttimestamp;
     });
+    business['events'] = [];
     for (const event of events) {
         const startDate = new Date(event.starttimestamp*1000);
         const endDate = new Date(event.endtimestamp*1000);
@@ -59,7 +63,24 @@ for (const [i, business] of Object.entries(businesses)) {
             description: '<h3 style="margin-top:0.1em;margin-bottom:0.5em;">' + sanitizeText(event.name) + "</h3>" + "Event Description: " + sanitizeText(event.description) + edit,
             everyYear: false,
         }
+        business['events'].push(eventData);
         $("#calendar").evoCalendar('addCalendarEvent', eventData);
+    }
+}
+
+window.toggleBusinessEvents = (businessIX) => {
+    const legend = document.getElementById(`business-legend-${businessIX}`);
+    const shouldHide = legend.style.opacity == "1";
+    legend.style.opacity = shouldHide ? "0.5" : "1";
+    if (shouldHide) {
+        $("#calendar").evoCalendar('removeCalendarEvent', businesses[businessIX].events.map(event => event.id));
+        // evo calendar forgets to remove bullets in the main calendar view, so we have to do it manually
+        const bullets = document.querySelectorAll(`.event-indicator>.type-bullet>div[style*="background-color:${colors[businessIX%colors.length]}"]`);
+        for (const bullet of bullets) {
+            bullet.parentElement.parentElement.remove();
+        }
+    } else {
+        $("#calendar").evoCalendar('addCalendarEvent', businesses[businessIX].events);
     }
 }
 
@@ -71,7 +92,7 @@ window.markAbsent = async (businessId, eventId) => {
     }
     await Popup.alert('You have been marked absent!');
 
-    // manually change html since evo-calendar is broken when adding and removing events
+    // manually change html since evo-calendar is broken when adding/removing or updating events
     const badge = document.createElement("span");
     badge.textContent = "ABSENT(self-marked)";
     document.querySelector(`[data-event-index="${eventId}"]`).getElementsByClassName("event-title")[0].appendChild(badge);
