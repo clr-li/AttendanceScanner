@@ -8,10 +8,10 @@ const { captureConsole } = require('./utils.js');
 captureConsole('./test.server.log');
 
 // import code to test
-const { app, listener } = require('../server.js');
-const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists } = require('../Database.js');
-const { createBusiness, deleteBusiness } = require('../Business.js');
-const auth = require('../Auth.js');
+const { app, listener } = require('../server/server.js');
+const { asyncGet, asyncRun, asyncAll, asyncRunWithChanges, asyncRunWithID, reinitializeIfNotExists } = require('../server/Database.js');
+const { createBusiness, deleteBusiness } = require('../server/Business.js');
+const auth = require('../server/Auth.js');
 
 // ============================ TESTS ============================
 describe('Server', () => {

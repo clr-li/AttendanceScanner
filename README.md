@@ -11,10 +11,10 @@
 This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and CI/CD run through Github Actions.
 URL: https://attendancescannerqr.web.app
 
-# Recommended VS Code plugins
+# Development
+## Recommended VS Code plugins
 - [es6-string-html](https://marketplace.visualstudio.com/items?itemName=Tobermory.es6-string-html) - syntax highlighting for template literals, useful for HTML, CSS, SQL, and more!
 
-# Source Control and Workflow
 ## Branches
 - `master` - production branch - clone of Glitch branch (Glitch is currently used for hosting the server)
 - `main` - main development branch - latest stable version of the code, hosted on Github
@@ -25,9 +25,9 @@ URL: https://attendancescannerqr.web.app
 2. `git remote add glitch [INSERT GLITCH API URL HERE AND REMOVE THESE BRACKETS]`
 3. Add the `.data` directory and `.env` file (can be found on Glitch)
     - These are already `.gitignore`'d to avoid leaking API keys and secrets and user data
-4. `npm install --no-audit` the necessary dependencies
+4. `npm ci` to install the necessary dependencies from the package lock
 5. `npm run dev` (this will run the local server using the local .env file; `npm start` is only for Glitch)
-    - After running `npm run dev`, use a browser to go to the localhost port printed
+    - After running `npm run dev`, use a browser to go to the localhost port printed (this should automatically open on most systems)
 
 ### Workflow
 0. Start with `git pull`, and make sure you are on the right branch, e.g. `git checkout main`
@@ -40,12 +40,12 @@ URL: https://attendancescannerqr.web.app
 &nbsp;&nbsp;For larger changes:
 1. `git checkout -b [NAME OF NEW DEVELOPMENT BRANCH]` to create a separate branch
 2. Make changes and `git add` and `git commit` locally
-3. Either `git push origin main` if no conflicts, or `git push origin` and create a pull request
+3. `git push origin` and create a pull request for others to review and merge into `main` after review
 
 &nbsp;&nbsp;Then to deploy Github `main` to Glitch and Firebase:<br>
-<span style="white-space: pre; font-size: 0.8rem">&#9;</span>4. `npm run deploy`<br>
-<span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy to Glitch: `npm run glitch`<br>
-<span style="white-space: pre; font-size: 0.8rem">&#9;&#9;</span>- Or to only deploy static files to Firebase: `npm run fire`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. `npm run deploy`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Or to only deploy to Glitch: `npm run glitch`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Or to only deploy static files to Firebase: `npm run fire`
 
 ### Update database
  - To reset the database and its schema, change the `databaseSchema.sql` file accordingly, `npm run deploy` changes like normal, then delete the `.data/ATT.db` file on Glitch and restart the server. The database will automatically get reinitialized.
@@ -59,7 +59,7 @@ URL: https://attendancescannerqr.web.app
 
 3. Tests live in the `/test` directory and use the builtin [Node Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html) framework. New tests are always welcome!
 
-### Github Action
+### Github Actions
 The tests will automatically run in an environment closely mirroring the production environment when commits are pushed or branches merged. See `.github/workflows/tests.yml` for details. The status of these tests can be seen in the badge at the top of this readme. The coverage badge shows the percentage of lines, branches, and functions covered by the automated tests and will update everytime tests are run locally. 
 
 ### Server Side Tests
