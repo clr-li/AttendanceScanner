@@ -17,11 +17,10 @@ const quickEventBtn = document.createElement("a");
 quickEventBtn.href = "/scanner.html#new";
 quickEventBtn.textContent = "Create Quick Event Now";
 quickEventBtn.className = "button";
-quickEventBtn.style = "text-align: center;";
+quickEventBtn.style = "text-align: center; display: block; margin: 1rem auto;";
 sidebar[0].appendChild(quickEventBtn);
 
 sidebar[0].innerHTML += /* html */`
-    <hr><br>
     ${businesses.map((business, i) => /* html */`
         <p aria-role="presentation" style="color: ${colors[i%colors.length]}; display: inline; font-size: 1.2rem; margin-left: 1.5rem;" id="${sanitizeText(business.id)}">&#9632;</p>
         <p style="display: inline; font-size: 1.2rem;">${sanitizeText(business.name)}</p>
