@@ -39,7 +39,7 @@ else if (percentage < 90) color = "#7BB11B";
 else color = "#16B13D";
 createBadge(label, percentage + "%", 66, 48, color, "./.badges/coverage.svg");
 
-exec("tokei ./public ./*.js --output json", (error, stdout, stderr) => {
+exec("tokei ./public ./server/*.js --output json", (error, stdout, stderr) => {
     if (error) {
         console.log('Tokei not installed. Skipping lines of code and file count badge.')
         return;
