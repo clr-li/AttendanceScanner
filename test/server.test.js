@@ -65,7 +65,7 @@ describe('Server', () => {
 
     describe('Database', () => {
         beforeEach(async () => {
-            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+            await reinitializeIfNotExists(TEST_DB_FILE, './server/databaseSchema.sql');
         });
 
         it('Should not return a value when asyncRun called', async () => {
@@ -108,7 +108,7 @@ describe('Server', () => {
 
     describe('Authentication', () => {
         beforeEach(async () => {
-            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+            await reinitializeIfNotExists(TEST_DB_FILE, './server/databaseSchema.sql');
         });
 
         it('Should return 400 Invalid Input when no token is provided', (t, done) => {
@@ -195,7 +195,7 @@ describe('Server', () => {
 
     describe('Business', () => {
         beforeEach(async () => {
-            await reinitializeIfNotExists(TEST_DB_FILE, './databaseSchema.sql');
+            await reinitializeIfNotExists(TEST_DB_FILE, './server/databaseSchema.sql');
         });
 
         it('Should create a business with the correct values when createBusiness called', async (t) => {

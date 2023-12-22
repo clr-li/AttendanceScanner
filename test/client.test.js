@@ -44,7 +44,8 @@ describe('Client', () => {
   before(async () => {
     // spin up the server
     process.env.DEVELOPMENT = supportsGoogleSignIn() ? 'false' : 'true';
-    ({ listener } = require('../server/server.js'));
+    ({ listener, initPromise } = require('../server/server.js'));
+    await initPromise;
     port = listener.address().port;
 
     // spin up the browser

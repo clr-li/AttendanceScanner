@@ -6,7 +6,7 @@ const sqlite3 = require('sqlite3').verbose();
 // ============================ INIT SQLite DATABASE ============================
 /** @type { import('sqlite3').Database } */
 let db;
-async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='databaseSchema.sql') {
+async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='./server/databaseSchema.sql') {
     const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
     if (exists) console.log("Database file found: " + dbFile);
     if (db) await new Promise((resolve, reject) => {
