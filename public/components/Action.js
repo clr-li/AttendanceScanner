@@ -13,6 +13,7 @@ import { sanitizeText } from "../util/util.js";
         return /* html */`
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
+            <link rel="stylesheet" href="/font-alexesome/icon.css">
             <div class="cols" style="margin-bottom: 16px; width: 190px;">
                 <div role="link" class="actions" onclick="location.assign('${link}')">
                     <i class="${actionIcon}"></i>

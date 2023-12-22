@@ -4,7 +4,7 @@
 const express = require('express'),
   router = express.Router();
 // database access
-const { asyncRun } = require('./Database');
+const { asyncRun, asyncGet } = require('./Database');
 // user auth
 const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
@@ -71,20 +71,30 @@ router.get("/alterAttendance", async (request, response) => {
 });
 
 /**
- * Logged in user can mark themselves as absent for a future event.
- * @queryParams event - id of the event to record attendance for
+ * Logged in user can mark themselves as absent for a future event if no status has already been marked for than event.
+ * @queryParams eventId - id of the event to record attendance for
  * @queryParams businessId - id of the business to record attendance for
  * @requiredPrivileges member of the business
  * @response 200 OK if successful
  */
-router.get("/alterOwnAttendance", async (request, response) => {
+router.get("/markSelfAbsent", async (request, response) => {
   const uid = await handleAuth(request, response, request.query.businessId, {});
   if (!uid) return;
   
   const businessId = request.query.businessId;
-  const event = request.query.event;
+  const eventId = request.query.eventId;
 
-  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self-marked)", businessId, event, uid, Math.round(Date.now() / 1000)]);
+  const { status, starttimestamp } = await asyncGet(`SELECT R.status, E.starttimestamp FROM Events as E LEFT OUTER JOIN Records as R ON E.id = R.event_id WHERE (R.status IS NULL OR R.user_id = ? AND R.business_id = ?) AND E.id = ?`, [uid, businessId, eventId]);
+  if (status) {
+    response.status(400).send("Attendance already recorded");
+    return;
+  }
+  if (parseInt(starttimestamp) * 1000 < Date.now()) {
+    response.status(400).send("Can only alter attendance for future events");
+    return;
+  }
+
+  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self-marked)", businessId, eventId, uid, Math.round(Date.now() / 1000)]);
 
   response.sendStatus(200);
 });

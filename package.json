@@ -12,7 +12,8 @@
     "predeploy": "git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
     "deploy": "npm run glitch && npm run fire && git checkout main",
     "test": "DB_FILE=:memory: node -r dotenv/config --test --experimental-test-coverage --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=tap.info && npm run badges",
-    "badges": "node badges.js"
+    "badges": "node badges.js",
+    "icons": "node icons.js"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
@@ -41,6 +42,7 @@
     "dotenv": "^16.0.3",
     "nodemon": "^3.0.1",
     "selenium-webdriver": "^4.15.0",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "svgtofont": "^4.0.1"
   }
 }
