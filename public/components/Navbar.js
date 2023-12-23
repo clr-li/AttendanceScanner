@@ -24,7 +24,7 @@ class Navbar extends Component {
                     background-color: var(--primary);
                 }
                 header {
-                    height: 100%;
+                    height: 60px;
                     max-width: var(--max-width);
                     padding: 8px;
                     margin: auto;
