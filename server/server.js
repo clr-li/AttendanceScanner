@@ -1,4 +1,4 @@
-const https = require('https');
+'use strict';
 
 // express.js framework
 const express = require("express");
@@ -23,6 +23,14 @@ app.use(express.static("public"));
 // ============================ DATABASE ============================
 const schemaFile = "./server/databaseSchema.sql"; // filepath for the database schema
 module.exports.initPromise = require('./Database').reinitializeIfNotExists(process.env.DB_FILE, schemaFile);
+
+// ============================ SUPER ADMIN ============================
+// for modifying and viewing database contents without manually running SQL commands
+// go to http://localhost:3000/super_admin/ to view
+module.exports.initPromise.then(() => {
+  const { superAdminRouter } = require('./SuperAdmin');
+  app.use('/super_admin', superAdminRouter);
+});
 
 // ============================ AUTHENTICATION ============================
 const { authRouter } = require('./Auth');

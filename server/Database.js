@@ -6,6 +6,12 @@ const sqlite3 = require('sqlite3').verbose();
 // ============================ INIT SQLite DATABASE ============================
 /** @type { import('sqlite3').Database } */
 let db;
+/**
+ * Reinitializes the database if the database file does not exist.
+ * @param {string} dbFile path to the database file or ':memory:' for an in-memory database
+ * @param {string} schemaFile path to the database schema file
+ * @returns true if the database file already existed, false otherwise
+ */
 async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='./server/databaseSchema.sql') {
     const exists = dbFile != ':memory:' && fs.existsSync(dbFile);
     if (exists) console.log("Database file found: " + dbFile);
@@ -39,6 +45,7 @@ async function reinitializeIfNotExists(dbFile=':memory:', schemaFile='./server/d
             });
         });
     }
+    return exists;
 }
 
 // ============================ ASYNC DATABASE FUNCTIONS ============================
