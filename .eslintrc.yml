@@ -1,0 +1,18 @@
+root: true
+
+rules:
+    eqeqeq: [error, allow-null]
+    no-unused-vars: [error, { vars: all, args: none, ignoreRestSiblings: true }]
+
+parserOptions:
+    ecmaVersion: 'latest'
+    sourceType: 'module'
+
+env:
+    node: true
+    es6: true
+    browser: true
+
+extends:
+    - eslint:recommended
+    - prettier

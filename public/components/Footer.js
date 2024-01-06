@@ -1,8 +1,8 @@
-import { Component } from "../util/Component.js";
+import { Component } from '../util/Component.js';
 
 class Footer extends Component {
     initialHTML() {
-        return /* html */`
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <footer>
                 <div class="row">

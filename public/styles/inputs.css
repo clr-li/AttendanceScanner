@@ -3,7 +3,10 @@
     padding: 0.2rem;
 }
 
-.form input[type="text"], input[type="list"], input[type="email"], .basic-input {
+.form input[type='text'],
+input[type='list'],
+input[type='email'],
+.basic-input {
     min-width: min(30ch, 100%);
 }
 
@@ -20,7 +23,10 @@ input:-webkit-autofill:active {
     resize: none;
 }
 
-.form input, .form textarea, .form select, .basic-input { 
+.form input,
+.form textarea,
+.form select,
+.basic-input {
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
@@ -29,10 +35,10 @@ input:-webkit-autofill:active {
 }
 
 .weekDays-selector input {
-    display: none!important;
+    display: none !important;
 }
-  
-.weekDays-selector input[type=checkbox] + label {
+
+.weekDays-selector input[type='checkbox'] + label {
     display: inline-block;
     border-radius: 6px;
     background: white;
@@ -46,8 +52,8 @@ input:-webkit-autofill:active {
     border: 2px solid var(--accent);
     font-size: 16px;
 }
-  
-.weekDays-selector input[type=checkbox]:checked + label {
+
+.weekDays-selector input[type='checkbox']:checked + label {
     background: var(--primary);
     color: #ffffff;
 }
@@ -96,7 +102,7 @@ input:-webkit-autofill:active {
 .checkbox-wrapper-6 .tgl + .tgl-btn:before {
     position: relative;
     display: block;
-    content: "";
+    content: '';
     width: 50%;
     height: 100%;
 }
@@ -130,7 +136,7 @@ input:-webkit-autofill:active {
     width: 20vw;
     height: 0;
 }
-input[type="radio"] {
+input[type='radio'] {
     opacity: 0;
     width: 20px;
     height: 20px;
@@ -138,31 +144,31 @@ input[type="radio"] {
     left: 0;
     z-index: 7;
 }
-input[type="radio"]:checked + .overlay .circle:before {
+input[type='radio']:checked + .overlay .circle:before {
     background: var(--secondary);
 }
-input[type="radio"]:checked:hover + .overlay .circle:before {
+input[type='radio']:checked:hover + .overlay .circle:before {
     background: var(--accent);
 }
-input[type="radio"]:hover:not(:disabled) + .overlay .circle {
+input[type='radio']:hover:not(:disabled) + .overlay .circle {
     border-color: var(--accent);
 }
-input[type="radio"]:disabled + .overlay .circle:before {
+input[type='radio']:disabled + .overlay .circle:before {
     opacity: 0.5;
 }
-input[type="radio"]:disabled + .overlay .circle {
+input[type='radio']:disabled + .overlay .circle {
     opacity: 0.5;
 }
-input[type="radio"]:disabled + .overlay {
+input[type='radio']:disabled + .overlay {
     cursor: default;
 }
-input[type="radio"] + .overlay {
+input[type='radio'] + .overlay {
     font-size: 1.2rem;
     clear: both;
     width: 100%;
     cursor: pointer;
 }
-input[type="radio"] + .overlay .text {
+input[type='radio'] + .overlay .text {
     position: relative;
     text-align: left;
     margin-left: 23px;
@@ -209,9 +215,9 @@ input[type="radio"] + .overlay .text {
 }
 
 .button-tab {
-    color: var(--accent); 
-    background: transparent; 
-    border: none; 
+    color: var(--accent);
+    background: transparent;
+    border: none;
     min-width: 3rem;
 }
 .button-tab.active {
@@ -222,24 +228,24 @@ input[type="radio"] + .overlay .text {
 }
 
 .themify {
-    border: 1px solid var(--accent); 
-    color: var(--accent); 
-    border-radius: 8px; 
-    padding: 2px; 
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    padding: 2px;
     background: white;
 }
 
 button.themify:hover {
-    border: 1px solid var(--accent-lighter); 
-    color: var(--accent-lighter); 
+    border: 1px solid var(--accent-lighter);
+    color: var(--accent-lighter);
 }
 
 button.themify:active {
-    border: 1px solid var(--accent); 
+    border: 1px solid var(--accent);
     color: var(--accent);
     transform: translateY(2px);
 }
 
-input[type="time"] {
+input[type='time'] {
     width: 141px;
 }

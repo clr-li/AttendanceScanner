@@ -2,7 +2,7 @@
 
 // express for routing
 const express = require('express'),
-  router = express.Router();
+    router = express.Router();
 // database access
 const { asyncRun, asyncGet } = require('./Database');
 // user auth
@@ -12,8 +12,8 @@ const uuid = require('uuid');
 // persistent storage for temporary attendance codes
 const storage = require('node-persist');
 storage.init({
-  dir: '.data/tempEventAttendanceCodesByBusiness',
-  ttl: 300_000, // 5 minutes
+    dir: '.data/tempEventAttendanceCodesByBusiness',
+    ttl: 300_000, // 5 minutes
 });
 
 // ============================ SCAN ATTENDANCE ============================
@@ -27,22 +27,25 @@ storage.init({
  * @requiredPrivileges scanner for the business
  * @response 200 OK if successful
  */
-router.get("/recordAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
-  
-  const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
-  const userid = request.query.userid;
-  const status = request.query.status;
+router.get('/recordAttendance', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
+    if (!uid) return;
 
-  if (!(await getAccess(userid, businessid, {}))) {
-    response.status(400).send("Cannot take attendance for non-member");
-    return;
-  }
+    const eventid = request.query.eventid;
+    const businessid = request.query.businessId;
+    const userid = request.query.userid;
+    const status = request.query.status;
 
-  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessid, userid, Math.round(Date.now() / 1000), status]);
-  response.sendStatus(200);
+    if (!(await getAccess(userid, businessid, {}))) {
+        response.status(400).send('Cannot take attendance for non-member');
+        return;
+    }
+
+    await asyncRun(
+        `INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`,
+        [eventid, businessid, userid, Math.round(Date.now() / 1000), status],
+    );
+    response.sendStatus(200);
 });
 
 // ============================ ADMIN MODIFY ATTENDANCE ============================
@@ -55,19 +58,22 @@ router.get("/recordAttendance", async (request, response) => {
  * @requiredPrivileges write for the business
  * @response 200 OK if successful
  */
-router.get("/alterAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { write: true });
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const ids = request.query.ids;
-  const event = request.query.event;
-  const status = request.query.status;
+router.get('/alterAttendance', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
 
-  for (const id of ids.split(',')) {
-    await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, [status, businessId, event, id, Math.round(Date.now() / 1000)]);
-  }
-  response.sendStatus(200);
+    const businessId = request.query.businessId;
+    const ids = request.query.ids;
+    const event = request.query.event;
+    const status = request.query.status;
+
+    for (const id of ids.split(',')) {
+        await asyncRun(
+            `INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`,
+            [status, businessId, event, id, Math.round(Date.now() / 1000)],
+        );
+    }
+    response.sendStatus(200);
 });
 
 /**
@@ -77,26 +83,32 @@ router.get("/alterAttendance", async (request, response) => {
  * @requiredPrivileges member of the business
  * @response 200 OK if successful
  */
-router.get("/markSelfAbsent", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {});
-  if (!uid) return;
-  
-  const businessId = request.query.businessId;
-  const eventId = request.query.eventId;
+router.get('/markSelfAbsent', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, {});
+    if (!uid) return;
 
-  const { status, starttimestamp } = await asyncGet(`SELECT R.status, E.starttimestamp FROM Events as E LEFT OUTER JOIN Records as R ON E.id = R.event_id WHERE (R.status IS NULL OR R.user_id = ? AND R.business_id = ?) AND E.id = ?`, [uid, businessId, eventId]);
-  if (status) {
-    response.status(400).send("Attendance already recorded");
-    return;
-  }
-  if (parseInt(starttimestamp) * 1000 < Date.now()) {
-    response.status(400).send("Can only alter attendance for future events");
-    return;
-  }
+    const businessId = request.query.businessId;
+    const eventId = request.query.eventId;
 
-  await asyncRun(`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`, ["ABSENT(self-marked)", businessId, eventId, uid, Math.round(Date.now() / 1000)]);
+    const { status, starttimestamp } = await asyncGet(
+        `SELECT R.status, E.starttimestamp FROM Events as E LEFT OUTER JOIN Records as R ON E.id = R.event_id WHERE (R.status IS NULL OR R.user_id = ? AND R.business_id = ?) AND E.id = ?`,
+        [uid, businessId, eventId],
+    );
+    if (status) {
+        response.status(400).send('Attendance already recorded');
+        return;
+    }
+    if (parseInt(starttimestamp) * 1000 < Date.now()) {
+        response.status(400).send('Can only alter attendance for future events');
+        return;
+    }
 
-  response.sendStatus(200);
+    await asyncRun(
+        `INSERT INTO Records(status, business_id, event_id, user_id, timestamp) VALUES (?, ?, ?, ?, ?)`,
+        ['ABSENT(self-marked)', businessId, eventId, uid, Math.round(Date.now() / 1000)],
+    );
+
+    response.sendStatus(200);
 });
 
 // ============================ TEMPORARY ATTENDANCE CODES ============================
@@ -108,20 +120,20 @@ router.get("/markSelfAbsent", async (request, response) => {
  * @requiredPrivileges scanner for the business
  * @response the code to take attendance with
  */
-router.get("/setNewTempAttendanceCode", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
+router.get('/setNewTempAttendanceCode', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
+    if (!uid) return;
 
-  const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
-  const expiration = parseInt(request.query.expiration) || 10_000;
-  const key = eventid + "-" + businessid;
+    const eventid = request.query.eventid;
+    const businessid = request.query.businessId;
+    const expiration = parseInt(request.query.expiration) || 10_000;
+    const key = eventid + '-' + businessid;
 
-  const code = uuid.v4().split('-')[0];
-  await storage.setItem(key, code, { ttl: expiration });
-  
-  response.status(200);
-  response.send(code);
+    const code = uuid.v4().split('-')[0];
+    await storage.setItem(key, code, { ttl: expiration });
+
+    response.status(200);
+    response.send(code);
 });
 
 /**
@@ -133,28 +145,28 @@ router.get("/setNewTempAttendanceCode", async (request, response) => {
  * @requiredPrivileges scanner for the business
  * @response 200 OK if successful, 400 if no code to refresh
  */
-router.get("/refreshTempAttendanceCode", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
+router.get('/refreshTempAttendanceCode', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
+    if (!uid) return;
 
-  const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
-  const expiration = parseInt(request.query.expiration) || 10_000;
-  const clientCode = request.query.code;
-  const key = eventid + "-" + businessid;
+    const eventid = request.query.eventid;
+    const businessid = request.query.businessId;
+    const expiration = parseInt(request.query.expiration) || 10_000;
+    const clientCode = request.query.code;
+    const key = eventid + '-' + businessid;
 
-  const code = await storage.getItem(key) || clientCode;
-  if (clientCode && clientCode !== code) {
-    response.status(400).send("Invalid code, perhaps it was updated in another tab?");
-    return;
-  }
-  if (!code) {
-    response.status(400).send("No code to refresh");
-    return;
-  }
-  storage.setItem(key, code, { ttl: expiration });
-  
-  response.sendStatus(200);
+    const code = (await storage.getItem(key)) || clientCode;
+    if (clientCode && clientCode !== code) {
+        response.status(400).send('Invalid code, perhaps it was updated in another tab?');
+        return;
+    }
+    if (!code) {
+        response.status(400).send('No code to refresh');
+        return;
+    }
+    storage.setItem(key, code, { ttl: expiration });
+
+    response.sendStatus(200);
 });
 
 /**
@@ -164,24 +176,24 @@ router.get("/refreshTempAttendanceCode", async (request, response) => {
  * @requiredPrivileges scanner for the business
  * @response the code to take attendance with, does not refresh expiration time.
  */
-router.get("/getOrSetTempAttendanceCode", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
+router.get('/getOrSetTempAttendanceCode', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
+    if (!uid) return;
 
-  const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
-  const key = eventid + "-" + businessid;
+    const eventid = request.query.eventid;
+    const businessid = request.query.businessId;
+    const key = eventid + '-' + businessid;
 
-  if (!await storage.getItem(key)) {
-    const code = uuid.v4().split('-')[0];
-    await storage.setItem(key, code);
+    if (!(await storage.getItem(key))) {
+        const code = uuid.v4().split('-')[0];
+        await storage.setItem(key, code);
+        response.status(200);
+        response.send(code);
+        return;
+    }
+
     response.status(200);
-    response.send(code);
-    return;
-  }
-
-  response.status(200);
-  response.send(await storage.getItem(key));
+    response.send(await storage.getItem(key));
 });
 
 /**
@@ -193,23 +205,26 @@ router.get("/getOrSetTempAttendanceCode", async (request, response) => {
  * @requiredPrivileges member of the business
  * @response 200 OK if successful, 400 if invalid code
  */
-router.get("/recordMyAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {});
-  if (!uid) return;
-  
-  const eventid = request.query.eventid;
-  const businessId = request.query.businessId;
-  const status = request.query.status;
-  const code = request.query.code;
-  const key = eventid + "-" + businessId;
+router.get('/recordMyAttendance', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, {});
+    if (!uid) return;
 
-  if (await storage.getItem(key) !== code || !code) {
-    response.status(400).send("Invalid/Expired code");
-    return;
-  }
+    const eventid = request.query.eventid;
+    const businessId = request.query.businessId;
+    const status = request.query.status;
+    const code = request.query.code;
+    const key = eventid + '-' + businessId;
 
-  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessId, uid, Math.round(Date.now() / 1000), status]);
-  response.sendStatus(200);
+    if ((await storage.getItem(key)) !== code || !code) {
+        response.status(400).send('Invalid/Expired code');
+        return;
+    }
+
+    await asyncRun(
+        `INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`,
+        [eventid, businessId, uid, Math.round(Date.now() / 1000), status],
+    );
+    response.sendStatus(200);
 });
 
 // ============================ ATTENDANCE EXPORTS ============================

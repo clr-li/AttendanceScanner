@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Home</title>
-        <meta name="description" content="A service to automate attendance">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="assets/logo.png"/>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="assets/logo.png" />
 
         <!-- Import the webpage's stylesheet -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css" />
 
         <!-- Import QR Code creating -->
         <script src="util/qrcode.min.js"></script>
@@ -29,61 +29,101 @@
     <body>
         <navigation-manager id="navigation">
             <section class="not-logged-in">
-                <h1>
-                    Take attendance in seconds.
-                </h1>
-                <div style="display: flex;align-items: center;justify-content: center;flex-wrap: wrap;">
+                <h1>Take attendance in seconds.</h1>
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    "
+                >
                     <div>
-                        <img src="/assets/phoneqr.jpg" style="max-width:350px">
+                        <img src="/assets/phoneqr.jpg" style="max-width: 350px" />
                     </div>
-                    <div style="margin-left: 2em; max-width: 400px; text-align: left;">
-                        <h2>Tired of role call and filling out attendance forms? Swiftly scan unique QR codes to take attendance!</h2>
-                        <a class="button big-button" style="margin-top: 5%;" role="button" href="/payment.html">Get Started</a>
+                    <div style="margin-left: 2em; max-width: 400px; text-align: left">
+                        <h2>
+                            Tired of role call and filling out attendance forms? Swiftly scan unique
+                            QR codes to take attendance!
+                        </h2>
+                        <a
+                            class="button big-button"
+                            style="margin-top: 5%"
+                            role="button"
+                            href="/payment.html"
+                            >Get Started</a
+                        >
                     </div>
                 </div>
             </section>
             <section class="not-logged-in light-section">
-                <h1>
-                    Features
-                </h1>
+                <h1>Features</h1>
                 <div class="rows">
                     <div class="cols">
                         <h2>Unique QR Codes</h2>
-                        <img src="/assets/myqr.jpg" style="max-width:197px; margin-top: 0.5em;">
+                        <img src="/assets/myqr.jpg" style="max-width: 197px; margin-top: 0.5em" />
                         <p>
-                            Each group gets a unique QR code that members can scan to join. Everyone also gets a unique QR code linked to their Google Account which can be scanned to take attendance.
+                            Each group gets a unique QR code that members can scan to join. Everyone
+                            also gets a unique QR code linked to their Google Account which can be
+                            scanned to take attendance.
                         </p>
                     </div>
                     <div class="cols">
                         <h2>Multiple Admins</h2>
-                        <img src="/assets/admin.jpg" style="max-width:300px; margin-top: 0.5em;">
+                        <img src="/assets/admin.jpg" style="max-width: 300px; margin-top: 0.5em" />
                         <p>
-                            Delegate roles as desired. Admins have access to a QR code scanner, an event manager, and a table and calendar view of their group members' attendance.
+                            Delegate roles as desired. Admins have access to a QR code scanner, an
+                            event manager, and a table and calendar view of their group members'
+                            attendance.
                         </p>
                     </div>
                     <div class="cols">
                         <h2>Calendar View</h2>
-                        <img src="/assets/calendar.png" style="max-width:300px; margin-top: 0.5em;">
+                        <img
+                            src="/assets/calendar.png"
+                            style="max-width: 300px; margin-top: 0.5em"
+                        />
                         <p>
-                            Easily browse past and upcoming events from your groups. Create and view reocurring events. Edit previous attendance records as needed.
+                            Easily browse past and upcoming events from your groups. Create and view
+                            reocurring events. Edit previous attendance records as needed.
                         </p>
                     </div>
                     <div class="cols">
                         <h2>Participate in many groups</h2>
-                        <img src="/assets/groups.png" style="max-width:310px; margin-top: 0.5em;">
+                        <img src="/assets/groups.png" style="max-width: 310px; margin-top: 0.5em" />
                         <p>
-                            Quickly view your past attendance and upcoming events for your groups, manage which groups you participate in, and notify group admins if you know you'll be late/absent.
+                            Quickly view your past attendance and upcoming events for your groups,
+                            manage which groups you participate in, and notify group admins if you
+                            know you'll be late/absent.
                         </p>
                     </div>
                 </div>
             </section>
             <section class="only-logged-in light-section">
                 <h1>Actions</h1>
-                <p>One account, many ways to take attendance. Click below to shortcut straight to the relevant features!</p>
+                <p>
+                    One account, many ways to take attendance. Click below to shortcut straight to
+                    the relevant features!
+                </p>
                 <div class="rows">
-                    <action-icon name="Quick Attendance" icon="fa-solid fa-person-running" link="scanner.html#new" description="Automatically creates an event to be able to start taking attendance immediately."></action-icon>
-                    <action-icon name="Take Attendance" icon="icon-scanner-solid" link="scanner.html" description="Pick a business and event to start taking attendance or create a new event."></action-icon>
-                    <action-icon name="Start a Group" icon="fa-solid fa-user-group" link="payment.html" description="Start a group to record attendance for your business."></action-icon>
+                    <action-icon
+                        name="Quick Attendance"
+                        icon="fa-solid fa-person-running"
+                        link="scanner.html#new"
+                        description="Automatically creates an event to be able to start taking attendance immediately."
+                    ></action-icon>
+                    <action-icon
+                        name="Take Attendance"
+                        icon="icon-scanner-solid"
+                        link="scanner.html"
+                        description="Pick a business and event to start taking attendance or create a new event."
+                    ></action-icon>
+                    <action-icon
+                        name="Start a Group"
+                        icon="fa-solid fa-user-group"
+                        link="payment.html"
+                        description="Start a group to record attendance for your business."
+                    ></action-icon>
                 </div>
                 <!-- <div class="rows">
                     <action-icon name="Launch Event" icon="fa-solid fa-rocket" link="scanner.html#launch" description="Creates a free group and launches a new event. Everyone who attends the event will automatically be added to the group."></action-icon>
@@ -97,12 +137,28 @@
                 </div> -->
             </section>
             <section class="not-logged-in medium-section">
-                <h1>
-                    Our Customers
-                </h1>
-                <br>
-                <a href="https://syso.org" target="_blank"><img src="/assets/syso.png" style="max-width:350px; background-color: black; padding: 15px; height: 205px;"></a>
-                <a href="https://bothellfbla.weebly.com/" target="_blank"><img src="/assets/bhsFLBA.jpg" style="max-width:350px; background-color: black; padding: 15px; height: 205px;"></a>
+                <h1>Our Customers</h1>
+                <br />
+                <a href="https://syso.org" target="_blank"
+                    ><img
+                        src="/assets/syso.png"
+                        style="
+                            max-width: 350px;
+                            background-color: black;
+                            padding: 15px;
+                            height: 205px;
+                        "
+                /></a>
+                <a href="https://bothellfbla.weebly.com/" target="_blank"
+                    ><img
+                        src="/assets/bhsFLBA.jpg"
+                        style="
+                            max-width: 350px;
+                            background-color: black;
+                            padding: 15px;
+                            height: 205px;
+                        "
+                /></a>
             </section>
             <!-- <section class="medium-section">
                 <h1>
@@ -124,7 +180,7 @@
                     </p>
                 </div>
             </section> -->
-            <section class="purple-section"id="contact">
+            <section class="purple-section" id="contact">
                 <contact-form></contact-form>
             </section>
         </navigation-manager>

@@ -1,7 +1,3 @@
 {
-    "ignore": [
-        ".git",
-        "node_modules/**/node_modules",
-        "server/super_admin/**"
-    ]
+    "ignore": [".git", "node_modules/**/node_modules", "server/super_admin/**"]
 }

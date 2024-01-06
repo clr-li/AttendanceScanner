@@ -5,7 +5,7 @@
  * @returns the negated Levenshtein Distance between the two strings but normalized for the string lengths.
  */
 export function calcSimilarity(str1, str2) {
-  return -LevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length);
+    return -LevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length);
 }
 
 /**
@@ -15,25 +15,29 @@ export function calcSimilarity(str1, str2) {
  * @returns the Levenshtein Distance between the two strings.
  */
 function LevenshteinDistance(str1, str2) {
-  let matrix = Array(str1.length + 1).fill().map(() => Array(str2.length + 1).fill(0));
-  
-  for (let i = 1; i <= str1.length; i++) {
-    matrix[i][0] = i;
-  }
-  for (let j = 1; j <= str2.length; j++) {
-    matrix[0][j] = j;
-  }
-  
-  for (let i = 1; i <= str1.length; i++) {
-    for (let j = 1; j <= str2.length; j++) {
-      let subcost = str1.charAt(i) == str2.charAt(j) ? 0 : 1;
-      matrix[i][j] = Math.min(matrix[i - 1][j] + 1, 
-                              matrix[i][j - 1] + 1, 
-                              matrix[i - 1][j - 1] + subcost);
+    let matrix = Array(str1.length + 1)
+        .fill()
+        .map(() => Array(str2.length + 1).fill(0));
+
+    for (let i = 1; i <= str1.length; i++) {
+        matrix[i][0] = i;
     }
-  }
-  
-  return matrix[str1.length][str2.length];
+    for (let j = 1; j <= str2.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str1.length; i++) {
+        for (let j = 1; j <= str2.length; j++) {
+            let subcost = str1.charAt(i) === str2.charAt(j) ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + subcost,
+            );
+        }
+    }
+
+    return matrix[str1.length][str2.length];
 }
 
 const p = document.createElement('p');
@@ -43,12 +47,12 @@ const p = document.createElement('p');
  * @returns the sanitized text with all HTML tags removed.
  */
 export function sanitizeText(text) {
-  p.innerHTML = text;
-  return p.textContent;
+    p.innerHTML = text;
+    return p.textContent;
 }
 
 export function escapeQuotes(text) {
-  return text.replace(/[`'"\\]/g, '\\$&');
+    return text.replace(/[`'"\\]/g, '\\$&');
 }
 
 /**
@@ -57,7 +61,7 @@ export function escapeQuotes(text) {
  * @param {string} str the string to escape characters from
  * @returns the escaped version of str
  */
- export function escapeRegExp(str) {
+export function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 

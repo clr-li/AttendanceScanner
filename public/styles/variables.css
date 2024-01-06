@@ -4,7 +4,7 @@
 /* ====================== Variables ====================== */
 :root {
     --font-family: 'Raleway';
-    --primary: #277FEB;
+    --primary: #277feb;
     --secondary: #3f51b5;
     --secondary-lighter: #4554a8;
     --accent: #1e1190;
@@ -18,7 +18,7 @@
     --max-width: min(1000px, 100vw);
     --max-width-small: min(800px, 100vw);
     --delete: #f02828;
-    --delete-lighter: #f87777; 
+    --delete-lighter: #f87777;
     --delete-darker: #d30707;
     --light-section: #b0d8ff;
     --medium-section: #9ab4ec;

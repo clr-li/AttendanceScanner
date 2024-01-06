@@ -4,22 +4,26 @@ section {
     text-align: center;
 }
 
-section > h1, section > ::slotted(h1) {
+section > h1,
+section > ::slotted(h1) {
     font-size: 2.8rem;
     padding: 0.2em;
 }
 
-section > h2, section > ::slotted(h2) {
+section > h2,
+section > ::slotted(h2) {
     font-size: 1.8rem;
     padding: 0.2em;
 }
 
-section p, section > ::slotted(p) {
+section p,
+section > ::slotted(p) {
     font-size: 1rem;
     padding: 0.2em;
 }
 
-section img, section > ::slotted(img) {
+section img,
+section > ::slotted(img) {
     border-radius: 10px;
     border: 3px solid var(--accent);
 }
@@ -41,14 +45,14 @@ section img, section > ::slotted(img) {
 }
 
 .transcript {
-    display: none; 
+    display: none;
     text-align: left;
-    border-style: solid; 
+    border-style: solid;
     padding: 1em;
 }
 
 @media (max-width: 800px) {
-    .transcript{
+    .transcript {
         border: none;
     }
 }
