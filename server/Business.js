@@ -267,7 +267,7 @@ router.get('/changeName', async (request, response) => {
 });
 
 router.get('/getRecordSettings', async (request, response) => {
-    const uid = await handleAuth(request, response);
+    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
     if (!uid) return;
 
     const businessId = request.query.businessId;
@@ -279,7 +279,7 @@ router.get('/getRecordSettings', async (request, response) => {
 });
 
 router.get('/changeRecordSettings', async (request, response) => {
-    const uid = await handleAuth(request, response);
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
     if (!uid) return;
 
     const businessId = request.query.businessId;

@@ -67,11 +67,11 @@ async function setRecordSettings() {
     return requireJoin;
 }
 
-document.getElementById('require-join').onchange = async () => {
-    const res = await (await GET(`/getRecordSettings?businessId=${getBusinessId()}`)).json();
-    const requireJoin = res.requireJoin === 0 ? 1 : 0;
+document.getElementById('require-join').addEventListener('change', async e => {
+    const requireJoin = e.target.checked ? 1 : 0;
+    console.log(requireJoin);
     await GET(`/changeRecordSettings?businessId=${getBusinessId()}&newStatus=${requireJoin}`);
-};
+});
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating = false) {
     if (startDate > endDate) {
@@ -300,8 +300,8 @@ function getEventData() {
     );
 }
 
-Window.onload = runTable();
-Window.onload = setRecordSettings();
+runTable();
+setRecordSettings();
 
 // smooth load (keep previous page visible until content loaded)
 // requires the body to start with opacity: 0, and this should be the last script run.
