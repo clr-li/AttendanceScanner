@@ -9,13 +9,16 @@ const absoluteSettingsPath = path.resolve(__dirname, 'super_admin', 'settings.js
 const absoluteCustomViewsPath = path.resolve(__dirname, 'super_admin', 'custom.json');
 
 module.exports.superAdminRouter = admin({
-  config: { "sqlite": { "database": absoluteDBPath }, "admin": { "settings": absoluteSettingsPath, "root": "/super_admin" } },
-  settings: require(absoluteSettingsPath),
-  users: {
-    "admin": {
-      "name": "admin",
-      "pass": process.env.ADMIN_PASSWORD,
-    }
-  },
-  custom: require(absoluteCustomViewsPath),
+    config: {
+        sqlite: { database: absoluteDBPath },
+        admin: { settings: absoluteSettingsPath, root: '/super_admin' },
+    },
+    settings: require(absoluteSettingsPath),
+    users: {
+        admin: {
+            name: 'admin',
+            pass: process.env.ADMIN_PASSWORD,
+        },
+    },
+    custom: require(absoluteCustomViewsPath),
 });

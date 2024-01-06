@@ -1,4 +1,4 @@
-import { htmlToElements } from "../util/Component.js";
+import { htmlToElements } from '../util/Component.js';
 
 /**
  * The CircleLoader component blocks the screen with a loading animation when visible.
@@ -8,24 +8,26 @@ export class CircleLoader extends HTMLElement {
     constructor() {
         super(); // initialize component (should always be called first)
         const tips = [
-            "Have one member/account in the group just for scanning for a more secure business", 
+            'Have one member/account in the group just for scanning for a more secure business',
             "Download your QR code on your phone so you don't have to login every time",
-            "Change your name by clicking on your profile icon",
-            "If you are an owner, you can change your business name on the Groups page",
-            "Filter by attendance status on the Groups page by clicking the status labels",
+            'Change your name by clicking on your profile icon',
+            'If you are an owner, you can change your business name on the Groups page',
+            'Filter by attendance status on the Groups page by clicking the status labels',
         ];
         const randomTip = Math.floor(Math.random() * tips.length);
 
         // Create the shadow root (root of the shadow DOM representing the DOM nodes of this component)
-        const shadow = this.attachShadow({ mode: "closed" }); // sets and returns 'this.shadowRoot'; mode: "open" means the internal HTML is accessible outside the component, "closed" means it is not
+        const shadow = this.attachShadow({ mode: 'closed' }); // sets and returns 'this.shadowRoot'; mode: "open" means the internal HTML is accessible outside the component, "closed" means it is not
 
         // Create HTML for this component
-        const html = htmlToElements(/* html */`
+        const html = htmlToElements(/* html */ `
             <div class="center">
-                <div class="tip"><p style="font-size: 18px;"><span style="color: var(--secondary); font-size: 22px; font-weight: 1000">&#9432;&#160;&#160;</span>${tips[randomTip]}</p></div>
+                <div class="tip"><p style="font-size: 18px;"><span style="color: var(--secondary); font-size: 22px; font-weight: 1000">&#9432;&#160;&#160;</span>${
+                    tips[randomTip]
+                }</p></div>
             </div>
             <div class="container">
-                <div class="lds-default">${/* html */`<div></div>`.repeat(12)}</div>
+                <div class="lds-default">${/* html */ `<div></div>`.repeat(12)}</div>
             </div>
             <style>${CSS}</style>
         `);
@@ -35,7 +37,7 @@ export class CircleLoader extends HTMLElement {
     }
 }
 
-const CSS = /* css */`
+const CSS = /* css */ `
 .tip {
     border-radius: 5px;
     border-left: 10px solid var(--secondary);

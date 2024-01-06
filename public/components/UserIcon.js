@@ -1,17 +1,18 @@
-import { Component } from "../util/Component.js";
+import { Component } from '../util/Component.js';
 import { getCurrentUser } from '../util/Auth.js';
-import { Popup } from "./Popup.js";
-import { GET } from "../util/Client.js";
-import { sanitizeText } from "../util/util.js";
+import { Popup } from './Popup.js';
+import { GET } from '../util/Client.js';
+import { sanitizeText } from '../util/util.js';
 
 const user = await getCurrentUser();
 
 /**
  * The UserIcon component displays basic user information and provides a login button when logged in, otherwise provides a login button
  */
- export class UserIcon extends Component {
+export class UserIcon extends Component {
     initialHTML() {
-        if (!user) return /* html */`
+        if (!user)
+            return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <link rel="stylesheet" href="/styles/inputs.css">
@@ -26,7 +27,7 @@ const user = await getCurrentUser();
                 }
             </style>
         `;
-        return /* html */`
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <div class="container">
@@ -55,7 +56,7 @@ const user = await getCurrentUser();
      * Prompt the user to change their name and reload the page if the user enters a name.
      */
     async changeName() {
-        const name = await Popup.prompt("Change my name to: ");
+        const name = await Popup.prompt('Change my name to: ');
         if (name) {
             await GET(`/changeName?name=${name}`);
             location.reload();
@@ -66,20 +67,20 @@ const user = await getCurrentUser();
      */
     connectedCallback() {
         this.addEventListener('click', this.onClick);
-        const nameButton = this.shadowRoot.getElementById("change-name");
+        const nameButton = this.shadowRoot.getElementById('change-name');
         if (nameButton) nameButton.addEventListener('click', this.changeName);
     }
     /**
      * Called when this component is removed from the DOM. Should be used to clean up resources such as event listeners.
      */
     disconnectedCallback() {
-        this.removeEventListener("click", this.onClick);
-        const nameButton = this.shadowRoot.getElementById("change-name");
+        this.removeEventListener('click', this.onClick);
+        const nameButton = this.shadowRoot.getElementById('change-name');
         if (nameButton) nameButton.removeEventListener('click', this.changeName);
     }
 }
 
-const CSS = /* css */`
+const CSS = /* css */ `
 .container {
     height: 100%;
     position: relative;

@@ -3,7 +3,9 @@
     margin: 0 auto;
 }
 
-.calendar > table, th, td {
+.calendar > table,
+th,
+td {
     border: 2px solid;
     padding: 0.5rem;
     font-size: 1.2rem;
@@ -12,7 +14,8 @@
     table-layout: fixed;
 }
 
-.calendar th:nth-child(2), .calendar td:nth-child(2) {
+.calendar th:nth-child(2),
+.calendar td:nth-child(2) {
     --width: 150px;
     min-width: var(--width);
     width: var(--width);
@@ -24,7 +27,7 @@
 }
 
 .scroll {
-    overflow-x: auto; 
+    overflow-x: auto;
     max-width: var(--max-width);
     width: 100vw;
     margin: auto;

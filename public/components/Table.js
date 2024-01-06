@@ -1,5 +1,5 @@
-import { Component } from "../util/Component.js";
-import { Popup } from "./Popup.js";
+import { Component } from '../util/Component.js';
+import { Popup } from './Popup.js';
 import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { GET } from '../util/Client.js';
 
@@ -8,7 +8,7 @@ import { GET } from '../util/Client.js';
  */
 export class Table extends Component {
     initialHTML() {
-        return /* html */`
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <link rel="stylesheet" href="/styles/inputs.css">
@@ -56,22 +56,34 @@ export class Table extends Component {
         this.businessID = businessID;
         let map = new Map();
         let userIds = [];
-        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray", "ABSENT(self-marked)": "#fc6060"}
+        let statusColor = {
+            PRESENT: 'green',
+            ABSENT: 'red',
+            EXCUSED: 'gray',
+            LATE: 'orange',
+            'N/A': 'lightgray',
+            'ABSENT(self-marked)': '#fc6060',
+        };
         for (let i = 0; i < attendancearr.length; i++) {
-            if (attendancearr[i].user_id)
-                attendancearr[i].id = attendancearr[i].user_id;
-            if(!map.has(attendancearr[i].id)) {
+            if (attendancearr[i].user_id) attendancearr[i].id = attendancearr[i].user_id;
+            if (!map.has(attendancearr[i].id)) {
                 map.set(attendancearr[i].id, []);
             }
             map.get(attendancearr[i].id).push(attendancearr[i]);
         }
-        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th>Name (id)</th>`; 
+        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th>Name (id)</th>`;
         for (let i = 0; i < events.length; i++) {
-            var startDate = new Date(events[i].starttimestamp*1000);
-            var endDate = new Date(events[i].endtimestamp*1000);
-            html += `<th class="cell" data-time="${sanitizeText(events[i].starttimestamp)}" data-name="${sanitizeText(events[i].name)}"><b>${sanitizeText(events[i].name || "[Unnamed]")}</b><br><p class="smaller-text">${sanitizeText(startDate.toLocaleDateString())} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
+            var startDate = new Date(events[i].starttimestamp * 1000);
+            var endDate = new Date(events[i].endtimestamp * 1000);
+            html += `<th class="cell" data-time="${sanitizeText(
+                events[i].starttimestamp,
+            )}" data-name="${sanitizeText(events[i].name)}"><b>${sanitizeText(
+                events[i].name || '[Unnamed]',
+            )}</b><br><p class="smaller-text">${sanitizeText(
+                startDate.toLocaleDateString(),
+            )} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
         }
-        html += "</tr>";
+        html += '</tr>';
         for (let i = 0; i < [...map.keys()].length; i++) {
             let userid = [...map.keys()][i];
             userIds.push(userid);
@@ -87,24 +99,40 @@ export class Table extends Component {
                 <button type="button" class="kickuser" style="background: none; border: none;">&nbsp;<i class="fa-regular fa-trash-can"></i></button>
             </form>
             `;
-            html += `<tr id="row-${sanitizeText(userid)}"><td><input type="checkbox" id="select-${sanitizeText(userid)}" class="selectedrows"></td><td data-name="${records[0].name}">${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0,4))}`;
-            if (records[0].role != 'owner') {
+            html += `<tr id="row-${sanitizeText(
+                userid,
+            )}"><td><input type="checkbox" id="select-${sanitizeText(
+                userid,
+            )}" class="selectedrows"></td><td data-name="${records[0].name}">${sanitizeText(
+                records[0].name,
+            )} (${sanitizeText(userid.substr(0, 4))}`;
+            if (records[0].role !== 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
                 html += ` - owner)`;
             }
-            html += "</td>";
-            for (let j = 0; j < events.length; j++) {   
+            html += '</td>';
+            for (let j = 0; j < events.length; j++) {
                 let statusupdate = false;
-                let color = "lightgray";
+                let color = 'lightgray';
                 for (let k = 0; k < records.length; k++) {
-                    if (records[k].event_id == events[j].id) {
+                    if (records[k].event_id === events[j].id) {
                         if (statusColor[records[k].status]) {
                             color = statusColor[records[k].status];
                         }
-                        let recordTimestamp = (new Date(records[k].timestamp*1000)).toString().split(" ").slice(1, 5).toString().replace(",", " ").replaceAll(",", ", ");
-                        html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}">
-                            <p style="color: ${color}; font-weight: bold;">${sanitizeText(records[k].status)}</p>
+                        let recordTimestamp = new Date(records[k].timestamp * 1000)
+                            .toString()
+                            .split(' ')
+                            .slice(1, 5)
+                            .toString()
+                            .replace(',', ' ')
+                            .replaceAll(',', ', ');
+                        html += `<td class="cell" data-time="${sanitizeText(
+                            events[j].starttimestamp,
+                        )}" data-name="${sanitizeText(events[j].name)}">
+                            <p style="color: ${color}; font-weight: bold;">${sanitizeText(
+                                records[k].status,
+                            )}</p>
                             <p class="smaller-text">${sanitizeText(recordTimestamp)}</p>
                         </td>`;
                         statusupdate = true;
@@ -112,19 +140,24 @@ export class Table extends Component {
                     }
                 }
                 if (!statusupdate) {
-                    const status = Date.now() > parseInt(events[j].endtimestamp) * 1000 ? "ABSENT" : "N/A";
+                    const status =
+                        Date.now() > parseInt(events[j].endtimestamp) * 1000 ? 'ABSENT' : 'N/A';
                     if (statusColor[status]) {
                         color = statusColor[status];
                     }
-                    html += `<td class="cell" data-time="${sanitizeText(events[j].starttimestamp)}" data-name="${sanitizeText(events[j].name)}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
+                    html += `<td class="cell" data-time="${sanitizeText(
+                        events[j].starttimestamp,
+                    )}" data-name="${sanitizeText(
+                        events[j].name,
+                    )}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
                 }
             }
-            html += "</tr>";
+            html += '</tr>';
         }
-        const attendance = this.shadowRoot.getElementById("displayattendance");
+        const attendance = this.shadowRoot.getElementById('displayattendance');
         attendance.innerHTML = html;
-        this.shadowRoot.getElementById("select-all").addEventListener("input", (e) => {
-            for (const checkbox of [...attendance.getElementsByClassName("selectedrows")]) {
+        this.shadowRoot.getElementById('select-all').addEventListener('input', e => {
+            for (const checkbox of [...attendance.getElementsByClassName('selectedrows')]) {
                 checkbox.checked = e.target.checked;
             }
         });
@@ -132,27 +165,29 @@ export class Table extends Component {
         const allKickButtons = attendance.getElementsByClassName('kickuser');
         let button_index = 0;
         for (let i = 0; i < userIds.length; i++) {
-            if (map.get(userIds[i])[0].role != 'owner') {
+            if (map.get(userIds[i])[0].role !== 'owner') {
                 let id = userIds[i];
                 let b_id = button_index;
                 allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
                 allRoleSelects[button_index].addEventListener('change', () => {
                     let role = allRoleSelects[b_id].value;
-                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then(async (res) => {
-                        console.log(res.status);
-                        if (res.ok) {
-                            this.showSuccessDialog('role-success');
-                        } else {
-                            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
-                        }
-                    });
+                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then(
+                        async res => {
+                            console.log(res.status);
+                            if (res.ok) {
+                                this.showSuccessDialog('role-success');
+                            } else {
+                                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+                            }
+                        },
+                    );
                 });
                 allKickButtons[button_index].addEventListener('click', () => {
-                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async (res) => {
+                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async res => {
                         console.log(res.status);
                         if (res.ok) {
                             this.showSuccessDialog('success');
-                            this.shadowRoot.getElementById("row-" + id).remove();
+                            this.shadowRoot.getElementById('row-' + id).remove();
                         } else {
                             Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                         }
@@ -166,7 +201,7 @@ export class Table extends Component {
     sortStudents(searchword) {
         searchword = searchword.toLowerCase();
         var table, rows, switching, i, x, y, shouldSwitch;
-        table = this.shadowRoot.getElementById("displayattendance");
+        table = this.shadowRoot.getElementById('displayattendance');
         switching = true;
         /* Make a loop that will continue until
         no switching has been done: */
@@ -176,13 +211,13 @@ export class Table extends Component {
             rows = table.rows;
             /* Loop through all table rows (except the
             first, which contains table headers): */
-            for (i = 1; i < (rows.length - 1); i++) {
+            for (i = 1; i < rows.length - 1; i++) {
                 // Start by saying there should be no switching:
                 shouldSwitch = false;
                 /* Get the two elements you want to compare,
                 one from current row and one from the next: */
-                x = rows[i].getElementsByTagName("TD")[1];
-                y = rows[i + 1].getElementsByTagName("TD")[1];
+                x = rows[i].getElementsByTagName('TD')[1];
+                y = rows[i + 1].getElementsByTagName('TD')[1];
                 /** @type {string} */
                 let xName = x.dataset.name.toLowerCase();
                 let yName = y.dataset.name.toLowerCase();
@@ -208,30 +243,32 @@ export class Table extends Component {
     }
 
     replaceEvents(options, eventNames) {
-        this.eventFilterSelector.replaceChildren(...[...eventNames].map((name) => {
-            const option = document.createElement('option');
-            option.value = name;
-            return option;
-        }));
+        this.eventFilterSelector.replaceChildren(
+            ...[...eventNames].map(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                return option;
+            }),
+        );
         this.alterEventSelector.replaceChildren(...options.map(o => o.cloneNode(true)));
     }
 
     downloadCSVFile(csv_data) {
         // Create CSV file object and feed our
         // csv_data into it
-        let CSVFile = new Blob([csv_data], { type: "text/csv" });
+        let CSVFile = new Blob([csv_data], { type: 'text/csv' });
 
         // Create to temporary link to initiate
         // download process
         var temp_link = document.createElement('a');
 
         // Download csv file
-        temp_link.download = "cal.csv";
+        temp_link.download = 'cal.csv';
         var url = window.URL.createObjectURL(CSVFile);
         temp_link.href = url;
 
         // This link should not be displayed
-        temp_link.style.display = "none";
+        temp_link.style.display = 'none';
         document.body.appendChild(temp_link);
 
         // Automatically click the link to trigger download
@@ -240,75 +277,106 @@ export class Table extends Component {
     }
 
     connectedCallback() {
-        this.eventFilterSelector = this.shadowRoot.getElementById("filterEventName");
-        this.alterEventSelector = this.shadowRoot.getElementById("alter-events");
+        this.eventFilterSelector = this.shadowRoot.getElementById('filterEventName');
+        this.alterEventSelector = this.shadowRoot.getElementById('alter-events');
         this.event_to_alter = null;
-        this.alterEventSelector.addEventListener("select", (e) => {
+        this.alterEventSelector.addEventListener('select', e => {
             this.event_to_alter = e.detail;
         });
         let filteringEvent = null;
-        this.eventFilterSelector.addEventListener("select", (e) => {
+        this.eventFilterSelector.addEventListener('select', e => {
             filteringEvent = e.detail;
         });
         this.shadowRoot.getElementById('submitfilter').onclick = () => {
-            [...this.shadowRoot.getElementById('displayattendance').firstChild.querySelectorAll("tr")].forEach((row) => {
-                if (row.firstChild.nodeName == 'TD' && this.shadowRoot.getElementById('filtername').value != "") {
+            [
+                ...this.shadowRoot
+                    .getElementById('displayattendance')
+                    .firstChild.querySelectorAll('tr'),
+            ].forEach(row => {
+                if (
+                    row.firstChild.nodeName === 'TD' &&
+                    this.shadowRoot.getElementById('filtername').value
+                ) {
                     this.sortStudents(this.shadowRoot.getElementById('filtername').value);
                 } else {
-                    row.style.display = "table-row";
+                    row.style.display = 'table-row';
                 }
             });
-            [...this.shadowRoot.getElementById('displayattendance').getElementsByClassName('cell')].forEach((cell) => {
-                const showstart = this.shadowRoot.getElementById("filterstart").value != "";
-                const showend = this.shadowRoot.getElementById("filterend").value != "";
-                const eventName = filteringEvent ? filteringEvent.value : "";
+            [
+                ...this.shadowRoot
+                    .getElementById('displayattendance')
+                    .getElementsByClassName('cell'),
+            ].forEach(cell => {
+                const showstart = !!this.shadowRoot.getElementById('filterstart').value;
+                const showend = !!this.shadowRoot.getElementById('filterend').value;
+                const eventName = filteringEvent ? filteringEvent.value : '';
                 let showCell = true;
                 if (showstart) {
-                    showCell = showCell && (new Date(this.shadowRoot.getElementById("filterstart").value + 'T00:00')).getTime() / 1000 < cell.dataset.time;
+                    showCell =
+                        showCell &&
+                        new Date(
+                            this.shadowRoot.getElementById('filterstart').value + 'T00:00',
+                        ).getTime() /
+                            1000 <
+                            cell.dataset.time;
                 }
                 if (showend) {
-                    showCell = showCell && (new Date(this.shadowRoot.getElementById("filterend").value + 'T23:59')).getTime() / 1000 > cell.dataset.time;
+                    showCell =
+                        showCell &&
+                        new Date(
+                            this.shadowRoot.getElementById('filterend').value + 'T23:59',
+                        ).getTime() /
+                            1000 >
+                            cell.dataset.time;
                 }
                 if (eventName) {
-                    showCell = showCell && (cell.dataset.name === eventName);
+                    showCell = showCell && cell.dataset.name === eventName;
                 }
                 if (showCell) {
-                    cell.style.display = "table-cell";
+                    cell.style.display = 'table-cell';
                 } else {
-                    cell.style.display = "none";
+                    cell.style.display = 'none';
                 }
             });
-        }
+        };
 
-        this.status = "EXCUSED";
-        const statusSelector = this.shadowRoot.getElementById("status");
-        statusSelector.addEventListener("select", (e) => {
+        this.status = 'EXCUSED';
+        const statusSelector = this.shadowRoot.getElementById('status');
+        statusSelector.addEventListener('select', e => {
             this.status = e.detail.value;
         });
-        statusSelector.setAttribute("value", this.status);
+        statusSelector.setAttribute('value', this.status);
 
-        const alterButton = this.shadowRoot.getElementById("alter-button");
-        alterButton.addEventListener("click", async (e) => {
+        const alterButton = this.shadowRoot.getElementById('alter-button');
+        alterButton.addEventListener('click', async e => {
             const ids_to_alter = [];
-            for (const checkbox of [...this.shadowRoot.getElementById("displayattendance").getElementsByClassName("selectedrows")]) {
+            for (const checkbox of [
+                ...this.shadowRoot
+                    .getElementById('displayattendance')
+                    .getElementsByClassName('selectedrows'),
+            ]) {
                 if (checkbox.checked) {
-                    ids_to_alter.push(checkbox.id.split("-")[1]);
+                    ids_to_alter.push(checkbox.id.split('-')[1]);
                 }
             }
-            console.log("ids to alter: " + ids_to_alter);
-            if (ids_to_alter.length == 0) {
-                Popup.alert("Please select the users/rows to alter first.", "var(--warning)");
+            console.log('ids to alter: ' + ids_to_alter);
+            if (ids_to_alter.length === 0) {
+                Popup.alert('Please select the users/rows to alter first.', 'var(--warning)');
                 return;
             }
             if (!this.event_to_alter) {
-                Popup.alert("Please select an event to alter first.", "var(--warning)");
+                Popup.alert('Please select an event to alter first.', 'var(--warning)');
                 return;
             }
             if (!statusSelector.isValid()) {
-                Popup.alert("Please select a valid status.", "var(--warning)");
+                Popup.alert('Please select a valid status.', 'var(--warning)');
                 return;
             }
-            const res = await GET(`/alterAttendance?businessId=${this.businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
+            const res = await GET(
+                `/alterAttendance?businessId=${this.businessID}&ids=${ids_to_alter.join(
+                    ',',
+                )}&status=${this.status}&event=${this.event_to_alter.dataset.id}`,
+            );
             if (res.ok) {
                 const event = new CustomEvent('reloadTable', {});
                 this.dispatchEvent(event);
@@ -316,34 +384,34 @@ export class Table extends Component {
                 Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }
         });
-    
-        this.shadowRoot.getElementById("export").onclick = () => {
+
+        this.shadowRoot.getElementById('export').onclick = () => {
             // Variable to store the final csv data
             var csv_data = [];
 
             // Get each row data
-            var rows = this.shadowRoot.getElementById('displayattendance').getElementsByTagName('tr');
+            var rows = this.shadowRoot
+                .getElementById('displayattendance')
+                .getElementsByTagName('tr');
             for (var i = 0; i < rows.length; i++) {
-
                 // Get each column data
                 var cols = rows[i].querySelectorAll('td,th');
 
                 // Stores each csv row data
                 var csvrow = [];
                 for (var j = 0; j < cols.length; j++) {
-
                     // Get the text data of each cell of
                     // a row and push it to csvrow
-                    csvrow.push(cols[j].innerHTML.split("<br>")[0]);
+                    csvrow.push(cols[j].innerHTML.split('<br>')[0]);
                 }
 
                 // Combine each column value with comma
-                csv_data.push(csvrow.join(","));
+                csv_data.push(csvrow.join(','));
             }
             // combine each row data with new line character
             csv_data = csv_data.join('\n');
             this.downloadCSVFile(csv_data);
-        }
+        };
     }
 }
 

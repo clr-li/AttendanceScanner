@@ -1,0 +1,10 @@
+.glitchdotcom.json
+.node-gyp
+node_modules
+.data
+.DS_Store
+.env
+.firebase
+test.*.log
+tap.info
+**/*.min.js

@@ -1,16 +1,16 @@
-import { Component } from "../util/Component.js";
-import { sanitizeText } from "../util/util.js";
+import { Component } from '../util/Component.js';
+import { sanitizeText } from '../util/util.js';
 
- export class ActionIcon extends Component {
+export class ActionIcon extends Component {
     constructor() {
         super(false);
     }
     initialHTML() {
-        const actionName = sanitizeText(this.getAttribute('name')) ?? "Action Name";
-        const actionIcon = sanitizeText(this.getAttribute('icon') ?? "fa-solid fa-users");
-        const link = sanitizeText(this.getAttribute('link') ?? "payment.html");
-        const description = sanitizeText(this.getAttribute('description') ?? "Description");
-        return /* html */`
+        const actionName = sanitizeText(this.getAttribute('name')) ?? 'Action Name';
+        const actionIcon = sanitizeText(this.getAttribute('icon') ?? 'fa-solid fa-users');
+        const link = sanitizeText(this.getAttribute('link') ?? 'payment.html');
+        const description = sanitizeText(this.getAttribute('description') ?? 'Description');
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
             <link rel="stylesheet" href="/font-alexesome/icon.css">
@@ -29,7 +29,7 @@ import { sanitizeText } from "../util/util.js";
             <style>${CSS}</style>
         `;
     }
-    
+
     /**
      * Called when this component is attached to the DOM. Has access to attributes and properties of this component and can be used to attach event listeners.
      */
@@ -40,12 +40,12 @@ import { sanitizeText } from "../util/util.js";
             console.log(actionInfo.open);
             actionInfo.show();
         });
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (e.target.tagName.toLowerCase() !== 'action-icon') {
                 actionInfo.close();
             }
         });
-        actionInfo.addEventListener('click', (e) => {
+        actionInfo.addEventListener('click', e => {
             actionInfo.close();
         });
     }
@@ -57,7 +57,7 @@ import { sanitizeText } from "../util/util.js";
     }
 }
 
-const CSS = /* css */`
+const CSS = /* css */ `
 h3 {
     white-space: nowrap;
 }
