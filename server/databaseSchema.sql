@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "Businesses" (
         "name"  TEXT NOT NULL,
         "joincode"      TEXT NOT NULL UNIQUE,
         "subscriptionId"        TEXT NOT NULL UNIQUE,
+        "requireJoin"     INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "Events" (

@@ -32,16 +32,22 @@ router.get("/recordAttendance", async (request, response) => {
   if (!uid) return;
   
   const eventid = request.query.eventid;
-  const businessid = request.query.businessId;
+  const businessId = request.query.businessId;
   const userid = request.query.userid;
   const status = request.query.status;
 
-  if (!(await getAccess(userid, businessid, {}))) {
+  const requireJoin = (await asyncGet("SELECT requireJoin FROM Businesses WHERE id = ?", [businessId])).requireJoin;
+  const access = (await getAccess(userid, businessId, {}));
+  if (requireJoin && !access) {
     response.status(400).send("Cannot take attendance for non-member");
     return;
   }
 
-  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessid, userid, Math.round(Date.now() / 1000), status]);
+  if (!requireJoin && !access) {
+    await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, userid]);
+  }
+
+  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessId, userid, Math.round(Date.now() / 1000), status]);
   response.sendStatus(200);
 });
 
@@ -194,7 +200,7 @@ router.get("/getOrSetTempAttendanceCode", async (request, response) => {
  * @response 200 OK if successful, 400 if invalid code
  */
 router.get("/recordMyAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, {});
+  const uid = await handleAuth(request, response);
   if (!uid) return;
   
   const eventid = request.query.eventid;
@@ -202,6 +208,17 @@ router.get("/recordMyAttendance", async (request, response) => {
   const status = request.query.status;
   const code = request.query.code;
   const key = eventid + "-" + businessId;
+
+  const requireJoin = (await asyncGet("SELECT requireJoin FROM Businesses WHERE id = ?", [businessId])).requireJoin;
+  const access = await getAccess(uid, businessId, {});
+  if (requireJoin && !access) {
+    response.status(400).send("Cannot take attendance for non-member");
+    return;
+  }
+
+  if (!requireJoin && !access) {
+    await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
+  }
 
   if (await storage.getItem(key) !== code || !code) {
     response.status(400).send("Invalid/Expired code");

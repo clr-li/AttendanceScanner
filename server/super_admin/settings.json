@@ -386,6 +386,38 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "recordPermissions",
+        "verbose": "recordPermissions",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "requireJoin",
+        "verbose": "requireJoin",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": "0",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
