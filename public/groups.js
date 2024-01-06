@@ -53,14 +53,14 @@ document.getElementById('join').addEventListener('click', (e) => {
 async function handleBusinessLoad(business) {
     document.getElementById('leave-' + business.id).addEventListener('click', async () => {
         if (business.role === 'owner') {
-            Popup.alert(`<h1>Warning!</h1>Can't leave a group you own. Please go to <a href="/payment.html" class="button">manage groups</a> if you want to delete the group.`, "var(--error)");
+            Popup.alert(`<h1>Warning!</h1>Can't leave a group you own. Please go to <a href="/payment.html" class="button">manage groups</a> if you want to delete the group.`, "var(--warning)");
             return;
         }
         const shouldLeave = await Popup.confirm("Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.");
         if (shouldLeave) {
             const res = await GET(`/leave?businessId=${business.id}`);
             if (!res.ok) {
-                Popup.alert(`<h1>Failed to leave ${sanitizeText(business.name)}</h1> Try again later or <a href="/" class="button">Contact Us</a>`, "var(--error)");
+                Popup.alert(`<h1>Failed to leave ${sanitizeText(business.name)}</h1> Try again later or <a href="/#contact" class="button">Contact Us</a>`, "var(--error)");
             }
             location.assign("/groups.html");
         }
@@ -72,24 +72,23 @@ async function handleBusinessLoad(business) {
     description.classList.remove('load-wrapper');
     description.innerHTML = `<span style="white-space: nowrap; margin: 30px">Created by ${sanitizeText(userdata.ownerName)}</span> <span style="white-space: nowrap;">With ${sanitizeText(userdata.numUsers)} current members</span> <span style="white-space: nowrap; margin: 30px">And ${sanitizeText(userdata.userEvents.length)} planned events!</span>`;
 
-    let absentCount = 0, presentCount = 0, lateCount = 0;
-    const dayOfTheWeekAbsentCounts = [0, 0, 0, 0, 0, 0, 0];
-    const dayOfTheWeekPresentCounts = [0, 0, 0, 0, 0, 0, 0];
-    const dayOfTheWeekLateCounts = [0, 0, 0, 0, 0, 0, 0];
     const now = Date.now();
+    const alwaysShowStatuses = ["PRESENT", "ABSENT", "LATE", "EXCUSED", "N/A"];
+    const extraStatuses = [...new Set(userdata.userEvents.map(ev => ev.status))]
+                                .filter(status => status && !alwaysShowStatuses.includes(status));
+    const statuses = alwaysShowStatuses.concat(extraStatuses);
+
+    const statusCounts = {};
+    const dayOfTheWeekCounts = {};
+    for (const status of statuses) {
+        statusCounts[status] = 0;
+        dayOfTheWeekCounts[status] = [0, 0, 0, 0, 0, 0, 0];
+    }
     for (const event of userdata.userEvents) {
-        const starttimestamp = event.starttimestamp * 1000
-        const start = new Date(starttimestamp);
-        if (event.status === 'PRESENT') {
-            dayOfTheWeekPresentCounts[start.getDay()]++;
-            presentCount++;
-        } else if (event.status === 'LATE') {
-            dayOfTheWeekLateCounts[start.getDay()]++;
-            lateCount++;
-        } else if (starttimestamp <= now) {
-            dayOfTheWeekAbsentCounts[start.getDay()]++;
-            absentCount++;
-        }
+        const status = event.status || (event.starttimestamp <= now ? "ABSENT" : "N/A");
+        statusCounts[status]++;
+        const start = new Date(event.starttimestamp * 1000);
+        dayOfTheWeekCounts[status][start.getDay()]++;
     }
 
     Chart.overrides['doughnut'].plugins.legend.display = false;
@@ -97,14 +96,10 @@ async function handleBusinessLoad(business) {
     new Chart(document.getElementById('status-' + business.id), {
         type: 'doughnut',
         data: {
-            labels: [
-                'PRESENT',
-                'ABSENT',
-                'LATE'
-            ],
+            labels: statuses,
             datasets: [{
                 label: 'Events',
-                data: [presentCount, absentCount, lateCount],
+                data: statuses.map(status => statusCounts[status]),
             }]
         },
         options: {
@@ -121,23 +116,11 @@ async function handleBusinessLoad(business) {
         type: 'bar',
         data: {
             labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-            datasets: [
-                {
-                    label: 'Present',
-                    data: dayOfTheWeekPresentCounts,
-                    borderWidth: 1
-                },
-                {
-                    label: 'Absent',
-                    data: dayOfTheWeekAbsentCounts,
-                    borderWidth: 1
-                },
-                {
-                    label: 'Late',
-                    data: dayOfTheWeekLateCounts,
-                    borderWidth: 1
-                }
-            ]
+            datasets: statuses.map(status => ({
+                label: status,
+                data: dayOfTheWeekCounts[status],
+                borderWidth: 1
+            }))
         },
         options: {
             scales: {

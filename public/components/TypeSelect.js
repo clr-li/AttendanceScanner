@@ -126,10 +126,16 @@ import { sanitizeText, getPattern, escapeQuotes } from "../util/util.js";
         return option.value;
     }
     /**
-     * Gets the selected option of this input.
+     * @returns the selected option of this input.
      */
     getSelected() {
         return this.querySelector(`option[value="${this.getAttribute("value")}"]`);
+    }
+    /**
+     * @returns true if the inputted option is valid, false otherwise.
+     */
+    isValid() {
+        return this.shadowRoot.getElementById("select").checkValidity();
     }
 }
 window.customElements.define('type-select', TypeSelect); // define custom <type-select> tag, name must be lowercase and have one hyphen

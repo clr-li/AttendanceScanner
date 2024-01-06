@@ -7,28 +7,57 @@ class ContactForm extends Component {
         <link rel="stylesheet" href="/styles/reset.css">
         <link rel="stylesheet" href="/styles/inputs.css">
         <link rel="stylesheet" href="/styles/button.css">
-        <script type="module" src="/contactform.js"></script>
-        <h1>
-            Contact Us
-        </h1>
-        <p>Experiencing any technological issues with the service? Have a question or feature request? We're happy to hear from you!</p>
-        <br>
-        <p>NOTE: You'll have to contact the groups you're part of directly to dispute attendance records since we don't decide whether or you should be marked absent.</p>
-        <br>
-        <form class="form" id="contactform">
-            <label for="name">Name</label>
-            <input id="name" type="text" required>
+        <div>
+            <h1>
+                Contact Us
+            </h1>
+            <hr><br>
+            <p>Experiencing any technological issues with the service? Have a question or feature request? We're happy to hear from you!</p>
             <br>
-            <label for="email">Email</label>
-            <input id="email" type="email" required><br>
-            <label for="message">What would you like to say to us?</label><br>
-            <textarea id="message" rows="3" required></textarea><br>
-            <button class="button">Submit</button>
-        </form>
+            <p>NOTE: You'll have to contact the groups you're part of directly to dispute attendance records since we don't decide whether or not you should be marked absent.</p>
+            <br>
+            <form class="form" id="contactform">
+                <label for="name">Name</label><br>
+                <input id="name" type="text" required>
+                <br>
+                <label for="email">Email</label><br>
+                <input id="email" type="email" required><br>
+                <label for="message">What would you like to say to us?</label><br>
+                <textarea style="resize: vertical;" id="message" rows="3" required></textarea><br>
+                <button class="button">Submit</button>
+            </form>
+        </div>
         <style>
             h1 {
                 font-size: 3rem;
                 padding: 0.2em;
+            }
+            hr {
+                width: 3rem;
+                border: 2px solid var(--accent);
+                margin: 0 auto;
+            }
+            div {
+                width: 100%;
+                max-width: var(--max-width-small);
+                margin: 0 auto;
+                height: 100%;
+                color: var(--accent);
+                padding: 1em;
+            }
+            p, .form input, .form input[type="text"], .form textarea {
+                min-width: 90%;
+                width: 90%;
+                max-width: 90%;
+                margin: 0 auto;
+                text-align: left;
+                color: black;
+            }
+            input:focus, textarea:focus {
+                outline: 2px solid var(--accent);
+            }
+            .form input, .form input[type="text"], .form textarea {
+                margin-bottom: 1rem;
             }
         </style>
         `;

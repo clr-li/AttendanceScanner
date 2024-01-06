@@ -225,8 +225,7 @@ router.get("/changeName", async (request, response) => {
 
 /**
  * Gets the name of the user
- * @queryParams name - the new name of the user.
- * @response 200 OK - if successful.
+ * @response the name of the user as a json object { name: `name` }
  */
 router.get("/getName", async (request, response) => {
   const uid = await handleAuth(request, response);

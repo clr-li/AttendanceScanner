@@ -132,40 +132,44 @@ function getEventData() {
         var startDate = new Date(eventinfo.starttimestamp*1000);
         var endDate = new Date(eventinfo.endtimestamp*1000);
         document.getElementById("eventdetails").innerHTML = /* html */`
-            <label for="update-name">Name:</label>
-            <input type="text" value="${sanitizeText(eventinfo.name)}" id="update-name"><br>
-            <label for="update-startdate">Start Date:</label>
-            <input type="date" value="${sanitizeText(startDate.toLocaleDateString('en-CA'))}" id="update-startdate">
-            <label for="update-starttime">Start Time:</label>
-            <input type="time" value="${sanitizeText((startDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + startDate.getMinutes()).padStart(2, '0'))}" id="update-starttime"><br>
-            <label for="update-enddate">End Date:</label>
-            <input type="date" value="${sanitizeText(endDate.toLocaleDateString('en-CA'))}" id="update-enddate">
-            <label for="update-endtime">End Time:</label>
-            <input type="time" value="${sanitizeText((endDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + endDate.getMinutes()).padStart(2, '0'))}" id="update-endtime"><br>
-            <label for="update-description">Description: </label>
-            <input type="text" value="${eventinfo.description}" id="update-description"><br>
-            <div class="radios">
-                <div>
-                    <input id="curr" name="repeat-effect" type="radio" class="open" value="1" checked>
-                    <label for="curr" class="overlay">
-                        <div class="circle"></div> 
-                        <span class=text>This event</span>  
-                    </label>
-                </div>
-                <div>
-                    <input id="future" name="repeat-effect" type="radio" class="open" value="2"  ${eventinfo.repeat_id != null ? '' : 'disabled'}>
-                    <label for="future" class="overlay">
-                        <div class="circle"></div> 
-                        <span class=text>This and future events</span>  
-                    </label>
-                </div>
-                <div>
-                    <input id="all" name="repeat-effect" type="radio" class="open" value="3"  ${eventinfo.repeat_id != null ? '' : 'disabled'}>
-                    <label for="all" class="overlay">
-                        <div class="circle"></div> 
-                        <span class=text>All events</span>  
-                    </label>
-                </div>
+            <label for="update-name">Name:</label><br>
+            <input style="min-width: min(850px, calc(95vw));" type="text" value="${sanitizeText(eventinfo.name)}" id="update-name"><br>
+            <label for="update-description">Description:</label><br>
+            <textarea style="resize: vertical;" id="update-description" rows="2" name="update-description">${eventinfo.description}</textarea><br>
+            <div class="cols">
+                <label for="update-startdate">Start:</label>
+                <input type="date" value="${sanitizeText(startDate.toLocaleDateString('en-CA'))}" id="update-startdate">
+            </div>
+            <div class="cols">
+                <input type="time" value="${sanitizeText((startDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + startDate.getMinutes()).padStart(2, '0'))}" id="update-starttime">
+            </div>
+            <div class="cols">
+                <label for="update-enddate">End:</label>
+                <input type="date" value="${sanitizeText(endDate.toLocaleDateString('en-CA'))}" id="update-enddate">
+            </div>
+            <div class="cols">
+                <input type="time" value="${sanitizeText((endDate.getHours()+100+"").substr(-2))}:${sanitizeText(("" + endDate.getMinutes()).padStart(2, '0'))}" id="update-endtime">
+            </div><br>
+            <div class="cols">
+                <input id="curr" name="repeat-effect" type="radio" value="1" checked>
+                <label for="curr" class="overlay">
+                    <div class="circle"></div> 
+                    <span class=text>This event</span>  
+                </label>
+            </div>
+            <div class="cols">
+                <input id="future" name="repeat-effect" type="radio" value="2" ${eventinfo.repeat_id != null ? '' : 'disabled'}>
+                <label for="future" class="overlay">
+                    <div class="circle"></div> 
+                    <span class=text>This and future events</span>  
+                </label>
+            </div>
+            <div class="cols">
+                <input id="all" name="repeat-effect" type="radio" value="3" ${eventinfo.repeat_id != null ? '' : 'disabled'}>
+                <label for="all" class="overlay">
+                    <div class="circle"></div> 
+                    <span class=text>All events</span>  
+                </label>
             </div>
             <br><button id="update" class="button" type="button">Update Event</button>
             <button id="delete" class="button delete" type="button">Delete Event</button>

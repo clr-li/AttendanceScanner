@@ -1,4 +1,4 @@
-.form > label {
+.form label {
     font-size: 1.5rem;
     padding: 0.2rem;
 }
@@ -14,16 +14,10 @@ input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-.form .radio {
-    font-size: large;
-}
-
 .form textarea {
-    min-width: min(50ch, calc(100% - 20px));
+    min-width: min(850px, calc(95vw));
     border: 2px solid var(--accent);
     resize: none;
-    margin-left: 10px;
-    margin-right: 10px;
 }
 
 .form input, .form textarea, .form select, .basic-input { 
@@ -44,11 +38,13 @@ input:-webkit-autofill:active {
     background: white;
     height: 40px;
     width: 30px;
-    margin-right: 3px;
+    margin-right: 1px;
+    margin-left: 1px;
     line-height: 40px;
     text-align: center;
     cursor: pointer;
     border: 2px solid var(--accent);
+    font-size: 16px;
 }
   
 .weekDays-selector input[type=checkbox]:checked + label {
@@ -161,16 +157,14 @@ input[type="radio"]:disabled + .overlay {
     cursor: default;
 }
 input[type="radio"] + .overlay {
+    font-size: 1.2rem;
     clear: both;
-    position: absolute;
     width: 100%;
     cursor: pointer;
 }
 input[type="radio"] + .overlay .text {
-    width: 100%;
-    height: fit-content;
+    position: relative;
     text-align: left;
-    float: left;
     margin-left: 23px;
     padding-right: 18px;
 }
@@ -181,11 +175,11 @@ input[type="radio"] + .overlay .text {
     -o-transition: border-color 0.25s linear;
     -ms--transition: border-color 0.25s linear;
     content: '';
-    position: absolute;
+    position: relative;
     left: 0;
     height: 20px;
     width: 20px;
-    display: block;
+    display: inline-block;
     background-color: white;
     border-radius: 50%;
     border-color: var(--secondary);
@@ -244,4 +238,8 @@ button.themify:active {
     border: 1px solid var(--accent); 
     color: var(--accent);
     transform: translateY(2px);
+}
+
+input[type="time"] {
+    width: 141px;
 }

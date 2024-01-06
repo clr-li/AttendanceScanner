@@ -13,7 +13,6 @@ export class Table extends Component {
             <link rel="stylesheet" href="/styles/button.css">
             <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/styles/tables.css">
-            <h1>Event Table</h1>
             <form id="filterform" class="form" onsubmit="return false;">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
@@ -54,9 +53,10 @@ export class Table extends Component {
     }
 
     async updateTable(attendancearr, events, businessID) {
+        this.businessID = businessID;
         let map = new Map();
         let userIds = [];
-        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray"}
+        let statusColor = {"PRESENT": "green", "ABSENT": "red", "EXCUSED": "gray", "LATE": "orange", "N/A": "lightgray", "ABSENT(self-marked)": "#fc6060"}
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id)
                 attendancearr[i].id = attendancearr[i].user_id;
@@ -161,22 +161,6 @@ export class Table extends Component {
                 button_index++;
             }
         }
-        const alterButton = this.shadowRoot.getElementById("alter-button");
-        alterButton.addEventListener("click", async (e) => {
-            const ids_to_alter = [];
-            for (const checkbox of [...attendance.getElementsByClassName("selectedrows")]) {
-                if (checkbox.checked) {
-                    ids_to_alter.push(checkbox.id.split("-")[1]);
-                }
-            }
-            const res = await GET(`/alterAttendance?businessId=${businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
-            if (res.ok) {
-                const event = new CustomEvent('reloadTable', {});
-                this.dispatchEvent(event);
-            } else {
-                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
-            }
-        });
     }
 
     sortStudents(searchword) {
@@ -302,6 +286,36 @@ export class Table extends Component {
             this.status = e.detail.value;
         });
         statusSelector.setAttribute("value", this.status);
+
+        const alterButton = this.shadowRoot.getElementById("alter-button");
+        alterButton.addEventListener("click", async (e) => {
+            const ids_to_alter = [];
+            for (const checkbox of [...this.shadowRoot.getElementById("displayattendance").getElementsByClassName("selectedrows")]) {
+                if (checkbox.checked) {
+                    ids_to_alter.push(checkbox.id.split("-")[1]);
+                }
+            }
+            console.log("ids to alter: " + ids_to_alter);
+            if (ids_to_alter.length == 0) {
+                Popup.alert("Please select the users/rows to alter first.", "var(--warning)");
+                return;
+            }
+            if (!this.event_to_alter) {
+                Popup.alert("Please select an event to alter first.", "var(--warning)");
+                return;
+            }
+            if (!statusSelector.isValid()) {
+                Popup.alert("Please select a valid status.", "var(--warning)");
+                return;
+            }
+            const res = await GET(`/alterAttendance?businessId=${this.businessID}&ids=${ids_to_alter.join(',')}&status=${this.status}&event=${this.event_to_alter.dataset.id}`);
+            if (res.ok) {
+                const event = new CustomEvent('reloadTable', {});
+                this.dispatchEvent(event);
+            } else {
+                Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+            }
+        });
     
         this.shadowRoot.getElementById("export").onclick = () => {
             // Variable to store the final csv data
