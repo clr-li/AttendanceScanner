@@ -47,7 +47,7 @@
             } else {
                 const errorMessage = await res.text();
                 console.error(res.status, errorMessage);
-                document.getElementById('content').innerHTML = /* html */`
+                document.getElementById('content').innerHTML = /* html */ `
                     <h1>Hi, ${sanitizeText(user.name)}</h1>
                     <p>${errorMessage}</p>
                     <a href="/groups.html" class="button">Back to Home</a>

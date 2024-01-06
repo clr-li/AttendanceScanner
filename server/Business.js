@@ -266,25 +266,27 @@ router.get('/changeName', async (request, response) => {
     response.sendStatus(200);
 });
 
-router.get("/getRecordSettings", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
+router.get('/getRecordSettings', async (request, response) => {
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
 
-  const businessId = request.query.businessId;
+    const businessId = request.query.businessId;
 
-  const requireJoin = await asyncGet("SELECT requireJoin FROM Businesses WHERE id = ?", [businessId]);
-  response.send(requireJoin);
+    const requireJoin = await asyncGet('SELECT requireJoin FROM Businesses WHERE id = ?', [
+        businessId,
+    ]);
+    response.send(requireJoin);
 });
 
-router.get("/changeRecordSettings", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
+router.get('/changeRecordSettings', async (request, response) => {
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
 
-  const businessId = request.query.businessId;
-  const newStatus = request.query.newStatus;
+    const businessId = request.query.businessId;
+    const newStatus = request.query.newStatus;
 
-  await asyncRun("UPDATE Businesses SET requireJoin = ? WHERE id = ?", [newStatus, businessId]);
-  response.sendStatus(200);
+    await asyncRun('UPDATE Businesses SET requireJoin = ? WHERE id = ?', [newStatus, businessId]);
+    response.sendStatus(200);
 });
 
 /**

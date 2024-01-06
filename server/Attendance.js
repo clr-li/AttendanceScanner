@@ -27,28 +27,36 @@ storage.init({
  * @requiredPrivileges scanner for the business
  * @response 200 OK if successful
  */
-router.get("/recordAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
-  if (!uid) return;
-  
-  const eventid = request.query.eventid;
-  const businessId = request.query.businessId;
-  const userid = request.query.userid;
-  const status = request.query.status;
+router.get('/recordAttendance', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { scanner: true });
+    if (!uid) return;
 
-  const requireJoin = (await asyncGet("SELECT requireJoin FROM Businesses WHERE id = ?", [businessId])).requireJoin;
-  const access = (await getAccess(userid, businessId, {}));
-  if (requireJoin && !access) {
-    response.status(400).send("Cannot take attendance for non-member");
-    return;
-  }
+    const eventid = request.query.eventid;
+    const businessId = request.query.businessId;
+    const userid = request.query.userid;
+    const status = request.query.status;
 
-  if (!requireJoin && !access) {
-    await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, userid]);
-  }
+    const requireJoin = (
+        await asyncGet('SELECT requireJoin FROM Businesses WHERE id = ?', [businessId])
+    ).requireJoin;
+    const access = await getAccess(userid, businessId, {});
+    if (requireJoin && !access) {
+        response.status(400).send('Cannot take attendance for non-member');
+        return;
+    }
 
-  await asyncRun(`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`, [eventid, businessId, userid, Math.round(Date.now() / 1000), status]);
-  response.sendStatus(200);
+    if (!requireJoin && !access) {
+        await asyncRun(
+            `INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`,
+            [businessId, userid],
+        );
+    }
+
+    await asyncRun(
+        `INSERT INTO Records (event_id, business_id, user_id, timestamp, status) VALUES (?, ?, ?, ?, ?)`,
+        [eventid, businessId, userid, Math.round(Date.now() / 1000), status],
+    );
+    response.sendStatus(200);
 });
 
 // ============================ ADMIN MODIFY ATTENDANCE ============================
@@ -208,31 +216,36 @@ router.get('/getOrSetTempAttendanceCode', async (request, response) => {
  * @requiredPrivileges member of the business
  * @response 200 OK if successful, 400 if invalid code
  */
-router.get("/recordMyAttendance", async (request, response) => {
-  const uid = await handleAuth(request, response);
-  if (!uid) return;
-  
-  const eventid = request.query.eventid;
-  const businessId = request.query.businessId;
-  const status = request.query.status;
-  const code = request.query.code;
-  const key = eventid + "-" + businessId;
+router.get('/recordMyAttendance', async (request, response) => {
+    const uid = await handleAuth(request, response);
+    if (!uid) return;
 
-  const requireJoin = (await asyncGet("SELECT requireJoin FROM Businesses WHERE id = ?", [businessId])).requireJoin;
-  const access = await getAccess(uid, businessId, {});
-  if (requireJoin && !access) {
-    response.status(400).send("Cannot take attendance for non-member");
-    return;
-  }
+    const eventid = request.query.eventid;
+    const businessId = request.query.businessId;
+    const status = request.query.status;
+    const code = request.query.code;
+    const key = eventid + '-' + businessId;
 
-  if (!requireJoin && !access) {
-    await asyncRun(`INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`, [businessId, uid]);
-  }
+    const requireJoin = (
+        await asyncGet('SELECT requireJoin FROM Businesses WHERE id = ?', [businessId])
+    ).requireJoin;
+    const access = await getAccess(uid, businessId, {});
+    if (requireJoin && !access) {
+        response.status(400).send('Cannot take attendance for non-member');
+        return;
+    }
 
-  if (await storage.getItem(key) !== code || !code) {
-    response.status(400).send("Invalid/Expired code");
-    return;
-  }
+    if (!requireJoin && !access) {
+        await asyncRun(
+            `INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`,
+            [businessId, uid],
+        );
+    }
+
+    if ((await storage.getItem(key)) !== code || !code) {
+        response.status(400).send('Invalid/Expired code');
+        return;
+    }
 
     if ((await storage.getItem(key)) !== code || !code) {
         response.status(400).send('Invalid/Expired code');

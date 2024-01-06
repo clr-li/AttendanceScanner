@@ -62,18 +62,18 @@ async function setRecordSettings() {
     const requireJoin = res.requireJoin;
     console.log(requireJoin);
     if (requireJoin) {
-        document.getElementById("require-join").checked = true;
+        document.getElementById('require-join').checked = true;
     }
     return requireJoin;
 }
 
-document.getElementById("require-join").onchange = async () => {
+document.getElementById('require-join').onchange = async () => {
     const res = await (await GET(`/getRecordSettings?businessId=${getBusinessId()}`)).json();
-    const requireJoin = res.requireJoin == 0 ? 1 : 0;
+    const requireJoin = res.requireJoin === 0 ? 1 : 0;
     await GET(`/changeRecordSettings?businessId=${getBusinessId()}&newStatus=${requireJoin}`);
 };
 
-function validateEventTime(startDate, endDate, startTime, endTime, isRepeating=false) {
+function validateEventTime(startDate, endDate, startTime, endTime, isRepeating = false) {
     if (startDate > endDate) {
         Popup.alert("Invalid date. Start date can't be later than end date.", 'var(--error)');
         return false;
