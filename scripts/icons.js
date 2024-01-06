@@ -10,7 +10,7 @@ const path = require('path');
 
 svgtofont({
     src: path.resolve(process.cwd(), 'source-icons'), // svg path
-    dist: path.resolve(process.cwd(), 'public/font-alexesome'), // output path
+    dist: path.resolve(process.cwd(), 'public/font-alexsome'), // output path
     fontName: 'icon', // font name
     css: {
         include: /\.css$/, // create CSS files
@@ -24,7 +24,7 @@ svgtofont({
     // append some extra formatting classes to the css file
     const fs = require('fs');
     const css = fs.readFileSync(
-        path.resolve(process.cwd(), 'public/font-alexesome/icon.css'),
+        path.resolve(process.cwd(), 'public/font-alexsome/icon.css'),
         'utf8',
     );
     const newCss =
@@ -37,5 +37,5 @@ svgtofont({
 }
 
   `;
-    fs.writeFileSync(path.resolve(process.cwd(), 'public/font-alexesome/icon.css'), newCss, 'utf8');
+    fs.writeFileSync(path.resolve(process.cwd(), 'public/font-alexsome/icon.css'), newCss, 'utf8');
 });
