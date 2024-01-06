@@ -1,13 +1,13 @@
-import { Component } from "../util/Component.js";
+import { Component } from '../util/Component.js';
 
 /**
  * The MessageContainer component formats a simple message
  * @attribute color - a CSS color for the message accent
  */
- export class MessageContainer extends Component {
+export class MessageContainer extends Component {
     initialHTML() {
-        const actionColor = this.getAttribute("color") ?? "var(--info)";
-        return /* html */`
+        const actionColor = this.getAttribute('color') ?? 'var(--info)';
+        return /* html */ `
             <div id="container">
                 <div id="message">
                     <slot></slot>

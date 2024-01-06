@@ -5,14 +5,14 @@ const urlParams = new URLSearchParams(window.location.search);
  * @returns {{ [paramName]: string, get: CallableFunction, set: CallableFunction}} an object with a get and set method that can be used to get and set the value of the url parameter.
  */
 export function useURL(paramName, defaultValue) {
-    const stateObject = { 
-        get: () => urlParams.get(paramName) || defaultValue, 
-        set: (val) => {
+    const stateObject = {
+        get: () => urlParams.get(paramName) || defaultValue,
+        set: val => {
             if (val === defaultValue) urlParams.delete(paramName);
-            else urlParams.set(paramName, val); 
-            window.history.replaceState({}, '', `${location.pathname}?${urlParams.toString()}`); 
-        }
+            else urlParams.set(paramName, val);
+            window.history.replaceState({}, '', `${location.pathname}?${urlParams.toString()}`);
+        },
     };
-    stateObject[paramName] = urlParams.get(paramName) || defaultValue
+    stateObject[paramName] = urlParams.get(paramName) || defaultValue;
     return stateObject;
 }

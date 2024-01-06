@@ -3,7 +3,7 @@
  * @param {string} html string representing any number of sibling elements
  * @returns a template element with html is its innerHTML.
  */
- function htmlToTemplate(html) {
+function htmlToTemplate(html) {
     const template = document.createElement('template');
     template.innerHTML = html;
     return template;
@@ -15,7 +15,7 @@
  * @return {NodeList} the sibling elements as nodes.
  */
 export function htmlToElements(html) {
-   return htmlToTemplate(html).content.childNodes;
+    return htmlToTemplate(html).content.childNodes;
 }
 
 /**
@@ -32,6 +32,7 @@ export class Component extends HTMLElement {
      * @returns the template of this component if it has already been set, otherwise sets it with self.initialHTML()
      */
     static template(self) {
+        // eslint-disable-next-line no-prototype-builtins
         if (this.hasOwnProperty('_template')) return this._template;
         this._template = htmlToTemplate(self.initialHTML());
         return this._template;
@@ -45,15 +46,16 @@ export class Component extends HTMLElement {
         super(); // initialize component (should always be called first)
 
         // Makes sure the Component class can't be initialized, only subclasses can (i.e. this is an abstract class)
-        if (this.constructor == Component) {
+        if (this.constructor === Component) {
             throw new Error("Abstract classes can't be instantiated.");
         }
-        
+
         // Create the shadowRoot (root of the shadow DOM representing the DOM nodes of this component)
-        this.attachShadow({ mode: "open" }); // returns the shadowRoot and, if mode is "open", sets 'this.shadowRoot' (@see https://blog.revillweb.com/open-vs-closed-shadow-dom-9f3d7427d1af)
+        this.attachShadow({ mode: 'open' }); // returns the shadowRoot and, if mode is "open", sets 'this.shadowRoot' (@see https://blog.revillweb.com/open-vs-closed-shadow-dom-9f3d7427d1af)
 
         // Attach the template elements to the shadow DOM
-        if (sharedTemplate) this.shadowRoot.appendChild(this.constructor.template(this).content.cloneNode(true));
+        if (sharedTemplate)
+            this.shadowRoot.appendChild(this.constructor.template(this).content.cloneNode(true));
         else this.shadowRoot.append(...htmlToElements(this.initialHTML()));
     }
 

@@ -1,5 +1,4 @@
-The MIT License (MIT) with the Commons Clause (CC)
-=====================
+# The MIT License (MIT) with the Commons Clause (CC)
 
 Copyright © `2023` `Alexander Metzger and Claire Li`
 

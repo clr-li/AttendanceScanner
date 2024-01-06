@@ -1,13 +1,33 @@
-.calendar > table, th, td {
+.calendar {
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.calendar > table,
+th,
+td {
     border: 2px solid;
     padding: 0.5rem;
     font-size: 1.2rem;
     background-color: white;
     color: black;
+    table-layout: fixed;
+}
+
+.calendar th:nth-child(2),
+.calendar td:nth-child(2) {
+    --width: 150px;
+    min-width: var(--width);
+    width: var(--width);
+    max-width: var(--width);
+}
+
+.smaller-text {
+    font-size: 0.8rem;
 }
 
 .scroll {
-    overflow-x: auto; 
+    overflow-x: auto;
     max-width: var(--max-width);
     width: 100vw;
     margin: auto;
@@ -26,6 +46,8 @@
     margin-left: 0.5em;
     margin-right: 0.5em;
     vertical-align: top;
+    height: 100%;
+    position: relative;
 }
 .rows {
     padding-top: 10px;

@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Login</title>
-        <meta name="description" content="A service to automate attendance">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/assets/logo.png" />
 
         <!-- import the webpage's stylesheet -->
-        <link type="text/css" rel="stylesheet" href="/style.css">
+        <link type="text/css" rel="stylesheet" href="/style.css" />
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
@@ -22,13 +22,15 @@
                 <h1>Click below to sign in:</h1>
                 <h2>First time login takes approximately a minute</h2>
                 <div id="form" style="display: flex; justify-content: center">
-                    <button class="button" id="signInWithGoogle" style="width: 80%;">Sign in with Google</button>
+                    <button class="button" id="signInWithGoogle" style="width: 80%">
+                        Sign in with Google
+                    </button>
                 </div>
             </message-container>
         </navigation-manager>
-        
+
         <circle-loader id="loader"></circle-loader>
-    
+
         <script type="module" src="/login.js"></script>
     </body>
 </html>

@@ -2,7 +2,7 @@
 .img {
     border: 8px ridge var(--accent);
     padding: 5px;
-    display: inline-block; 
+    display: inline-block;
     overflow: hidden;
     background-color: white;
     margin: 8px;
@@ -22,7 +22,8 @@
 }
 
 @media all and (display-mode: fullscreen) {
-    #qrcode > img, #qrcode > canvas {
+    #qrcode > img,
+    #qrcode > canvas {
         min-width: min(80vw, 80vh);
         /* min-height: min(80vw, 80vh); */
     }
@@ -45,8 +46,8 @@
 
 /* ================ Scanner ================ */
 .qr-container {
-    max-width: var(--max-width); 
-    margin: auto; 
+    max-width: var(--max-width);
+    margin: auto;
     width: 400px;
 }
 .qr-reader button {
@@ -57,13 +58,13 @@
     overflow: hidden;
 }
 .scanner-container {
-    background-color: var(--light-section); 
+    background-color: var(--light-section);
     width: fit-content;
     max-width: var(--max-width);
-    padding: 3rem; 
-    padding-top: 2rem; 
-    padding-bottom: 2rem; 
-    border-radius: 16px; 
+    padding: 3rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-radius: 16px;
     margin: auto;
 }
 @media (max-width: 500px) {

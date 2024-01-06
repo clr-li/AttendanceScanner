@@ -1,9 +1,10 @@
 /* Skip/hidden navigation link */
 .skip {
-    width:1px;
-    height:1px;
+    width: 1px;
+    height: 1px;
     position: absolute;
-    top: -1000px; left: 0;
+    top: -1000px;
+    left: 0;
     z-index: 99999;
     color: var(--accent);
     background-color: var(--info);

@@ -1,7 +1,7 @@
-const https = require('https');
+'use strict';
 
 // express.js framework
-const express = require("express");
+const express = require('express');
 const app = express();
 
 // parsing post bodies
@@ -10,20 +10,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // cors - make server endpoints available on firebase domain
-const cors = require('cors')
+const cors = require('cors');
 let corsOptions = {
-  origin: 'https://attendancescannerqr.web.app',
-}
-app.use(cors(corsOptions))
+    origin: 'https://attendancescannerqr.web.app',
+};
+app.use(cors(corsOptions));
 
 // ============================ PUBLIC (STATIC) FILES ============================
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static("public"));
+app.use(express.static('public'));
 
 // ============================ DATABASE ============================
-const dbFile = "./.data/ATT.db"; // filepath for the database
-const schemaFile = "./databaseSchema.sql"; // filepath for the database schema
-require('./Database').reinitializeIfNotExists(dbFile, schemaFile);
+const schemaFile = './server/databaseSchema.sql'; // filepath for the database schema
+module.exports.initPromise = require('./Database').reinitializeIfNotExists(
+    process.env.DB_FILE,
+    schemaFile,
+);
+
+// ============================ SUPER ADMIN ============================
+// for modifying and viewing database contents without manually running SQL commands
+// go to http://localhost:3000/super_admin/ to view
+if (process.env.DB_FILE !== ':memory:') {
+    module.exports.initPromise.then(() => {
+        const { superAdminRouter } = require('./SuperAdmin');
+        app.use('/super_admin', superAdminRouter);
+    });
+}
 
 // ============================ AUTHENTICATION ============================
 const { authRouter } = require('./Auth');
@@ -49,5 +61,5 @@ app.use('/', eventRouter);
 // listen for requests :)
 module.exports.app = app;
 module.exports.listener = app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${module.exports.listener.address().port}`);
+    console.log(`Your app is listening on port ${module.exports.listener.address().port}`);
 });

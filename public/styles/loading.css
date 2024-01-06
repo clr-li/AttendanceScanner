@@ -1,6 +1,6 @@
 .load-wrapper {
     position: relative;
-    background-color: rgb(211,211,211);
+    background-color: rgb(211, 211, 211);
     z-index: 4;
     overflow: hidden;
     border-radius: 5px;
@@ -12,13 +12,34 @@
     left: -45%;
     height: 100%;
     width: 45%;
-    background-image: linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
-    background-image: -moz-linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
-    background-image: -webkit-linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
+    background-image: linear-gradient(
+        to left,
+        rgba(251, 251, 251, 0.05),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.6),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.05)
+    );
+    background-image: -moz-linear-gradient(
+        to left,
+        rgba(251, 251, 251, 0.05),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.6),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.05)
+    );
+    background-image: -webkit-linear-gradient(
+        to left,
+        rgba(251, 251, 251, 0.05),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.6),
+        rgba(251, 251, 251, 0.3),
+        rgba(251, 251, 251, 0.05)
+    );
     animation: loading 1s infinite;
     z-index: 45;
- }
-  
+}
+
 @keyframes loading {
     0% {
         left: -45%;
