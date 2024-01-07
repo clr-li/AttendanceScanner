@@ -71,15 +71,16 @@ export class Table extends Component {
             }
             map.get(attendancearr[i].id).push(attendancearr[i]);
         }
-        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th>Name (id)</th>`;
+        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th data-csv="Name (id)">Name (id)</th>`;
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp * 1000);
             var endDate = new Date(events[i].endtimestamp * 1000);
+            let eventName = events[i].name || '[Unnamed]';
             html += `<th class="cell" data-time="${sanitizeText(
                 events[i].starttimestamp,
-            )}" data-name="${sanitizeText(events[i].name)}"><b>${sanitizeText(
-                events[i].name || '[Unnamed]',
-            )}</b><br><p class="smaller-text">${sanitizeText(
+            )}" data-name="${sanitizeText(events[i].name)}" data-csv="${sanitizeText(
+                eventName,
+            )}"><b>${sanitizeText(eventName)}</b><br><p class="smaller-text">${sanitizeText(
                 startDate.toLocaleDateString(),
             )} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
         }
@@ -103,9 +104,9 @@ export class Table extends Component {
                 userid,
             )}"><td><input type="checkbox" id="select-${sanitizeText(
                 userid,
-            )}" class="selectedrows"></td><td data-name="${records[0].name}">${sanitizeText(
-                records[0].name,
-            )} (${sanitizeText(userid.substr(0, 4))}`;
+            )}" class="selectedrows"></td><td data-name="${records[0].name}" data-csv="${
+                records[0].name
+            }">${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0, 4))}`;
             if (records[0].role !== 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -129,7 +130,9 @@ export class Table extends Component {
                             .replaceAll(',', ', ');
                         html += `<td class="cell" data-time="${sanitizeText(
                             events[j].starttimestamp,
-                        )}" data-name="${sanitizeText(events[j].name)}">
+                        )}" data-name="${sanitizeText(events[j].name)}" data-csv="${sanitizeText(
+                            records[k].status,
+                        )}">
                             <p style="color: ${color}; font-weight: bold;">${sanitizeText(
                                 records[k].status,
                             )}</p>
@@ -393,6 +396,7 @@ export class Table extends Component {
             var rows = this.shadowRoot
                 .getElementById('displayattendance')
                 .getElementsByTagName('tr');
+            let cellData;
             for (var i = 0; i < rows.length; i++) {
                 // Get each column data
                 var cols = rows[i].querySelectorAll('td,th');
@@ -402,7 +406,10 @@ export class Table extends Component {
                 for (var j = 0; j < cols.length; j++) {
                     // Get the text data of each cell of
                     // a row and push it to csvrow
-                    csvrow.push(cols[j].innerHTML.split('<br>')[0]);
+                    cellData = cols[j].dataset.csv;
+                    if (cellData) {
+                        csvrow.push(cellData);
+                    }
                 }
 
                 // Combine each column value with comma
@@ -410,6 +417,7 @@ export class Table extends Component {
             }
             // combine each row data with new line character
             csv_data = csv_data.join('\n');
+            // console.log(csv_data);
             this.downloadCSVFile(csv_data);
         };
     }
