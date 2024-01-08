@@ -57,6 +57,10 @@ app.use('/', attendanceRouter);
 const { eventRouter } = require('./Event');
 app.use('/', eventRouter);
 
+// ============================ SHEETS ============================
+const { sheetsRouter } = require('./Sheets');
+app.use('/', sheetsRouter);
+
 // ============================ SERVER ============================
 // listen for requests :)
 module.exports.app = app;

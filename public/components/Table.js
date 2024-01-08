@@ -34,7 +34,6 @@ export class Table extends Component {
                 <option value="EXCUSED">EXCUSED</option>
                 <option value="LATE">LATE</option>
             </type-select>
-            <button class="button" id="alter-button">Alter Checked</button><br>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>role changed</p>
             </dialog>
@@ -42,6 +41,8 @@ export class Table extends Component {
                 <p>success</p>
             </dialog>
             <button type="button" class="button" id="export">Export to CSV</button>
+            <button class="button delete" id="alter-button">Alter Checked</button>
+            <button type="button" class="button" id="copy-sheets-import">Copy Google Sheets Import</button>
         `;
     }
 
@@ -64,6 +65,7 @@ export class Table extends Component {
             'N/A': 'lightgray',
             'ABSENT(self-marked)': '#fc6060',
         };
+        console.log(attendancearr);
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id) attendancearr[i].id = attendancearr[i].user_id;
             if (!map.has(attendancearr[i].id)) {
@@ -417,8 +419,19 @@ export class Table extends Component {
             }
             // combine each row data with new line character
             csv_data = csv_data.join('\n');
-            // console.log(csv_data);
             this.downloadCSVFile(csv_data);
+        };
+
+        this.shadowRoot.getElementById('copy-sheets-import').onfocus = () => {
+            // onfocus instead of onclick fixes the clipboard DOM exception security issue
+            window.navigator.clipboard.writeText(
+                `=IMPORTDATA("https://verified-tomcat-generally.ngrok-free.app/sheet/${this.businessID}")`,
+            );
+            this.shadowRoot.getElementById('copy-sheets-import').classList.add('success');
+            document.activeElement.blur();
+            setTimeout(() => {
+                this.shadowRoot.getElementById('copy-sheets-import').classList.remove('success');
+            }, 5000);
         };
     }
 }
