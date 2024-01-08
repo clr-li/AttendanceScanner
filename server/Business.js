@@ -18,8 +18,8 @@ const uuid = require('uuid');
  */
 async function createBusiness(uid, name, subscriptionId) {
     const businessId = await asyncRunWithID(
-        `INSERT INTO Businesses (name, joincode, subscriptionId) VALUES (?, ?, ?)`,
-        [name, uuid.v4(), subscriptionId],
+        `INSERT INTO Businesses (name, joincode, subscriptionId, api_key) VALUES (?, ?, ?, ?)`,
+        [name, uuid.v4(), subscriptionId, uuid.v4()],
     );
     await asyncRun(`INSERT INTO Members (business_id, user_id, role) VALUES (?, ?, ?)`, [
         businessId,
