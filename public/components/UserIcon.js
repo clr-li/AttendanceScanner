@@ -90,7 +90,10 @@ const CSS = /* css */ `
 img {
     height: 100%;
     border-radius: 50%;
-    border: 3px ridge var(--secondary);
+    border-left: 3px groove var(--secondary);
+    border-right: 3px ridge var(--secondary);
+    border-top: 3px groove var(--secondary);
+    border-bottom: 3px ridge var(--secondary);
 }
 button {
     display: block;
