@@ -426,7 +426,7 @@ export class Table extends Component {
             const apiKey = await res.json();
             // onfocus instead of onclick fixes the clipboard DOM exception security issue
             window.navigator.clipboard.writeText(
-                `=IMPORTDATA("${window.location.origin}/sheet/${this.businessID}/${apiKey.api_key}")`,
+                `=IMPORTDATA("https://verified-tomcat-generally.ngrok-free.app/sheet/${this.businessID}/${apiKey.api_key}")`,
             );
             this.shadowRoot.getElementById('copy-sheets-import').classList.add('success');
             document.activeElement.blur();
