@@ -8,15 +8,8 @@ const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
 const uuid = require('uuid');
 
-router.get('/sheet/:bid/:key', async (request, response) => {
-    const businessId = request.params.bid;
-    const apiKey = request.params.key;
-
-    const dbKey = await asyncGet('SELECT api_key FROM Businesses WHERE id = ?', [businessId]);
-    if (dbKey.api_key !== apiKey) {
-        response.status(403).send('Invalid API key');
-        return;
-    }
+router.get('/sheet/:bid/', async (req, res) => {
+    const businessId = req.params.bid;
 
     const events = await asyncAll(
         `
@@ -57,23 +50,14 @@ router.get('/sheet/:bid/:key', async (request, response) => {
     );
 
     const tableCSV = [['Name', ...events.map(x => "'" + x.name)]].concat(tableData);
-    response.set('Content-Type', 'text/csv');
-    response.send(
+    res.set('Content-Type', 'text/csv');
+    res.send(
         tableCSV
             .map(it => {
                 return Object.values(it).toString();
             })
             .join('\n'),
     );
-});
-
-router.get('/getApiKey', async (request, response) => {
-    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
-    if (!uid) return;
-
-    const businessId = request.query.businessId;
-    const apiKey = await asyncGet('SELECT api_key FROM Businesses WHERE id = ?', [businessId]);
-    response.send(apiKey);
 });
 
 // ============================ SHEETS EXPORTS ============================

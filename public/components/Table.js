@@ -65,6 +65,7 @@ export class Table extends Component {
             'N/A': 'lightgray',
             'ABSENT(self-marked)': '#fc6060',
         };
+        console.log(attendancearr);
         for (let i = 0; i < attendancearr.length; i++) {
             if (attendancearr[i].user_id) attendancearr[i].id = attendancearr[i].user_id;
             if (!map.has(attendancearr[i].id)) {
@@ -421,12 +422,10 @@ export class Table extends Component {
             this.downloadCSVFile(csv_data);
         };
 
-        this.shadowRoot.getElementById('copy-sheets-import').onfocus = async () => {
-            const res = await GET('/getApiKey?businessId=' + this.businessID);
-            const apiKey = await res.json();
+        this.shadowRoot.getElementById('copy-sheets-import').onfocus = () => {
             // onfocus instead of onclick fixes the clipboard DOM exception security issue
             window.navigator.clipboard.writeText(
-                `=IMPORTDATA("https://verified-tomcat-generally.ngrok-free.app/sheet/${this.businessID}/${apiKey.api_key}")`,
+                `=IMPORTDATA("https://verified-tomcat-generally.ngrok-free.app/sheet/${this.businessID}")`,
             );
             this.shadowRoot.getElementById('copy-sheets-import').classList.add('success');
             document.activeElement.blur();

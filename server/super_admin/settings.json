@@ -418,22 +418,6 @@
         "editview": {
           "show": true
         }
-      },
-      {
-        "name": "api_key",
-        "verbose": "api_key",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
       }
     ],
     "mainview": {
