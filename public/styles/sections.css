@@ -56,3 +56,60 @@ section > ::slotted(img) {
         border: none;
     }
 }
+
+.business-card {
+    background-color: aliceblue;
+    width: 80%;
+    min-width: min(100%, 500px);
+    margin: auto;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    position: relative;
+    max-width: var(--max-width);
+}
+
+.business-card > h1 > span {
+    font-size: medium;
+    display: inline;
+}
+
+.business-card > hr, .subscription > hr {
+    border: 1px solid var(--accent);
+    width: 30%;
+    margin: auto;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 500px) {
+    .business-card {
+        border-radius: 0;
+    }
+}
+
+.subscription {
+    max-width: calc(var(--max-width) / 2);
+    border: 3px solid transparent;
+    border-radius: 20px;
+    padding: 10px;
+    margin: auto;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 5px;
+    background-color: aliceblue;
+    cursor: pointer;
+}
+
+.subscription:hover {
+    opacity: 0.8;
+}
+
+.subscription li {
+    text-align: left;
+    margin-bottom: 3px;
+}
+
+.subscription.active-subscription {
+    border: 3px solid var(--accent);
+}

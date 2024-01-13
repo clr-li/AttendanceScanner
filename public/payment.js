@@ -32,16 +32,16 @@ async function showSubscriptions() {
         subscriptions = [];
     }
 
-    document.getElementById('subscriptions').innerHTML =
-        '<h1>Manage Subscriptions</h1><h3>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</h3>';
     subscriptions.forEach(sub => {
         const div = document.createElement('div');
         div.id = sub.id;
+        div.classList.add('business-card');
         div.innerHTML = /* html */ `
-        <h3 style="margin-bottom: 5px;">${sanitizeText(sub.plan)} PLAN</h3>
-        <div style="text-align: center; max-width: 28%; margin: auto;">
-            <li style="text-align: left; margin-bottom: 3px;">Business: ${sanitizeText(
-                sub.businessName,
+        <h3 style="margin-bottom: 5px;">${sanitizeText(sub.businessName)}</h3>
+        <hr>
+        <div style="text-align: center; max-width: fit-content; margin: auto;">
+            <li style="text-align: left; margin-bottom: 3px;">Subscription: ${sanitizeText(
+                sub.plan,
             )}</li>
             <li style="text-align: left; margin-bottom: 3px;">Status: ${sanitizeText(
                 sub.status,
@@ -59,18 +59,15 @@ async function showSubscriptions() {
             sub.id
         }" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0">❌</button>
         `;
-        div.style =
-            'max-width: var(--max-width); border: 1px solid black; border-radius: 20px; padding: 10px; margin: auto; position: relative';
         document.getElementById('subscriptions').appendChild(div);
         document.getElementById('btn-' + sub.id).addEventListener('click', async () => {
             if (
                 await Popup.confirm(
-                    `This will cancel this subscription and delete all data of its associated business. Proceed?`,
+                    `This will cancel this subscription and delete all data of its associated group. Proceed?`,
                 )
             )
                 unsubscribe(sub.id);
         });
-        document.getElementById('subscriptions').appendChild(document.createElement('br'));
     });
     hideLoader();
 }
@@ -129,6 +126,7 @@ freeSubscription.addEventListener('click', async () => {
     console.log('free subscription');
     freeSubscription.classList.add('active-subscription');
     standardSubscription.classList.remove('active-subscription');
+    document.getElementById('purchase-btn').textContent = 'Create Free Group';
     document.getElementById('purchase-subscription').style.display = 'block';
     subscriptionType = 'FREE';
 });
@@ -137,6 +135,7 @@ standardSubscription.addEventListener('click', async () => {
     console.log('standard subscription');
     freeSubscription.classList.remove('active-subscription');
     standardSubscription.classList.add('active-subscription');
+    document.getElementById('purchase-btn').textContent = 'Purchase Standard Subscription';
     document.getElementById('purchase-subscription').style.display = 'block';
     subscriptionType = 'STANDARD';
 });

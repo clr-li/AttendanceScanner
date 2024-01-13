@@ -112,7 +112,7 @@ button {
     z-index: 1;
     top: 110%;
     left: 0;
-    margin-left: -230%;
+    margin-left: -232%;
 }
 .popup::after {
     content: "";

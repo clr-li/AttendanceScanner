@@ -22,44 +22,51 @@
     </head>
     <body>
         <navigation-manager>
-            <section id="subscriptions">
+            <section class="light-section">
                 <h1>Manage Subscriptions</h1>
+                <br>
+                <div id="subscriptions"></div>
             </section>
 
-            <section class="light-section">
+            <section class="medium-section">
                 <h2>Choose Subscription</h2>
+                <br>
                 <div id="free" class="subscription">
                     <h3 style="margin-bottom: 3px">Free Plan</h3>
-                    <div style="text-align: center; max-width: 80%; margin: auto">
-                        <li class="subscription-list">Price per Month: $0.00</li>
-                        <li class="subscription-list">Allow up to 50 members</li>
-                        <li class="subscription-list">
+                    <hr>
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Price per Month: $0.00</li>
+                        <li>Allow up to 50 members</li>
+                        <li>
                             Includes admin, moderator, scanner, and user privileges
                         </li>
-                        <li class="subscription-list">FAQ and GitHub community support</li>
+                        <li>FAQ and GitHub community support</li>
                     </div>
                 </div>
                 <div id="standard" class="subscription">
                     <h3 style="margin-bottom: 3px">Standard Plan</h3>
-                    <div style="text-align: center; max-width: 80%; margin: auto">
-                        <li class="subscription-list">Price per Month: $7.00</li>
-                        <li class="subscription-list">Allow up to 100 members</li>
-                        <li class="subscription-list">
+                    <hr>
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Price per Month: $7.00</li>
+                        <li>Allow up to 100 members</li>
+                        <li>
                             Includes custom roles, admin, moderator, scanner, and user privileges
                         </li>
-                        <li class="subscription-list">Email support (response within 3 days)</li>
+                        <li>Email support (response within 3 days)</li>
                     </div>
                 </div>
             </section>
 
-            <section id="purchase-subscription" class="medium-section" style="display: none">
+            <section id="purchase-subscription" class="purple-section" style="display: none">
                 <h2>Purchase Subscriptions</h2>
-                <form id="payment-form" style="max-width: var(--max-width); margin: auto">
+                <p>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</p>
+                <br>
+                <form class="form" id="payment-form" style="max-width: var(--max-width); margin: auto">
                     <div id="dropin-container"></div>
                     <br />
-                    <label for="businessName">Business Name:</label>
+                    <label for="businessName">Group Name:</label>
                     <input type="text" id="businessName" name="BusinessName" />
-                    <button class="button" type="submit">Purchase Standard Subscription</button>
+                    <button id="purchase-btn" style="width: 32ch; vertical-align: top;" class="button" type="submit">Purchase</button>
                 </form>
             </section>
         </navigation-manager>
