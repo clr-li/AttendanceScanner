@@ -90,6 +90,7 @@ section > ::slotted(img) {
 
 .subscription {
     max-width: calc(var(--max-width) / 2);
+    min-width: 240px;
     border: 3px solid transparent;
     border-radius: 20px;
     padding: 10px;

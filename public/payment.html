@@ -20,7 +20,7 @@
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/CircleLoader.js"></script>
     </head>
-    <body>
+    <body style="background-color: var(--medium-section);">
         <navigation-manager>
             <section class="light-section">
                 <h1>Manage Subscriptions</h1>
@@ -61,12 +61,14 @@
                 <h2>Purchase Subscriptions</h2>
                 <p>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</p>
                 <br>
-                <form class="form" id="payment-form" style="max-width: var(--max-width); margin: auto">
+                <form id="payment-form" style="max-width: var(--max-width); margin: auto">
                     <div id="dropin-container"></div>
                     <br />
-                    <label for="businessName">Group Name:</label>
-                    <input type="text" id="businessName" name="BusinessName" />
-                    <button id="purchase-btn" style="width: 32ch; vertical-align: top;" class="button" type="submit">Purchase</button>
+                    <div class="form">
+                        <label for="businessName">Group Name:</label>
+                        <input type="text" id="businessName" name="BusinessName" />
+                        <button id="purchase-btn" style="width: 32ch; vertical-align: top;" class="button" type="submit">Purchase</button>
+                    </div>
                 </form>
             </section>
         </navigation-manager>
