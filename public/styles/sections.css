@@ -40,6 +40,10 @@ section > ::slotted(img) {
     background-color: var(--purple-section);
 }
 
+.dark-section {
+    background-color: var(--dark-section);
+}
+
 .only-logged-in {
     display: none;
 }
