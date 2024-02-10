@@ -568,6 +568,8 @@ describe('Server', () => {
                         timestamp: '0',
                         status: 'teststatus',
                         role: 'owner',
+                        email: VALID_AUTH.email,
+                        custom_data: '{}',
                     },
                     {
                         name: 'testname',
@@ -577,13 +579,23 @@ describe('Server', () => {
                         timestamp: '0',
                         status: 'teststatus',
                         role: 'user',
+                        email: 'testemail',
+                        custom_data: '{}',
                     },
                     {
                         name: VALID_AUTH.name,
                         id: VALID_AUTH.user_id,
                         role: 'owner',
+                        email: VALID_AUTH.email,
+                        custom_data: '{}',
                     },
-                    { name: 'testname', id: 'testuid', role: 'user' },
+                    {
+                        name: 'testname',
+                        id: 'testuid',
+                        role: 'user',
+                        email: 'testemail',
+                        custom_data: '{}',
+                    },
                 ]);
         });
         it('Should return metadata when /userdata requested with multiple businesses', async t => {
