@@ -28,7 +28,7 @@ export class Table extends Component {
             <div class="scroll">
                 <table id="displayattendance" class="calendar"></table>
             </div><br>
-            <div class="scanner-container" style="width: 671px; height: 232px;">
+            <div class="scanner-container" style="width: 671px; height: 276px;">
                 <button class="button-tab active" id="alter-tab">Alter Checked</button>
                 <button class="button-tab" id="import-tab">Import Data</button>
                 <button class="button-tab" id="export-tab">Export Data</button>
@@ -48,7 +48,16 @@ export class Table extends Component {
                         <label for="csv-file">Choose CSV: </label>
                         <input type="file" id="csv-file" name="csv-file"><br>
                         <type-select label="Join On:" name="merge-col" id="merge-col" placeholder="select/type column"></type-select>
-                        <button type="button" value="Submit" id="import-merge" class="button">Import and Merge</button>
+                        <div style="display: flex; justify-content: center; margin-bottom: 12px">
+                        <label style="font-size: 1.5rem; padding: 0.2rem"
+                            >Overwrite</label
+                        >
+                        <div class="checkbox-wrapper-6">
+                            <input id="overwrite" class="tgl tgl-light" type="checkbox" />
+                            <label class="tgl-btn" style="font-size: 16px" for="overwrite"></label>
+                        </div>
+                    </div>
+                    <button type="button" value="Submit" id="import-merge" class="button">Import and Merge</button>
                     </form>
                 </div>
                 <div id="export-container" style="display: none;">
@@ -151,7 +160,6 @@ export class Table extends Component {
         for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
             html += `<th data-csv="${sanitizeText(key)}">${sanitizeText(key)}</th>`;
         }
-
         // Event headers
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp * 1000);
@@ -378,15 +386,19 @@ export class Table extends Component {
             // Get file text
             const file = csvFile.files[0];
             let reader = new FileReader();
+            const overwrite = this.shadowRoot.getElementById('overwrite').checked;
             reader.addEventListener(
                 'load',
                 async () => {
                     const res = await POST(`/importCustomData?businessId=${businessID}`, {
                         data: reader.result,
                         mergeCol: this.mergeCol.toLowerCase(),
+                        overwrite: overwrite,
                     });
                     if (res.ok) {
                         this.showSuccessDialog('success');
+                        const event = new CustomEvent('reloadTable', {});
+                        this.dispatchEvent(event);
                     } else {
                         Popup.alert(sanitizeText(await res.text()), 'var(--error)');
                     }
@@ -579,7 +591,7 @@ export class Table extends Component {
             );
             if (res.ok) {
                 const event = new CustomEvent('reloadTable', {});
-                this.dispatchEvent(event);
+                dispatchEvent(event);
             } else {
                 Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }

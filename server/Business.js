@@ -259,13 +259,13 @@ router.post('/importCustomData', async (request, response) => {
     const data = request.body.data;
     const mergeCol = request.body.mergeCol;
     const lines = data.split('\n');
+    const overwrite = request.body.overwrite;
 
     if (!['name', 'email', 'id'].includes(mergeCol)) {
         response.sendStatus(400);
         return;
     }
 
-    // Headers
     const headers = lines[0].split(',').map(header => header.trim());
     for (const header of headers) {
         if (header.toLowerCase() === mergeCol) {
@@ -273,6 +273,7 @@ router.post('/importCustomData', async (request, response) => {
             break;
         }
     }
+
     const mergeColToJson = new Map();
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].split(',');
@@ -285,15 +286,27 @@ router.post('/importCustomData', async (request, response) => {
         mergeColToJson.set(key, JSON.stringify(headerToLine));
     }
     for (const [key, value] of mergeColToJson.entries()) {
-        await asyncRun(
-            `UPDATE Members 
-            SET custom_data = ?
-            FROM (SELECT id
-                FROM Users
-                WHERE Users.${mergeCol} = ?) AS U
-            WHERE business_id = ? AND U.id = user_id`,
-            [value, key, businessId],
-        );
+        if (overwrite) {
+            await asyncRun(
+                `UPDATE Members 
+                SET custom_data = ?
+                FROM (SELECT id
+                    FROM Users
+                    WHERE Users.${mergeCol} = ?) AS U
+                WHERE business_id = ? AND U.id = user_id`,
+                [value, key, businessId],
+            );
+        } else {
+            await asyncRun(
+                `UPDATE Members 
+                SET custom_data = json_patch(custom_data, ?)
+                FROM (SELECT id
+                    FROM Users
+                    WHERE Users.${mergeCol} = ?) AS U
+                WHERE business_id = ? AND U.id = user_id`,
+                [value, key, businessId],
+            );
+        }
     }
 
     response.sendStatus(200);
