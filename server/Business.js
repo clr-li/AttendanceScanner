@@ -159,7 +159,7 @@ router.get('/attendancedata', async function (request, response) {
     const attendanceinfo = await asyncAll(
         `
     SELECT 
-      UserData.name, Records.*, UserData.role
+      UserData.name, Records.*, UserData.role, UserData.email, UserData.custom_data
     FROM
       Records 
       INNER JOIN (SELECT * FROM Users INNER JOIN Members ON Members.user_id = Users.id WHERE Members.business_id = ?) as UserData ON Records.user_id = UserData.id
@@ -177,7 +177,7 @@ router.get('/attendancedata', async function (request, response) {
     response.send(
         attendanceinfo.concat(
             await asyncAll(
-                `SELECT Users.name, Users.id, role FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`,
+                `SELECT Users.name, Users.id, Users.email, role, Members.custom_data FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`,
                 [businessid],
             ),
         ),
@@ -251,6 +251,54 @@ router.get('/assignRole', async (request, response) => {
 });
 
 // ============================ USER ROUTES ============================
+router.post('/importCustomData', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+    const data = request.body.data;
+    const mergeCol = request.body.mergeCol;
+    const lines = data.split('\n');
+
+    if (!['name', 'email', 'id'].includes(mergeCol)) {
+        response.sendStatus(400);
+        return;
+    }
+
+    // Headers
+    const headers = lines[0].split(',').map(header => header.trim());
+    for (const header of headers) {
+        if (header.toLowerCase() === mergeCol) {
+            headers[headers.indexOf(header)] = mergeCol;
+            break;
+        }
+    }
+    const mergeColToJson = new Map();
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].split(',');
+        let headerToLine = {};
+        for (let j = 0; j < headers.length; j++) {
+            headerToLine[headers[j]] = line[j];
+        }
+        const key = headerToLine[mergeCol];
+        delete headerToLine[mergeCol];
+        mergeColToJson.set(key, JSON.stringify(headerToLine));
+    }
+    for (const [key, value] of mergeColToJson.entries()) {
+        await asyncRun(
+            `UPDATE Members 
+            SET custom_data = ?
+            FROM (SELECT id
+                FROM Users
+                WHERE Users.${mergeCol} = ?) AS U
+            WHERE business_id = ? AND U.id = user_id`,
+            [value, key, businessId],
+        );
+    }
+
+    response.sendStatus(200);
+});
+
 /**
  * Updates the name of the authenticated user.
  * @queryParams name - the new name of the user.

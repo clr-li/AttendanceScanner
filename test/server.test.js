@@ -42,7 +42,8 @@ describe('Server', () => {
             auth,
             'verifyIdToken',
             idToken => {
-                if (idToken === VALID_TOKEN) return [VALID_AUTH.user_id, VALID_AUTH.name];
+                if (idToken === VALID_TOKEN)
+                    return [VALID_AUTH.user_id, VALID_AUTH.name, VALID_AUTH.email];
                 else return _verifyIdToken(idToken);
             },
             { times: times },
@@ -56,12 +57,12 @@ describe('Server', () => {
      * @param {string} name the name of the user to return when the token is verified
      * @param {number} times the number of times to mock the method
      */
-    function skipTokenVerification(t, uid, name, times = 1) {
+    function skipTokenVerification(t, uid, name, email, times = 1) {
         t.mock.method(
             auth,
             'verifyIdToken',
             idToken => {
-                return [uid, name];
+                return [uid, name, email];
             },
             { times: times },
         );
@@ -85,8 +86,8 @@ describe('Server', () => {
 
         it('Should not return a value when asyncRun called', async () => {
             const result = await asyncRun(
-                'INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)',
-                ['testid', 'testname', 'testcustomerid'],
+                'INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)',
+                ['testid', 'testname', 'testemail', 'testcustomerid'],
             );
             assert.strictEqual(result, undefined);
         });
@@ -96,25 +97,25 @@ describe('Server', () => {
         });
         it('Should return the rowid when asyncRunWithID called', async () => {
             const result1 = await asyncRunWithID(
-                'INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)',
-                ['testid1', 'testname1', 'testcustomerid1'],
+                'INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)',
+                ['testid1', 'testname1', 'testemail1', 'testcustomerid1'],
             );
             assert.strictEqual(result1, 1);
             const result2 = await asyncRunWithID(
-                'INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)',
-                ['testid2', 'testname2', 'testcustomerid2'],
+                'INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)',
+                ['testid2', 'testname2', 'testemail2', 'testcustomerid2'],
             );
             assert.strictEqual(result2, 2);
         });
         it('Should return the number of rows changed when asyncRunWithChanges called', async () => {
             const result1 = await asyncRunWithChanges(
-                'INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)',
-                ['testid1', 'testname', 'testcustomerid1'],
+                'INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)',
+                ['testid1', 'testname', 'testemail1', 'testcustomerid1'],
             );
             assert.strictEqual(result1, 1);
             const result2 = await asyncRunWithChanges(
-                'INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)',
-                ['testid2', 'testname', 'testcustomerid2'],
+                'INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)',
+                ['testid2', 'testname', 'testemail2', 'testcustomerid2'],
             );
             assert.strictEqual(result2, 1);
             const result3 = await asyncRunWithChanges('UPDATE Users SET name = ? WHERE name = ?', [
@@ -126,14 +127,16 @@ describe('Server', () => {
         it('Should get all the correct rows when asyncAll called', async () => {
             const result1 = await asyncAll('SELECT * FROM Users');
             assert.strictEqual(result1.length, 0);
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 'testid1',
                 'testname1',
+                'testemail1',
                 'testcustomerid1',
             ]);
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 'testid2',
                 'testname2',
+                'testemail2',
                 'testcustomerid2',
             ]);
             const result2 = await asyncAll('SELECT * FROM Users');
@@ -172,9 +175,10 @@ describe('Server', () => {
                 .end(done);
         });
         it('Should correctly enforce single privileges when getAccess is called', async () => {
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 VALID_AUTH.user_id,
                 VALID_AUTH.name,
+                VALID_AUTH.email,
                 VALID_AUTH.user_id,
             ]);
             await asyncRun(
@@ -208,9 +212,10 @@ describe('Server', () => {
             );
         });
         it('Should correctly enforce multiple privileges when getAccess is called', async () => {
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 VALID_AUTH.user_id,
                 VALID_AUTH.name,
+                VALID_AUTH.email,
                 VALID_AUTH.user_id,
             ]);
             await asyncRun(
@@ -240,9 +245,10 @@ describe('Server', () => {
             );
         });
         it('Should correctly return false when getAccess is called with invalid privileges', async () => {
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 VALID_AUTH.user_id,
                 VALID_AUTH.name,
+                VALID_AUTH.email,
                 VALID_AUTH.user_id,
             ]);
             await asyncRun(
@@ -265,9 +271,10 @@ describe('Server', () => {
         });
         it('Should return 403 Access denied when /joincode is called as a user', async t => {
             mockToken(t);
-            await asyncRun('INSERT INTO Users (id, name, customer_id) VALUES (?, ?, ?)', [
+            await asyncRun('INSERT INTO Users (id, name, email, customer_id) VALUES (?, ?, ?, ?)', [
                 VALID_AUTH.user_id,
                 VALID_AUTH.name,
+                VALID_AUTH.email,
                 VALID_AUTH.user_id,
             ]);
             await asyncRun(
@@ -418,7 +425,7 @@ describe('Server', () => {
             await createBusiness('testuid', 'testname', 'testsubscriptionid1');
             const businessId = await createBusiness('testuid', 'testname', 'testsubscriptionid2');
             await createBusiness('testuid', 'testname', 'testsubscriptionid3');
-            skipTokenVerification(t, 'testuid', 'testname');
+            skipTokenVerification(t, 'testuid', 'testname', 'testemail');
             const res = await request(app)
                 .get('/joincode')
                 .set('idToken', 'testtoken')
@@ -442,7 +449,7 @@ describe('Server', () => {
         it('Should not join when /join is requested with the joincode of another business', async t => {
             const businessId1 = await createBusiness('testuid', 'testname', 'testsubscriptionid1');
             const businessId2 = await createBusiness('testuid', 'testname', 'testsubscriptionid2');
-            skipTokenVerification(t, 'testuid', 'testname');
+            skipTokenVerification(t, 'testuid', 'testname', 'testemail');
             const res = await request(app)
                 .get('/joincode')
                 .set('idToken', 'testtoken')
@@ -523,7 +530,11 @@ describe('Server', () => {
                 VALID_AUTH.name,
                 'testsubscriptionid1',
             );
-            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Users (id, name, email) VALUES (?, ?, ?)', [
+                'testuid',
+                'testname',
+                'testemail',
+            ]);
             await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [
                 'testuid',
                 businessId,
@@ -586,7 +597,11 @@ describe('Server', () => {
                 VALID_AUTH.name,
                 'testsubscriptionid2',
             );
-            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Users (id, name, email) VALUES (?, ?, ?)', [
+                'testuid',
+                'testname',
+                'testemail',
+            ]);
             await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [
                 'testuid',
                 businessId1,
@@ -640,7 +655,11 @@ describe('Server', () => {
                 VALID_AUTH.name,
                 'testsubscriptionid1',
             );
-            await asyncRun('INSERT INTO Users (id, name) VALUES (?, ?)', ['testuid', 'testname']);
+            await asyncRun('INSERT INTO Users (id, name, email) VALUES (?, ?, ?)', [
+                'testuid',
+                'testname',
+                'testemail',
+            ]);
             await asyncRun('INSERT INTO Members (user_id, business_id, role) VALUES (?, ?, ?)', [
                 'testuid',
                 businessId,

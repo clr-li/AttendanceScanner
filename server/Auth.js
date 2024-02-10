@@ -41,10 +41,10 @@ function parseJwt(token) {
 module.exports.verifyIdToken = async function verifyIdToken(idToken) {
     if (TOKEN_VERIFICATION) {
         const decodedToken = await admin.auth().verifyIdToken(idToken, true);
-        return [decodedToken.uid, decodedToken.name];
+        return [decodedToken.uid, decodedToken.name, decodedToken.email];
     } else {
         const decodedToken = parseJwt(idToken); // development purposes, don't require idToken to be valid
-        return [decodedToken.user_id, decodedToken.name];
+        return [decodedToken.user_id, decodedToken.name, decodedToken.email];
     }
 };
 
@@ -57,11 +57,15 @@ module.exports.verifyIdToken = async function verifyIdToken(idToken) {
 async function getUID(idToken, registerIfNewUser = true) {
     if (typeof idToken !== 'string' || idToken === 'null') return false;
     try {
-        const [uid, truename] = await module.exports.verifyIdToken(idToken);
+        const [uid, truename, email] = await module.exports.verifyIdToken(idToken);
         if (registerIfNewUser) {
             let name = await asyncGet(`SELECT name FROM Users WHERE id = ?`, [uid]);
             if (!name) {
-                await asyncRun(`INSERT INTO Users (id, name) VALUES (?, ?)`, [uid, truename]);
+                await asyncRun(`INSERT INTO Users (id, name, email) VALUES (?, ?, ?)`, [
+                    uid,
+                    truename,
+                    email,
+                ]);
             }
         }
         return uid;

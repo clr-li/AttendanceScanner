@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS "Users" (
         "id"    TEXT NOT NULL UNIQUE,
         "name"  TEXT NOT NULL,
         "customer_id"   TEXT,
+        "email" TEXT NOT NULL UNIQUE,
         PRIMARY KEY("id")
 );
 CREATE TABLE IF NOT EXISTS "Businesses" (
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS "Members" (
         "business_id"   INTEGER NOT NULL,
         "user_id"       TEXT NOT NULL,
         "role"  TEXT NOT NULL,
+        "custom_data"     TEXT DEFAULT "{}" NOT NULL,
         UNIQUE("business_id", "user_id") ON CONFLICT REPLACE,
         FOREIGN KEY("business_id") REFERENCES "Businesses"("id"),
         FOREIGN KEY("user_id") REFERENCES "Events"("id")

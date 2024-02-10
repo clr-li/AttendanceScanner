@@ -219,6 +219,8 @@ input[type='radio'] + .overlay .text {
     background: transparent;
     border: none;
     min-width: 3rem;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .button-tab.active {
     border-bottom: 2px solid var(--accent);

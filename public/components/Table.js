@@ -1,7 +1,8 @@
 import { Component } from '../util/Component.js';
 import { Popup } from './Popup.js';
 import { calcSimilarity, sanitizeText } from '../util/util.js';
-import { GET } from '../util/Client.js';
+import { GET, POST } from '../util/Client.js';
+import { useURL } from '../util/StateManager.js';
 
 /**
  * The Table component represents a table to store data
@@ -13,6 +14,7 @@ export class Table extends Component {
             <link rel="stylesheet" href="/styles/button.css">
             <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/styles/tables.css">
+            <link rel="stylesheet" href="/styles/qrcode.css">
             <form id="filterform" class="form" onsubmit="return false;">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
@@ -23,25 +25,42 @@ export class Table extends Component {
                 <input type="date" id="filterend" name="filterend"><br>
                 <button type="button" value="Submit" id="submitfilter" class="button">Filter</button>
             </form>
-            <br>
             <div class="scroll">
                 <table id="displayattendance" class="calendar"></table>
             </div><br>
-            <type-select label="Event Name:" name="eventNameAlter" id="alter-events" placeholder="select/type event"></type-select>
-            <type-select id="status" name="status" label="STATUS: " placeholder="select">
-                <option value="PRESENT">PRESENT</option>
-                <option value="ABSENT">ABSENT</option>
-                <option value="EXCUSED">EXCUSED</option>
-                <option value="LATE">LATE</option>
-            </type-select>
-            <button class="button" id="alter-button">Alter Checked</button><br>
+            <div class="scanner-container" style="width: 671px; height: 232px;">
+                <button class="button-tab active" id="alter-tab">Alter Checked</button>
+                <button class="button-tab" id="import-tab">Import Data</button>
+                <button class="button-tab" id="export-tab">Export Data</button>
+                <hr style="border-color: var(--accent); margin-bottom: 5px;" />
+                <div id="alter-container">
+                    <type-select label="Event Name:" name="eventNameAlter" id="alter-events" placeholder="select/type event"></type-select>
+                    <type-select id="status" name="status" label="STATUS: " placeholder="select">
+                        <option value="PRESENT">PRESENT</option>
+                        <option value="ABSENT">ABSENT</option>
+                        <option value="EXCUSED">EXCUSED</option>
+                        <option value="LATE">LATE</option>
+                    </type-select>
+                    <button class="button" id="alter-button">Alter Checked</button>
+                </div>
+                <div id="import-container" style="display: none;">
+                    <form id="import-form" class="form" onsubmit="return false;">
+                        <label for="csv-file">Choose CSV: </label>
+                        <input type="file" id="csv-file" name="csv-file"><br>
+                        <type-select label="Join On:" name="merge-col" id="merge-col" placeholder="select/type column"></type-select>
+                        <button type="button" value="Submit" id="import-merge" class="button">Import and Merge</button>
+                    </form>
+                </div>
+                <div id="export-container" style="display: none;">
+                <button type="button" class="button" id="export">Export to CSV</button>
+                </div>
+            </div>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>role changed</p>
             </dialog>
             <dialog id="success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
                 <p>success</p>
             </dialog>
-            <button type="button" class="button" id="export">Export to CSV</button>
         `;
     }
 
@@ -50,6 +69,60 @@ export class Table extends Component {
         setTimeout(() => {
             this.shadowRoot.getElementById(id).close();
         }, 3000);
+    }
+
+    activateAlter(
+        alterTab,
+        importTab,
+        exportTab,
+        alterContainer,
+        importContainer,
+        exportContainer,
+        setActiveTab,
+    ) {
+        alterTab.classList.add('active');
+        importTab.classList.remove('active');
+        exportTab.classList.remove('active');
+        alterContainer.style.display = 'block';
+        importContainer.style.display = 'none';
+        exportContainer.style.display = 'none';
+        setActiveTab('alter');
+    }
+
+    activateImport(
+        alterTab,
+        importTab,
+        exportTab,
+        alterContainer,
+        importContainer,
+        exportContainer,
+        setActiveTab,
+    ) {
+        alterTab.classList.remove('active');
+        importTab.classList.add('active');
+        exportTab.classList.remove('active');
+        alterContainer.style.display = 'none';
+        importContainer.style.display = 'block';
+        exportContainer.style.display = 'none';
+        setActiveTab('import');
+    }
+
+    activateExport(
+        alterTab,
+        importTab,
+        exportTab,
+        alterContainer,
+        importContainer,
+        exportContainer,
+        setActiveTab,
+    ) {
+        alterTab.classList.remove('active');
+        importTab.classList.remove('active');
+        exportTab.classList.add('active');
+        alterContainer.style.display = 'none';
+        importContainer.style.display = 'none';
+        exportContainer.style.display = 'block';
+        setActiveTab('export');
     }
 
     async updateTable(attendancearr, events, businessID) {
@@ -71,7 +144,15 @@ export class Table extends Component {
             }
             map.get(attendancearr[i].id).push(attendancearr[i]);
         }
-        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th data-csv="Name (id)">Name (id)</th>`;
+        let html = `<tr><th><input type="checkbox" id="select-all" class="selectedrows"></th><th data-csv="Name">Name (id)</th><th data-csv="Email">Email</th>`;
+
+        // Custom data headers
+        const customHeaders = attendancearr[0].custom_data;
+        for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
+            html += `<th data-csv="${sanitizeText(key)}">${sanitizeText(key)}</th>`;
+        }
+
+        // Event headers
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp * 1000);
             var endDate = new Date(events[i].endtimestamp * 1000);
@@ -112,7 +193,16 @@ export class Table extends Component {
             } else {
                 html += ` - owner)`;
             }
-            html += '</td>';
+            html += `</td><td data-csv="${sanitizeText(records[0].email)}">${sanitizeText(
+                records[0].email,
+            )}</td>`;
+
+            // Custom data
+            let customData = JSON.parse(records[0].custom_data);
+            for (const [key, value] of Object.entries(customData)) {
+                html += `<td data-csv="${sanitizeText(value)}">${sanitizeText(value)}</td>`;
+            }
+
             for (let j = 0; j < events.length; j++) {
                 let statusupdate = false;
                 let color = 'lightgray';
@@ -150,8 +240,8 @@ export class Table extends Component {
                     }
                     html += `<td class="cell" data-time="${sanitizeText(
                         events[j].starttimestamp,
-                    )}" data-name="${sanitizeText(
-                        events[j].name,
+                    )}" data-name="${sanitizeText(events[j].name)}" data-csv="${sanitizeText(
+                        status,
                     )}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
                 }
             }
@@ -199,6 +289,114 @@ export class Table extends Component {
                 button_index++;
             }
         }
+        const { get: getActiveTab, set: setActiveTab } = useURL('active', 'alter');
+        const alterTab = this.shadowRoot.getElementById('alter-tab');
+        const importTab = this.shadowRoot.getElementById('import-tab');
+        const exportTab = this.shadowRoot.getElementById('export-tab');
+        const alterContainer = this.shadowRoot.getElementById('alter-container');
+        const importContainer = this.shadowRoot.getElementById('import-container');
+        const exportContainer = this.shadowRoot.getElementById('export-container');
+        this.shadowRoot.getElementById('alter-tab').addEventListener('click', e => {
+            this.activateAlter(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        });
+        this.shadowRoot.getElementById('import-tab').addEventListener('click', e => {
+            this.activateImport(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        });
+        this.shadowRoot.getElementById('export-tab').addEventListener('click', e => {
+            this.activateExport(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        });
+        if (getActiveTab() === 'alter') {
+            this.activateAlter(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        } else if (getActiveTab() === 'import') {
+            this.activateImport(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        } else {
+            this.activateExport(
+                alterTab,
+                importTab,
+                exportTab,
+                alterContainer,
+                importContainer,
+                exportContainer,
+                setActiveTab,
+            );
+        }
+        this.options = ['Email', 'Id', 'Name'];
+        this.mergeOptions = this.shadowRoot.getElementById('merge-col');
+        for (let i = 0; i < this.options.length; i++) {
+            let option = document.createElement('option');
+            option.value = this.options[i];
+            this.mergeOptions.appendChild(option);
+        }
+
+        this.mergeCol = '';
+        this.mergeOptions.addEventListener('select', e => {
+            this.mergeCol = e.detail.value;
+        });
+
+        const csvFile = this.shadowRoot.getElementById('csv-file');
+        this.shadowRoot.getElementById('import-merge').addEventListener('click', () => {
+            // Get file text
+            const file = csvFile.files[0];
+            let reader = new FileReader();
+            reader.addEventListener(
+                'load',
+                async () => {
+                    const res = await POST(`/importCustomData?businessId=${businessID}`, {
+                        data: reader.result,
+                        mergeCol: this.mergeCol.toLowerCase(),
+                    });
+                    if (res.ok) {
+                        this.showSuccessDialog('success');
+                    } else {
+                        Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+                    }
+                },
+                false,
+            );
+            if (file) {
+                reader.readAsText(file);
+            }
+        });
     }
 
     sortStudents(searchword) {
@@ -362,7 +560,6 @@ export class Table extends Component {
                     ids_to_alter.push(checkbox.id.split('-')[1]);
                 }
             }
-            console.log('ids to alter: ' + ids_to_alter);
             if (ids_to_alter.length === 0) {
                 Popup.alert('Please select the users/rows to alter first.', 'var(--warning)');
                 return;
@@ -417,7 +614,6 @@ export class Table extends Component {
             }
             // combine each row data with new line character
             csv_data = csv_data.join('\n');
-            // console.log(csv_data);
             this.downloadCSVFile(csv_data);
         };
     }

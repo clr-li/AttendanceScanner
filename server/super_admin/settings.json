@@ -54,6 +54,38 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "email",
+        "verbose": "email",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "custom_data",
+        "verbose": "custom_data",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
@@ -297,6 +329,22 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "custom_data",
+        "verbose": "custom_data",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
@@ -412,6 +460,22 @@
         "type": "INTEGER",
         "allowNull": false,
         "defaultValue": "0",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "customData",
+        "verbose": "customData",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
         "listview": {
           "show": true
         },
