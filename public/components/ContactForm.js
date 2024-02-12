@@ -32,11 +32,6 @@ class ContactForm extends Component {
                 font-size: 3rem;
                 padding: 0.2em;
             }
-            hr {
-                width: 3rem;
-                border: 2px solid var(--accent);
-                margin: 0 auto;
-            }
             div {
                 width: 100%;
                 max-width: var(--max-width-small);

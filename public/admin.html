@@ -18,6 +18,7 @@
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/TypeSelect.js"></script>
         <script type="module" src="/components/Table.js"></script>
+        <script type="module" src="/components/Popup.js"></script>
 
         <style>
             /* smooth load */
@@ -32,7 +33,9 @@
                 <h1>Dashboard</h1>
                 <type-select id="businessId" name="businesses" label="Group:"></type-select>
                 <div id="qrcode" class="img"></div>
-                <button id="joinlink" class="button">Copy Join Link</button><br />
+                <button id="joinlink" class="button">Copy Join Link</button>
+                <button id="emailInvite" class="button">Invite by Email</button>
+                <br />
             </section>
             <section class="light-section">
                 <h1>Events</h1>
@@ -185,15 +188,26 @@
                 <attendance-table id="table"></attendance-table>
             </section>
             <section class="dark-section">
-                <h1>Business Settings</h1>
-                <div style="display: flex; justify-content: center; margin-bottom: 12px">
-                    <label style="font-size: 1.5rem; padding: 0.2rem"
-                        >Require joining business before attendance can be taken</label
-                    >
-                    <div class="checkbox-wrapper-6">
-                        <input id="require-join" class="tgl tgl-light" type="checkbox" />
-                        <label class="tgl-btn" style="font-size: 16px" for="require-join"></label>
-                    </div>
+                <h1>Group Settings</h1>
+                <div class="form" style="padding-right: 1em;">
+                    <label for="require-join" style="display: flex; justify-content: space-evenly;">
+                        Only take attendance for members
+                        <div class="checkbox-wrapper-6">
+                            <input id="require-join" class="tgl tgl-light" type="checkbox" />
+                            <label class="tgl-btn" style="font-size: 16px" for="require-join"></label>
+                        </div>
+                    </label>
+                    <hr>
+                    <label for="email-notification"
+                        >Send email notification to group members</label
+                    ><br>
+                    <textarea
+                        id="email-notification"
+                        style="resize: vertical"
+                        rows="7"
+                        name="email-notification"
+                    ></textarea><br>
+                    <button id="sent-email" class="button">Send Email to Everyone</button>
                 </div>
             </section>
         </navigation-manager>

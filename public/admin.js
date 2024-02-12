@@ -1,10 +1,11 @@
-import { GET } from './util/Client.js';
-import { requireLogin } from './util/Auth.js';
+import { GET, sendEmail } from './util/Client.js';
+import { requireLogin, requestGoogleCredential, getCurrentUser } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { initBusinessSelector, initEventSelector } from './util/selectors.js';
 import { sanitizeText } from './util/util.js';
 const QRCode = window.QRCode;
 await requireLogin();
+const user = await getCurrentUser();
 
 const attendanceTable = document.getElementById('table');
 attendanceTable.addEventListener('reloadTable', () => {
@@ -49,18 +50,103 @@ async function updateJoinLink() {
             document.getElementById('joinlink').classList.remove('success');
         }, 5000);
     };
+
+    document.getElementById('emailInvite').onclick = async () => {
+        const emails = await Popup.prompt(
+            'Enter comma separated email addresses of the people you want to invite:',
+            'var(--primary)',
+        );
+        if (!emails) {
+            Popup.alert('No emails entered.', 'var(--error)');
+            return;
+        }
+        const credential = await requestGoogleCredential([
+            'https://www.googleapis.com/auth/gmail.send',
+        ]);
+        let success = true;
+        for (const email of emails.split(',')) {
+            const res = await sendEmail(
+                email.trim(),
+                'Attendance Scanner Invitation',
+                `
+Hi!
+
+You have been invited to join my group on Attendance Scanner QR.
+
+Please click this link to join: ${joinlink}.
+
+Best,
+${sanitizeText(credential.name)}
+(automatically sent via Attendance Scanner QR)
+                `.trim(),
+                credential,
+            );
+            if (!res.ok) {
+                success = false;
+                const obj = await res.json();
+                const message = obj.error.message;
+                Popup.alert(
+                    `Email to ${sanitizeText(email)} failed to send. ` + message,
+                    'var(--error)',
+                );
+            }
+        }
+        if (success) {
+            Popup.alert('Emails sent successfully!', 'var(--success)');
+        }
+    };
 }
 updateJoinLink();
 
+const members = new Set();
 async function runTable() {
     let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
+    for (const user of attendancearr) {
+        members.add({ name: user.name, email: user.email });
+    }
     attendanceTable.updateTable(attendancearr, events, getBusinessId());
 }
+
+const email_notification = document.getElementById('email-notification');
+email_notification.textContent = `
+Hi [MEMBER_NAME],
+
+We'll be having an extra rehearsal on Monday at XXXX. We hope to see you there!
+
+Best,
+${user.name}
+(automatically sent via Attendance Scanner QR)
+`.trim();
+document.getElementById('sent-email').onclick = async () => {
+    const credential = await requestGoogleCredential([
+        'https://www.googleapis.com/auth/gmail.send',
+    ]);
+    let success = true;
+    for (const member of members) {
+        const res = await sendEmail(
+            member.email,
+            'Attendance Scanner Notification',
+            email_notification.textContent.replace('[MEMBER_NAME]', member.name),
+            credential,
+        );
+        if (!res.ok) {
+            success = false;
+            const obj = await res.json();
+            const message = obj.error.message;
+            Popup.alert(
+                `Email to ${sanitizeText(member[1])} failed to send. ` + message,
+                'var(--error)',
+            );
+        }
+    }
+    if (success) {
+        Popup.alert('Emails sent successfully!', 'var(--success)');
+    }
+};
 
 async function setRecordSettings() {
     const res = await (await GET(`/getRecordSettings?businessId=${getBusinessId()}`)).json();
     const requireJoin = res.requireJoin;
-    console.log(requireJoin);
     if (requireJoin) {
         document.getElementById('require-join').checked = true;
     }
@@ -69,7 +155,6 @@ async function setRecordSettings() {
 
 document.getElementById('require-join').addEventListener('change', async e => {
     const requireJoin = e.target.checked ? 1 : 0;
-    console.log(requireJoin);
     await GET(`/changeRecordSettings?businessId=${getBusinessId()}&newStatus=${requireJoin}`);
 });
 

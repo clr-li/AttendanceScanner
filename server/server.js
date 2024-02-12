@@ -57,6 +57,10 @@ app.use('/', attendanceRouter);
 const { eventRouter } = require('./Event');
 app.use('/', eventRouter);
 
+// ============================ Google APIs ============================
+const { googleRouter } = require('./Google');
+app.use('/', googleRouter);
+
 // ============================ SERVER ============================
 // listen for requests :)
 module.exports.app = app;

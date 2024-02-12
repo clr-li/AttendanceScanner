@@ -143,3 +143,18 @@ export async function logout() {
         console.error(e);
     }
 }
+
+/**
+ * Prompts the user to log in to a google account and give permission for the specified scopes.
+ * @param {string[]} scopes Google API scopes to request permission for (if we already have them, the user will not be prompted for them)
+ * @returns the user's Google credential (with the user's name and email) if the user has logged in and given permission, otherwise null.
+ */
+export async function requestGoogleCredential(scopes) {
+    for (const scope of scopes) {
+        googleProvider.addScope(scope);
+    }
+    const signinResult = await signInWithPopup(auth, googleProvider);
+    const credential = GoogleAuthProvider.credentialFromResult(signinResult);
+
+    return { ...credential, name: signinResult.user.displayName, email: signinResult.user.email };
+}

@@ -23,3 +23,14 @@ export async function POST(url, data) {
         body: JSON.stringify(data),
     });
 }
+
+export async function sendEmail(to_email, subject, text, credential) {
+    const message = {
+        to_email: to_email,
+        from_email: credential.email,
+        subject: subject,
+        text: text,
+    };
+
+    return await POST('/sendEmail', { message: message, accessToken: credential.accessToken });
+}
