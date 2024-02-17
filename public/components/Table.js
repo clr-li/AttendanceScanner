@@ -157,14 +157,16 @@ export class Table extends Component {
         // Custom data headers
         const customHeaders = attendancearr[0].custom_data;
         for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
-            html += `<th data-csv="${sanitizeText(key)}">${sanitizeText(key)}</th>`;
+            html += `<th style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
+                key,
+            )}">${sanitizeText(key)}</th>`;
         }
         // Event headers
         for (let i = 0; i < events.length; i++) {
             var startDate = new Date(events[i].starttimestamp * 1000);
             var endDate = new Date(events[i].endtimestamp * 1000);
             let eventName = events[i].name || '[Unnamed]';
-            html += `<th class="cell" data-time="${sanitizeText(
+            html += `<th style="min-width: max-content; text-wrap: nowrap;" class="cell" data-time="${sanitizeText(
                 events[i].starttimestamp,
             )}" data-name="${sanitizeText(events[i].name)}" data-csv="${sanitizeText(
                 eventName,
