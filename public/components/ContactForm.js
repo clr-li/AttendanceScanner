@@ -7,7 +7,7 @@ class ContactForm extends Component {
         <link rel="stylesheet" href="/styles/reset.css">
         <link rel="stylesheet" href="/styles/inputs.css">
         <link rel="stylesheet" href="/styles/button.css">
-        <div>
+        <div class="form">
             <h1>
                 Contact Us
             </h1>

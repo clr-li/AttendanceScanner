@@ -50,7 +50,7 @@ export class Table extends Component {
                         <type-select label="Join On:" name="merge-col" id="merge-col" placeholder="select/type column"></type-select>
                         <div style="display: flex; justify-content: center; margin-bottom: 12px">
                         <label style="font-size: 1.5rem; padding: 0.2rem"
-                            >Overwrite</label
+                            >Overwrite: </label
                         >
                         <div class="checkbox-wrapper-6">
                             <input id="overwrite" class="tgl tgl-light" type="checkbox" />
