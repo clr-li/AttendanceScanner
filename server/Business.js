@@ -97,10 +97,21 @@ router.get('/join', async (request, response) => {
     const joincode = request.query.code;
 
     const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [businessId]);
+
+    const currCustomData = await asyncGet(
+        `SELECT custom_data FROM Members WHERE business_id = ? LIMIT 1`,
+        [businessId],
+    );
+    const jsonCustomData = JSON.parse(currCustomData['custom_data']);
+    let customData = jsonCustomData;
+    for (const key of Object.keys(jsonCustomData)) {
+        customData[key] = 'N/A';
+    }
+    console.log(JSON.stringify(customData));
     if (row.joincode === joincode) {
         await asyncRun(
-            `INSERT OR IGNORE INTO Members (business_id, user_id, role) VALUES (?, ?, 'user')`,
-            [businessId, uid],
+            `INSERT OR IGNORE INTO Members (business_id, user_id, role, custom_data) VALUES (?, ?, 'user', ?)`,
+            [businessId, uid, JSON.stringify(customData)],
         );
         response.sendStatus(200);
     } else {
