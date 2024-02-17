@@ -90,10 +90,11 @@ router.get('/makeEvent', async function (request, response) {
     const description = request.query.description;
     const starttimestamp = request.query.starttimestamp;
     const endtimestamp = request.query.endtimestamp;
+    const tag = request.query.tag;
 
     const eventid = await asyncRunWithID(
-        'INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp) VALUES (?, ?, ?, ?, ?)',
-        [businessId, name, description, starttimestamp, endtimestamp],
+        'INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, tag) VALUES (?, ?, ?, ?, ?, ?)',
+        [businessId, name, description, starttimestamp, endtimestamp, tag],
     );
     response.send('' + eventid);
 });
@@ -108,13 +109,14 @@ function createEventSequence(
     frequency,
     interval,
     timezoneOffsetMS,
+    tag,
 ) {
     let current = startDate;
     while (current < endDate) {
         const currentEndDate = new Date(endDate);
         currentEndDate.setFullYear(current.getFullYear(), current.getMonth(), current.getDate());
         asyncRunWithID(
-            'INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id) VALUES (?, ?, ?, ?, ?, ?)',
+            'INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id, tag) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [
                 businessId,
                 name,
@@ -122,6 +124,7 @@ function createEventSequence(
                 (current.getTime() + timezoneOffsetMS) / 1000,
                 (currentEndDate.getTime() + timezoneOffsetMS) / 1000,
                 repeatId,
+                tag,
             ],
         );
         if (frequency === 'daily') current.setDate(current.getDate() + interval);
@@ -159,6 +162,7 @@ router.get('/makeRecurringEvent', async function (request, response) {
     const interval = parseInt(request.query.interval);
     const daysoftheweek = request.query.daysoftheweek;
     const repeatId = uuid.v4();
+    const tag = request.query.tag;
 
     if (frequency === 'weekly' && daysoftheweek.length > 0) {
         for (const day of daysoftheweek.split(',')) {
@@ -175,6 +179,7 @@ router.get('/makeRecurringEvent', async function (request, response) {
                 frequency,
                 interval,
                 timezoneOffsetMS,
+                tag,
             );
         }
     } else {
@@ -188,6 +193,7 @@ router.get('/makeRecurringEvent', async function (request, response) {
             frequency,
             interval,
             timezoneOffsetMS,
+            tag,
         );
     }
 
