@@ -615,15 +615,22 @@ export class Table extends Component {
             }
 
             const popup = window.open('blank', '_new');
-            setTimeout(() => {
-                popup.document.write(html);
-                popup.document.body.style.display = 'flex';
-                popup.document.body.style.flexWrap = 'wrap';
-                popup.document.body.style.width = '8.5in';
-                popup.document.body.style.width = '11in';
-                popup.focus(); //required for IE
-                popup.print();
-            });
+            popup.document.write(html);
+            popup.document.body.style.display = 'flex';
+            popup.document.body.style.flexWrap = 'wrap';
+            popup.document.body.style.width = '8.5in';
+            popup.document.body.style.width = '11in';
+            popup.focus(); //required for IE
+            const imgs = popup.document.getElementsByTagName('img');
+            let loaded = 0;
+            for (const img of imgs) {
+                img.onload = () => {
+                    loaded++;
+                    if (loaded === imgs.length) {
+                        popup.print();
+                    }
+                };
+            }
         };
         this.shadowRoot.getElementById('export').onclick = () => {
             const rows = this.shadowRoot
