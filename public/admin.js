@@ -130,7 +130,7 @@ const email_notification = document.getElementById('email-notification');
 email_notification.textContent = `
 Hi [MEMBER_NAME],
 
-We'll be having an extra rehearsal on Monday at XXXX. We hope to see you there!
+Insert email body here.
 
 Best,
 ${user.name}
@@ -220,6 +220,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
     const endtimestamp = new Date(enddate + 'T' + endtime).getTime() / 1000;
     const isRepeating = document.getElementById('repeat').checked;
+    const tag = document.getElementById('event-tag').value;
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
@@ -251,7 +252,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
         GET(
             `/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(
                 ',',
-            )}&timezoneOffsetMS=${timezoneOffsetMS}`,
+            )}&timezoneOffsetMS=${timezoneOffsetMS}&tag=${tag}`,
         ).then(async res => {
             if (res.ok) {
                 showSuccessDialog('new-event-success');
@@ -263,7 +264,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
         });
     } else {
         GET(
-            `/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`,
+            `/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&tag=${tag}`,
         ).then(async res => {
             if (res.ok) {
                 showSuccessDialog('new-event-success');

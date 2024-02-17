@@ -617,6 +617,22 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "tag",
+        "verbose": "tag",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
