@@ -628,6 +628,7 @@ export class Table extends Component {
                     loaded++;
                     if (loaded === imgs.length) {
                         popup.print();
+                        popup.close();
                     }
                 };
             }
