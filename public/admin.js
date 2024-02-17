@@ -189,6 +189,20 @@ function showSuccessDialog(id) {
     }, 3000);
 }
 
+document.getElementById('startdate').value ||= new Date().toISOString().split('T')[0];
+document.getElementById('enddate').value ||= new Date().toISOString().split('T')[0];
+const defaultStartTime = new Date();
+defaultStartTime.setMinutes(Math.round(defaultStartTime.getMinutes() / 30) * 30);
+document.getElementById('starttime').value ||= defaultStartTime
+    .toTimeString()
+    .split(' ')[0]
+    .slice(0, 5);
+defaultStartTime.setHours(defaultStartTime.getHours() + 1);
+document.getElementById('endtime').value ||= defaultStartTime
+    .toTimeString()
+    .split(' ')[0]
+    .slice(0, 5);
+
 document.getElementById('submitevent').addEventListener('click', () => {
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
@@ -400,6 +414,19 @@ function getEventData() {
 
 runTable();
 setRecordSettings();
+
+document.getElementById('changeName').onclick = async () => {
+    const newName = await Popup.prompt('Enter a new name for your group');
+    if (newName) {
+        const res = await GET(`/renameBusiness?businessId=${getBusinessId()}&name=${newName}`);
+        if (!res.ok) {
+            Popup.alert(res.statusText, 'var(--error)');
+        } else {
+            await Popup.alert('Successfully renamed group to ' + newName, 'var(--success)', 2000);
+        }
+        location.assign('/admin.html');
+    }
+};
 
 // smooth load (keep previous page visible until content loaded)
 // requires the body to start with opacity: 0, and this should be the last script run.

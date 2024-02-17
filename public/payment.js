@@ -57,7 +57,7 @@ async function showSubscriptions() {
         </div>
         <button aria-label="delete" id="btn-${
             sub.id
-        }" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0">❌</button>
+        }" style="background:none;border:none;position:absolute;top:10px;right:10px;width:auto;min-width:0;cursor:pointer">❌</button>
         `;
         document.getElementById('subscriptions').appendChild(div);
         document.getElementById('btn-' + sub.id).addEventListener('click', async () => {

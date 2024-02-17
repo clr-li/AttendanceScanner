@@ -256,7 +256,6 @@ for (const ownerId of ownerIds) {
     document.getElementById(ownerId).addEventListener('click', async () => {
         const newName = await Popup.prompt('Enter a new name for your group');
         if (newName) {
-            console.log('new name: ' + newName);
             const res = await GET(`/renameBusiness?businessId=${ownerId}&name=${newName}`);
             if (!res.ok) {
                 Popup.alert(res.statusText, 'var(--error)');

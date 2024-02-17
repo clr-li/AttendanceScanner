@@ -191,17 +191,22 @@
             <section class="dark-section">
                 <h1>Group Settings</h1>
                 <div class="form" style="padding-right: 1em;">
-                    <label for="require-join" style="display: flex; justify-content: space-evenly;">
-                        Only take attendance for members
+                    <label style="display: flex; justify-content: space-evenly;">
+                        <span>Only take attendance for members &nbsp; <i class="fa-solid fa-circle-info"></i></span>
                         <div class="checkbox-wrapper-6">
                             <input id="require-join" class="tgl tgl-light" type="checkbox" />
-                            <label class="tgl-btn" style="font-size: 16px" for="require-join"></label>
+                            <div class="tgl-btn" style="font-size: 16px"></div>
                         </div>
                     </label>
-                    <hr>
-                    <label for="email-notification"
-                        >Send email notification to group members</label
-                    ><br>
+                    <br><hr><br>
+                    <a class="button" href="/payment.html">Manage Subscription &nbsp; <i class="fa-regular fa-money-bill-1"></i></a>
+                    <a class="button" href="/#contact">Contact Support &nbsp; <i class="fa-regular fa-envelope"></i></a>
+                    <button id="changeName" class="button">Change Name &nbsp; <i class="fa-regular fa-pen-to-square"></i></button>
+                    <a class="button delete" href="/payment.html">Sink the Ship &nbsp; <i class="fa-solid fa-trash"></i></a>
+                    <br><br><hr><br>
+                    <label for="email-notification">
+                        Send email notification to group members &nbsp; <i class="fa-solid fa-circle-info"></i>
+                    </label><br>
                     <textarea
                         id="email-notification"
                         style="resize: vertical"
