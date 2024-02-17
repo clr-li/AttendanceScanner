@@ -51,6 +51,19 @@ async function updateJoinLink() {
         }, 5000);
     };
 
+    document.getElementById('resetJoincode').onclick = async () => {
+        const allow = await Popup.confirm(
+            "Are you sure you want to reset the group's join code? This will make the old join code and any pending email invites invalid.",
+        );
+        if (!allow) return;
+        const res = await GET('/resetJoincode?businessId=' + getBusinessId());
+        if (res.ok) {
+            updateJoinLink();
+        } else {
+            Popup.alert(sanitizeText(await res.text()), 'var(--error)');
+        }
+    };
+
     document.getElementById('emailInvite').onclick = async () => {
         const emails = await Popup.prompt(
             'Enter comma separated email addresses of the people you want to invite:',
