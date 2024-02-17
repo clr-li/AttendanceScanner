@@ -72,6 +72,7 @@ router.get('/renameBusiness', async (request, response) => {
  * Gets the joincode of the specified business.
  * @queryParams businessId - id of the business to get the joincode for
  * @requiredPrivileges read access to the specified business
+ * @response json object with the joincode of the specified business
  */
 router.get('/joincode', async (request, response) => {
     const uid = await handleAuth(request, response, request.query.businessId, { read: true });
@@ -81,6 +82,25 @@ router.get('/joincode', async (request, response) => {
 
     const row = await asyncGet(`SELECT joincode FROM Businesses WHERE id = ?`, [businessId]);
     response.send(row);
+});
+
+/**
+ * Regenerates the joincode of the specified business (invalidating the old joincode).
+ * @queryParams businessId - id of the business to reset the joincode for
+ * @requiredPrivileges write access to the specified business
+ * @response 200 OK - if successful, 403 - [access denied], 401 - [not logged in], 400 - [bad request]
+ */
+router.get('/resetJoincode', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.query.businessId;
+
+    const changes = await asyncRunWithChanges(`UPDATE Businesses SET joincode = ? WHERE id = ?`, [
+        uuid.v4(),
+        businessId,
+    ]);
+    response.sendStatus(changes === 1 ? 200 : 400);
 });
 
 /**
