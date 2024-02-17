@@ -60,6 +60,7 @@ export class Table extends Component {
                 </div>
                 <div id="export-container" style="display: none;">
                 <button type="button" class="button" id="export">Export to CSV</button>
+                <button type="button" class="button" id="print">Print QR Codes</button>
                 </div>
             </div>
             <dialog id="role-success" style="z-index: 10; width: fit-content; height: fit-content; background: white; position: fixed; bottom: 0; top: 0; left: 0; right: 0; margin: auto; color: var(--success); animation: fadeInAndOut 3s; font-weight: bold;">
@@ -594,35 +595,53 @@ export class Table extends Component {
                 Popup.alert(sanitizeText(await res.text()), 'var(--error)');
             }
         });
+        this.shadowRoot.getElementById('print').onclick = () => {
+            const rows = this.shadowRoot
+                .getElementById('displayattendance')
+                .querySelectorAll('tr[id^="row-"]');
+            let html = '';
+            for (const row of rows) {
+                const id = row.id.split('-')[1];
+                const name = row.children[1].dataset.name;
+                const email = row.children[2].dataset.csv;
+                const div = document.createElement('div');
+                const qr = new window.QRCode(div, id);
+                const src = qr._oDrawing._elCanvas.toDataURL();
+                html += `
+                <span style="display: flex; flex-direction: column; width: min-content; height: min-content; margin: 0.2in;">
+                    <img src="${src}" style="width: 2in;"></img>
+                    ${name} (${email})
+                </span>`;
+            }
 
+            const popup = window.open('blank', '_new');
+            setTimeout(() => {
+                popup.document.write(html);
+                popup.document.body.style.display = 'flex';
+                popup.document.body.style.flexWrap = 'wrap';
+                popup.document.body.style.width = '8.5in';
+                popup.document.body.style.width = '11in';
+                popup.focus(); //required for IE
+                popup.print();
+            });
+        };
         this.shadowRoot.getElementById('export').onclick = () => {
-            // Variable to store the final csv data
-            var csv_data = [];
-
-            // Get each row data
-            var rows = this.shadowRoot
+            const rows = this.shadowRoot
                 .getElementById('displayattendance')
                 .getElementsByTagName('tr');
-            let cellData;
-            for (var i = 0; i < rows.length; i++) {
-                // Get each column data
-                var cols = rows[i].querySelectorAll('td,th');
 
-                // Stores each csv row data
-                var csvrow = [];
-                for (var j = 0; j < cols.length; j++) {
-                    // Get the text data of each cell of
-                    // a row and push it to csvrow
-                    cellData = cols[j].dataset.csv;
+            const csv_data = [];
+            for (let i = 0; i < rows.length; i++) {
+                const cols = rows[i].querySelectorAll('td,th');
+                const csvrow = [];
+                for (let j = 0; j < cols.length; j++) {
+                    const cellData = cols[j].dataset.csv;
                     if (cellData) {
                         csvrow.push(cellData);
                     }
                 }
-
-                // Combine each column value with comma
                 csv_data.push(csvrow.join(','));
             }
-            // combine each row data with new line character
             csv_data = csv_data.join('\n');
             this.downloadCSVFile(csv_data);
         };
