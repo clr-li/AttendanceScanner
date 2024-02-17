@@ -257,3 +257,33 @@ button.themify:active {
 input[type='time'] {
     width: 141px;
 }
+
+.tooltip-info {
+    white-space: normal;
+    min-width: 150px;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 5;
+    margin-left: -115px;
+    margin-top: 35%;
+    border: none;
+    border-left: 10px solid var(--primary);
+    color: white;
+    background-color: var(--dark-background);
+    font-size: 0.8em;
+}
+
+.tooltip-info:focus {
+    outline: none;
+}
+
+.tooltip-info::after {
+    content: "";
+    position: absolute;
+    bottom: calc(100% - 1px);
+    left: 101.5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent var(--dark-background) transparent;
+}

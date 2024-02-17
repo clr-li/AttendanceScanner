@@ -13,6 +13,7 @@ export class ActionIcon extends Component {
         return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
+            <link rel="stylesheet" href="/styles/inputs.css">
             <link rel="stylesheet" href="/font-alexsome/icon.css">
             <div class="cols" style="margin-bottom: 16px; width: 190px;">
                 <div role="link" class="actions" onclick="location.assign('${link}')">
@@ -22,7 +23,7 @@ export class ActionIcon extends Component {
                 <h3>${actionName}
                     <span style="position: relative;">
                         <i role="button" id="info-btn" class="fa-solid fa-circle-info smaller-text"></i>
-                        <dialog id="info-dialog" class="action-info">${description}</dialog>
+                        <dialog id="info-dialog" class="tooltip-info">${description}</dialog>
                     </span>
                 </h3>
             </div>
@@ -102,37 +103,6 @@ h3 {
 
 .actions:active {
     transform: translateY(2px);
-}
-
-.action-info {
-    white-space: normal;
-    width: 150px;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 5;
-    margin-left: -900%;
-    margin-top: 35%;
-    border: none;
-    border-left: 10px solid var(--primary);
-    color: white;
-    background-color: var(--dark-background);
-    font-size: 0.8em;
-}
-
-.action-info:focus {
-    outline: none;
-}
-
-.action-info::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 78%;
-    margin-left: -7px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent transparent var(--dark-background) transparent;
 }
 `;
 

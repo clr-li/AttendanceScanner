@@ -16,7 +16,13 @@ const { get: getBusinessId } = await initBusinessSelector('businessId', async ()
     updateJoinLink();
     await updateEvents();
     await runTable();
+    document.getElementById('genericScannerLink').href =
+        `/scanner.html?businessId=${getBusinessId()}`;
 });
+if (getBusinessId()) {
+    document.getElementById('genericScannerLink').href =
+        `/scanner.html?businessId=${getBusinessId()}`;
+}
 
 let events;
 const { get: getEventId, updateEvents } = await initEventSelector(

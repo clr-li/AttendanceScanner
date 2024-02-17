@@ -24,6 +24,7 @@ td {
 
 .smaller-text {
     font-size: 0.8rem;
+    vertical-align: middle;
 }
 
 .scroll {
