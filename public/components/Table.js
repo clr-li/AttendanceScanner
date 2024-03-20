@@ -158,9 +158,9 @@ export class Table extends Component {
         // Custom data headers
         const customHeaders = attendancearr[0].custom_data;
         for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
-            html += `<th style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
+            html += `<th class="cell" style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
                 key,
-            )}">${sanitizeText(key)}</th>`;
+            )}" data-tag="None">${sanitizeText(key)}</th>`;
         }
         // Event headers
         for (let i = 0; i < events.length; i++) {
@@ -199,7 +199,7 @@ export class Table extends Component {
                 userid,
             )}" class="selectedrows"></td><td data-name="${records[0].name}" data-csv="${
                 records[0].name
-            }" data-tag="${sanitizeText(events[i].tag)}">${sanitizeText(
+            }" data-tag="${sanitizeText(records[0].tag)}">${sanitizeText(
                 records[0].name,
             )} (${sanitizeText(userid.substr(0, 4))}`;
             if (records[0].role !== 'owner') {
@@ -214,9 +214,9 @@ export class Table extends Component {
             // Custom data
             let customData = JSON.parse(records[0].custom_data);
             for (const [key, value] of Object.entries(customData)) {
-                html += `<td data-csv="${sanitizeText(value)}" data-tag="${sanitizeText(
-                    events[i].tag,
-                )}">${sanitizeText(value)}</td>`;
+                html += `<td class="cell" data-csv="${sanitizeText(
+                    value,
+                )}" data-tag="${sanitizeText(records[0].tag)}">${sanitizeText(value)}</td>`;
             }
 
             for (let j = 0; j < events.length; j++) {
@@ -238,7 +238,7 @@ export class Table extends Component {
                             events[j].starttimestamp,
                         )}" data-name="${sanitizeText(events[j].name)}" data-csv="${sanitizeText(
                             records[k].status,
-                        )}" data-tag="${sanitizeText(events[i].tag)}">
+                        )}" data-tag="${sanitizeText(events[j].tag)}">
                             <p style="color: ${color}; font-weight: bold;">${sanitizeText(
                                 records[k].status,
                             )}</p>
@@ -570,6 +570,7 @@ export class Table extends Component {
                     showCell = showCell && cell.dataset.name === eventName;
                 }
                 if (eventTag) {
+                    console.log(cell.dataset.csv, cell.dataset.tag);
                     showCell = showCell && cell.dataset.tag === eventTag;
                 }
                 if (showCell) {
