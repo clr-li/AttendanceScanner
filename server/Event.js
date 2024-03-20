@@ -21,7 +21,7 @@ router.get('/events', async (request, response) => {
     if (!uid) return;
 
     const events = await asyncAll(
-        `SELECT id, name, starttimestamp, endtimestamp, description FROM Events WHERE business_id = ?`,
+        `SELECT id, name, starttimestamp, endtimestamp, description, tag FROM Events WHERE business_id = ?`,
         [request.query.businessId],
     );
 
@@ -289,6 +289,24 @@ router.get('/deleteevent', async function (request, response) {
     }
 
     response.sendStatus(200);
+});
+
+/**
+ * Gets all the tags for the specified business.
+ * @queryParams businessId - id of the business to get tags for
+ * @requiredPrivileges read access for the business
+ * @response json list of tags for the specified business.
+ */
+router.get('/eventtags', async (request, response) => {
+    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
+    if (!uid) return;
+
+    const tags = await asyncAll(`SELECT tag FROM Events WHERE business_id = ?`, [
+        request.query.businessId,
+    ]);
+
+    console.log(tags);
+    response.send(tags);
 });
 
 // ============================ EVENT EXPORTS ============================

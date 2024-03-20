@@ -18,7 +18,8 @@ export class Table extends Component {
             <form id="filterform" class="form" onsubmit="return false;">
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
-                <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select><br>
+                <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select>
+                <type-select label="Event Tags:" name="eventTags" id="filter-event-tags" placeholder="select/type event tag"></type-select>
                 <label for="filterstart">Start Date: </label>
                 <input type="date" id="filterstart" name="filterstart">
                 <label for="filterend">End Date: </label>
@@ -170,7 +171,9 @@ export class Table extends Component {
                 events[i].starttimestamp,
             )}" data-name="${sanitizeText(events[i].name)}" data-csv="${sanitizeText(
                 eventName,
-            )}"><b>${sanitizeText(eventName)}</b><br><p class="smaller-text">${sanitizeText(
+            )}" data-tag="${sanitizeText(events[i].tag)}"><b>${sanitizeText(
+                eventName,
+            )}</b><br><p class="smaller-text">${sanitizeText(
                 startDate.toLocaleDateString(),
             )} - ${sanitizeText(endDate.toLocaleDateString())}</p></th>`;
         }
@@ -196,7 +199,9 @@ export class Table extends Component {
                 userid,
             )}" class="selectedrows"></td><td data-name="${records[0].name}" data-csv="${
                 records[0].name
-            }">${sanitizeText(records[0].name)} (${sanitizeText(userid.substr(0, 4))}`;
+            }" data-tag="${sanitizeText(events[i].tag)}">${sanitizeText(
+                records[0].name,
+            )} (${sanitizeText(userid.substr(0, 4))}`;
             if (records[0].role !== 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -209,7 +214,9 @@ export class Table extends Component {
             // Custom data
             let customData = JSON.parse(records[0].custom_data);
             for (const [key, value] of Object.entries(customData)) {
-                html += `<td data-csv="${sanitizeText(value)}">${sanitizeText(value)}</td>`;
+                html += `<td data-csv="${sanitizeText(value)}" data-tag="${sanitizeText(
+                    events[i].tag,
+                )}">${sanitizeText(value)}</td>`;
             }
 
             for (let j = 0; j < events.length; j++) {
@@ -231,7 +238,7 @@ export class Table extends Component {
                             events[j].starttimestamp,
                         )}" data-name="${sanitizeText(events[j].name)}" data-csv="${sanitizeText(
                             records[k].status,
-                        )}">
+                        )}" data-tag="${sanitizeText(events[i].tag)}">
                             <p style="color: ${color}; font-weight: bold;">${sanitizeText(
                                 records[k].status,
                             )}</p>
@@ -251,6 +258,8 @@ export class Table extends Component {
                         events[j].starttimestamp,
                     )}" data-name="${sanitizeText(events[j].name)}" data-csv="${sanitizeText(
                         status,
+                    )}" data-tag="${sanitizeText(
+                        events[j].tag,
                     )}"><p style="color: ${color}; font-weight: bold;">${status}</p></td>`;
                 }
             }
@@ -410,6 +419,13 @@ export class Table extends Component {
                 reader.readAsText(file);
             }
         });
+        let tagSet = new Set();
+        for (let i = 0; i < events.length; i++) {
+            if (!tagSet.has(events[i].tag) && events[i].tag !== null) {
+                this.tagFilterSelector.addOption(events[i].tag, events[i].tag);
+                tagSet.add(events[i].tag);
+            }
+        }
     }
 
     sortStudents(searchword) {
@@ -493,6 +509,7 @@ export class Table extends Component {
     connectedCallback() {
         this.eventFilterSelector = this.shadowRoot.getElementById('filterEventName');
         this.alterEventSelector = this.shadowRoot.getElementById('alter-events');
+        this.tagFilterSelector = this.shadowRoot.getElementById('filter-event-tags');
         this.event_to_alter = null;
         this.alterEventSelector.addEventListener('select', e => {
             this.event_to_alter = e.detail;
@@ -501,6 +518,11 @@ export class Table extends Component {
         this.eventFilterSelector.addEventListener('select', e => {
             filteringEvent = e.detail;
         });
+        let filteringTag = null;
+        this.tagFilterSelector.addEventListener('select', e => {
+            filteringTag = e.detail;
+        });
+
         this.shadowRoot.getElementById('submitfilter').onclick = () => {
             [
                 ...this.shadowRoot
@@ -524,6 +546,7 @@ export class Table extends Component {
                 const showstart = !!this.shadowRoot.getElementById('filterstart').value;
                 const showend = !!this.shadowRoot.getElementById('filterend').value;
                 const eventName = filteringEvent ? filteringEvent.value : '';
+                const eventTag = filteringTag ? filteringTag.value : '';
                 let showCell = true;
                 if (showstart) {
                     showCell =
@@ -545,6 +568,9 @@ export class Table extends Component {
                 }
                 if (eventName) {
                     showCell = showCell && cell.dataset.name === eventName;
+                }
+                if (eventTag) {
+                    showCell = showCell && cell.dataset.tag === eventTag;
                 }
                 if (showCell) {
                     cell.style.display = 'table-cell';
