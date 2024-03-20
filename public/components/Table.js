@@ -160,7 +160,7 @@ export class Table extends Component {
         for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
             html += `<th class="cell" style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
                 key,
-            )}" data-tag="None">${sanitizeText(key)}</th>`;
+            )}">${sanitizeText(key)}</th>`;
         }
         // Event headers
         for (let i = 0; i < events.length; i++) {
@@ -570,7 +570,6 @@ export class Table extends Component {
                     showCell = showCell && cell.dataset.name === eventName;
                 }
                 if (eventTag) {
-                    console.log(cell.dataset.csv, cell.dataset.tag);
                     showCell = showCell && cell.dataset.tag === eventTag;
                 }
                 if (showCell) {
