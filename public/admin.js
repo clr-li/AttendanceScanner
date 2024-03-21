@@ -220,7 +220,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
     const endtimestamp = new Date(enddate + 'T' + endtime).getTime() / 1000;
     const isRepeating = document.getElementById('repeat').checked;
-    const tag = document.getElementById('event-tag').value;
+    const allTags = document.getElementById('all-tags');
 
     if (!startdate || !starttime || !enddate || !endtime) {
         Popup.alert('Please fill out all start and end times/dates.', 'var(--error)');
@@ -229,6 +229,14 @@ document.getElementById('submitevent').addEventListener('click', () => {
 
     if (!validateEventTime(startdate, enddate, starttime, endtime, isRepeating)) {
         return;
+    }
+
+    let tag = ',';
+    for (const tagElement of allTags.getElementsByClassName('tag')) {
+        tag += tagElement.textContent + ',';
+    }
+    if (tag === ',') {
+        tag = '';
     }
 
     if (isRepeating) {
@@ -276,6 +284,35 @@ document.getElementById('submitevent').addEventListener('click', () => {
         });
     }
 });
+
+document.getElementById('add-tag').onclick = () => {
+    const tagName = document.createElement('input');
+    tagName.id = 'tag-name';
+    const check = document.createElement('button');
+    check.type = 'button';
+    check.className = 'plus-button';
+    check.textContent = '✓';
+    check.id = 'checkmark';
+    document.getElementById('add-tag').style.display = 'none';
+    document.getElementById('all-tags').appendChild(tagName);
+    document.getElementById('all-tags').appendChild(check);
+
+    let checkBtn = document.getElementById('checkmark');
+    checkBtn.onclick = () => {
+        const tagValue = document.getElementById('tag-name').value;
+        if (tagValue) {
+            const addedTag = document.createElement('p');
+            addedTag.className = 'tag';
+            addedTag.textContent = tagValue;
+            document.getElementById('all-tags').appendChild(addedTag);
+            document.getElementById('add-tag').style.display = 'block';
+            document.getElementById('all-tags').removeChild(tagName);
+            document.getElementById('all-tags').removeChild(checkBtn);
+        } else {
+            Popup.alert('Please enter a tag name.', 'var(--error)');
+        }
+    };
+};
 
 function getEventData() {
     GET(`/eventdata?eventid=${getEventId()}&businessId=${getBusinessId()}`).then(res =>

@@ -158,7 +158,7 @@ export class Table extends Component {
         // Custom data headers
         const customHeaders = attendancearr[0].custom_data;
         for (const [key, value] of Object.entries(JSON.parse(customHeaders))) {
-            html += `<th class="cell" style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
+            html += `<th style="min-width: max-content; text-wrap: nowrap;" data-csv="${sanitizeText(
                 key,
             )}">${sanitizeText(key)}</th>`;
         }
@@ -214,9 +214,9 @@ export class Table extends Component {
             // Custom data
             let customData = JSON.parse(records[0].custom_data);
             for (const [key, value] of Object.entries(customData)) {
-                html += `<td class="cell" data-csv="${sanitizeText(
-                    value,
-                )}" data-tag="${sanitizeText(records[0].tag)}">${sanitizeText(value)}</td>`;
+                html += `<td data-csv="${sanitizeText(value)}" data-tag="${sanitizeText(
+                    records[0].tag,
+                )}">${sanitizeText(value)}</td>`;
             }
 
             for (let j = 0; j < events.length; j++) {
@@ -421,10 +421,12 @@ export class Table extends Component {
         });
         let tagSet = new Set();
         for (let i = 0; i < events.length; i++) {
-            if (!tagSet.has(events[i].tag) && events[i].tag !== null) {
-                this.tagFilterSelector.addOption(events[i].tag, events[i].tag);
-                tagSet.add(events[i].tag);
-            }
+            events[i].tag.split(',').forEach(tag => {
+                if (!tagSet.has(tag)) {
+                    this.tagFilterSelector.addOption(tag, tag);
+                    tagSet.add(tag);
+                }
+            });
         }
     }
 
@@ -570,7 +572,10 @@ export class Table extends Component {
                     showCell = showCell && cell.dataset.name === eventName;
                 }
                 if (eventTag) {
-                    showCell = showCell && cell.dataset.tag === eventTag;
+                    showCell =
+                        (showCell && cell.dataset.tag.includes(',' + eventTag + ',')) ||
+                        cell.dataset.tag.startsWith(eventTag + ',') ||
+                        cell.dataset.tag.endsWith(',' + eventTag);
                 }
                 if (showCell) {
                     cell.style.display = 'table-cell';
