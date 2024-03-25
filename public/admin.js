@@ -321,6 +321,7 @@ document.getElementById('add-tag').onclick = () => {
 function getEventData() {
     GET(`/eventdata?eventid=${getEventId()}&businessId=${getBusinessId()}`).then(res =>
         res.json().then(eventinfo => {
+            tagHTMLString(eventinfo.tag);
             var startDate = new Date(eventinfo.starttimestamp * 1000);
             var endDate = new Date(eventinfo.endtimestamp * 1000);
             document.getElementById('eventdetails').innerHTML = /* html */ `
@@ -358,6 +359,11 @@ function getEventData() {
                     ('' + endDate.getMinutes()).padStart(2, '0'),
                 )}" id="update-endtime">
             </div><br>
+            <div id="current-tags" style="display: flex; justify-content: center; flex-wrap: wrap; max-width: var(--max-width-medium); margin: auto;">
+                <label>Tags:</label>
+                ${tagHTMLString(eventinfo.tag)}
+                <button id="update-add-tag" class="plus-button" type="button">+</button>
+            </div>
             <div class="cols">
                 <input id="curr" name="repeat-effect" type="radio" value="1" checked>
                 <label for="curr" class="overlay">
@@ -417,6 +423,47 @@ function getEventData() {
                     }
                 });
             };
+            document.getElementById('update-add-tag').onclick = () => {
+                const tagName = document.createElement('input');
+                tagName.id = 'update-tag-name';
+                const check = document.createElement('button');
+                check.type = 'button';
+                check.className = 'plus-button';
+                check.textContent = '✓';
+                check.id = 'update-checkmark';
+                document.getElementById('update-add-tag').style.display = 'none';
+                document.getElementById('current-tags').appendChild(tagName);
+                document.getElementById('current-tags').appendChild(check);
+
+                let checkBtn = document.getElementById('update-checkmark');
+                checkBtn.onclick = () => {
+                    const tagValue = document.getElementById('update-tag-name').value;
+                    if (tagValue) {
+                        const addedTag = document.createElement('p');
+                        addedTag.className = 'tag';
+                        addedTag.textContent = tagValue;
+                        addedTag.setAttribute('style', 'height: fit-content');
+                        document
+                            .getElementById('current-tags')
+                            .insertBefore(addedTag, document.getElementById('update-add-tag'));
+                        document.getElementById('update-add-tag').style.display = 'block';
+                        document.getElementById('current-tags').removeChild(tagName);
+                        document.getElementById('current-tags').removeChild(checkBtn);
+                    } else {
+                        Popup.alert('Please enter a tag name.', 'var(--error)');
+                    }
+                };
+            };
+
+            const allDeleteTags = document.getElementsByClassName('delete-tag');
+            for (const tag of allDeleteTags) {
+                // remove tag
+                tag.onclick = () => {
+                    tag.parentNode.remove();
+                };
+                console.log(tag);
+            }
+
             document.getElementById('update').onclick = () => {
                 const name = document.getElementById('update-name').value;
                 const description = document.getElementById('update-description').value;
@@ -437,6 +484,14 @@ function getEventData() {
                 const endtimestamp = new Date(enddate + 'T' + endtime).getTime() / 1000;
                 const starttimedelta = starttimestamp - eventinfo.starttimestamp;
                 const endtimedelta = endtimestamp - eventinfo.endtimestamp;
+                const allTags = document.getElementById('current-tags');
+                let tag = ',';
+                for (const tagElement of allTags.getElementsByClassName('tag')) {
+                    tag += tagElement.textContent.trim() + ',';
+                }
+                if (tag === ',') {
+                    tag = '';
+                }
 
                 if (
                     !validateEventTime(startdate, enddate, starttime, endtime, '1' !== repeatEffect)
@@ -447,7 +502,7 @@ function getEventData() {
                 GET(
                     `/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${
                         eventinfo.repeat_id
-                    }&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}`,
+                    }&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}&tag=${tag}`,
                 ).then(async res => {
                     if (res.ok) {
                         updateEvents();
@@ -458,6 +513,22 @@ function getEventData() {
             };
         }),
     );
+}
+
+function tagHTMLString(tags) {
+    const tagArr = tags.split(',');
+    let tagHTML = '';
+    for (let i = 0; i < tagArr.length; i++) {
+        let tag = tagArr[i];
+        if (tag) {
+            tagHTML += /* html */ `
+                <p id="${i}-${tag}" class="tag" style="height: fit-content;">
+                    ${tag} <button id="${i}-delete" class="cross delete-tag"><i class="fa fa-circle-xmark"></i></button>
+                </p>
+            `;
+        }
+    }
+    return tagHTML;
 }
 
 runTable();

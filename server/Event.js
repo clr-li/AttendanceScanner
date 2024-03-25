@@ -227,21 +227,32 @@ router.get('/updateevent', async function (request, response) {
     const repeatEffect = parseInt(request.query.repeatEffect);
     const starttimedelta = request.query.starttimedelta;
     const endtimedelta = request.query.endtimedelta;
+    const tag = request.query.tag;
 
     if (repeatEffect === 1) {
+        console.log(tag);
         await asyncRun(
-            `UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ? WHERE business_id = ? AND id = ? `,
-            [name, starttimestamp, endtimestamp, description, businessId, eventid],
+            `UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ?, tag = ? WHERE business_id = ? AND id = ? `,
+            [name, starttimestamp, endtimestamp, description, tag, businessId, eventid],
         );
     } else if (repeatEffect === 2) {
         await asyncRun(
-            `UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`,
-            [name, starttimedelta, endtimedelta, description, businessId, repeatId, starttimestamp],
+            `UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ?, tag = ? WHERE business_id = ? AND repeat_id = ? AND starttimestamp >= ?`,
+            [
+                name,
+                starttimedelta,
+                endtimedelta,
+                description,
+                tag,
+                businessId,
+                repeatId,
+                starttimestamp,
+            ],
         );
     } else if (repeatEffect === 3) {
         await asyncRun(
-            `UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ? WHERE business_id = ? AND repeat_id = ?`,
-            [name, starttimedelta, endtimedelta, description, businessId, repeatId],
+            `UPDATE Events SET name = ?, starttimestamp = CAST((CAST(starttimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), endtimestamp = CAST((CAST(endtimestamp as INTEGER) + CAST(? as INTEGER)) as TEXT), description = ?, tag = ? WHERE business_id = ? AND repeat_id = ?`,
+            [name, starttimedelta, endtimedelta, description, tag, businessId, repeatId],
         );
     } else {
         response.sendStatus(400);

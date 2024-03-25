@@ -6,3 +6,10 @@
     width: fit-content;
     background-color: var(--success-lighter);
 }
+
+.cross {
+    font-size: 0.9rem;
+    color: var(--delete-darker);
+    background-color: var(--success-lighter);
+    border: none;
+}
