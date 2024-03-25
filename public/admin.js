@@ -296,6 +296,7 @@ document.getElementById('add-tag').onclick = () => {
     document.getElementById('add-tag').style.display = 'none';
     document.getElementById('all-tags').appendChild(tagName);
     document.getElementById('all-tags').appendChild(check);
+    document.getElementById('all-tags').setAttribute('style', 'display: flex; flex-wrap: wrap;');
 
     let checkBtn = document.getElementById('checkmark');
     checkBtn.onclick = () => {
@@ -304,7 +305,10 @@ document.getElementById('add-tag').onclick = () => {
             const addedTag = document.createElement('p');
             addedTag.className = 'tag';
             addedTag.textContent = tagValue;
-            document.getElementById('all-tags').appendChild(addedTag);
+            addedTag.setAttribute('style', 'height: fit-content');
+            document
+                .getElementById('all-tags')
+                .insertBefore(addedTag, document.getElementById('add-tag'));
             document.getElementById('add-tag').style.display = 'block';
             document.getElementById('all-tags').removeChild(tagName);
             document.getElementById('all-tags').removeChild(checkBtn);
@@ -321,7 +325,7 @@ function getEventData() {
             var endDate = new Date(eventinfo.endtimestamp * 1000);
             document.getElementById('eventdetails').innerHTML = /* html */ `
             <label for="update-name">Name:</label><br>
-            <input style="min-width: min(850px, calc(95vw));" type="text" value="${sanitizeText(
+            <input style="min-width: var(--max-width-medium);" type="text" value="${sanitizeText(
                 eventinfo.name,
             )}" id="update-name"><br>
             <label for="update-description">Description:</label><br>

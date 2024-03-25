@@ -54,7 +54,7 @@
                 <form class="form" id="eventform">
                     <label for="name">Name:</label><br />
                     <input
-                        style="min-width: min(850px, calc(95vw))"
+                        style="min-width: var(--max-width-medium)"
                         type="text"
                         id="name"
                         name="name"
@@ -81,10 +81,13 @@
                     <div class="cols" style="justify-content: right">
                         <input type="time" id="endtime" name="endtime" />
                     </div>
-                    <div style="display: flex; justify-content: center; margin-bottom: 12px">
+                    <div style="display: flex; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; max-width: var(--max-width-medium); margin: auto;">
                         <label>Add Event Tags: </label>
-                        <div id="all-tags"></div>
-                        <button id="add-tag" class="plus-button" type="button">+</button>
+                        <div id="all-tags">
+                            <button id="add-tag" class="plus-button" type="button">+</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-bottom: 12px">
                         <label style="font-size: 1.5rem; padding: 0.2rem">Repeat</label>
                         <div class="checkbox-wrapper-6">
                             <input

@@ -24,7 +24,7 @@ input:-webkit-autofill:active {
 }
 
 .form textarea {
-    min-width: min(850px, calc(95vw));
+    min-width: var(--max-width-medium);
     border: 2px solid var(--accent);
     resize: none;
 }

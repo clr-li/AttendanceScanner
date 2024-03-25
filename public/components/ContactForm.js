@@ -34,7 +34,7 @@ class ContactForm extends Component {
             }
             div {
                 width: 100%;
-                max-width: var(--max-width-small);
+                max-width: var(--max-width-medium);
                 margin: 0 auto;
                 height: 100%;
                 color: var(--accent);
