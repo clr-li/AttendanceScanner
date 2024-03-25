@@ -230,7 +230,6 @@ router.get('/updateevent', async function (request, response) {
     const tag = request.query.tag;
 
     if (repeatEffect === 1) {
-        console.log(tag);
         await asyncRun(
             `UPDATE Events SET name = ?, starttimestamp = ?, endtimestamp = ?, description = ?, tag = ? WHERE business_id = ? AND id = ? `,
             [name, starttimestamp, endtimestamp, description, tag, businessId, eventid],

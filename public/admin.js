@@ -457,11 +457,9 @@ function getEventData() {
 
             const allDeleteTags = document.getElementsByClassName('delete-tag');
             for (const tag of allDeleteTags) {
-                // remove tag
                 tag.onclick = () => {
                     tag.parentNode.remove();
                 };
-                console.log(tag);
             }
 
             document.getElementById('update').onclick = () => {
