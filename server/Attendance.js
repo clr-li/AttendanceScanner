@@ -4,7 +4,7 @@
 const express = require('express'),
     router = express.Router();
 // database access
-const { asyncRun, asyncGet } = require('./Database');
+const { asyncRun, asyncGet, asyncAll } = require('./Database');
 // user auth
 const { handleAuth, getAccess } = require('./Auth');
 // random universal unique ids for joincodes
@@ -101,15 +101,15 @@ router.get('/markSelfAbsent', async (request, response) => {
     const businessId = request.query.businessId;
     const eventId = request.query.eventId;
 
-    const { status, starttimestamp } = await asyncGet(
-        `SELECT R.status, E.starttimestamp FROM Events as E LEFT OUTER JOIN Records as R ON E.id = R.event_id WHERE (R.status IS NULL OR R.user_id = ? AND R.business_id = ?) AND E.id = ?`,
+    const { status, endtimestamp } = await asyncGet(
+        `SELECT R.status, E.endtimestamp FROM Events as E LEFT OUTER JOIN Records as R ON E.id = R.event_id WHERE (R.status IS NULL OR R.user_id = ? AND R.business_id = ?) AND E.id = ?`,
         [uid, businessId, eventId],
     );
     if (status) {
         response.status(400).send('Attendance already recorded');
         return;
     }
-    if (parseInt(starttimestamp) * 1000 < Date.now()) {
+    if (parseInt(endtimestamp) * 1000 < Date.now()) {
         response.status(400).send('Can only alter attendance for future events');
         return;
     }
@@ -257,6 +257,111 @@ router.get('/recordMyAttendance', async (request, response) => {
         [eventid, businessId, uid, Math.round(Date.now() / 1000), status],
     );
     response.sendStatus(200);
+});
+
+// ============================ GET ATTENDANCE DATA ============================
+
+/**
+ * Returns all the attendance records for the specified business.
+ * @queryParams businessId - id of the business to get attendance records for
+ * @requiredPrivileges read for the business
+ * @response json list of records for all users in the business as well as empty records for users with no attendance records.
+ */
+router.get('/attendancedata', async function (request, response) {
+    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
+    if (!uid) return;
+
+    const businessid = request.query.businessId;
+    const attendanceinfo = await asyncAll(
+        `
+    SELECT 
+      UserData.name, Records.*, UserData.role, UserData.email, UserData.custom_data
+    FROM
+      Records 
+      INNER JOIN (SELECT * FROM Users INNER JOIN Members ON Members.user_id = Users.id WHERE Members.business_id = ?) as UserData ON Records.user_id = UserData.id
+    WHERE 
+      Records.business_id = ? 
+    GROUP BY 
+      UserData.id,
+      Records.event_id,
+      UserData.role
+    ORDER BY
+      UserData.role ASC,
+      Records.timestamp DESC`,
+        [businessid, businessid],
+    );
+    response.send(
+        attendanceinfo.concat(
+            await asyncAll(
+                `
+                SELECT Users.name, Users.id, Users.email, role, Members.custom_data 
+                FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
+                WHERE business_id = ? ORDER BY Members.role`,
+                [businessid],
+            ),
+        ),
+    );
+});
+
+router.get('/memberattendancedata', async function (request, response) {
+    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
+    if (!uid) return;
+
+    const businessid = request.query.businessId;
+    // const starttimestamp = request.query.starttimestamp;
+    // const endtimestamp = request.query.endtimestamp;
+    // const role = request.query.role;
+    const memberAttendance = await asyncAll(
+        `
+        SELECT 
+            Users.name, Users.id as user_id, Records.status, Members.role, COUNT(*) AS total_count
+        FROM
+            Users, Records, Members, Events
+        WHERE 
+            Users.id = Records.user_id
+            AND Members.user_id = Users.id
+            AND Records.business_id = ?
+            AND Members.business_id = ?
+            AND Events.business_id = ?
+            AND Records.event_id = Events.id
+            AND Events.endtimestamp <= ?
+        GROUP BY
+            Records.user_id, Records.status
+        ORDER BY
+            Users.name ASC
+        `,
+        [businessid, businessid, businessid, Math.round(Date.now() / 1000)],
+    );
+
+    response.send(
+        memberAttendance.concat(
+            await asyncAll(
+                `
+        SELECT Users.name, Users.id as user_id, Users.email, role, Members.custom_data FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`,
+                [businessid],
+            ),
+        ),
+    );
+});
+
+router.get('/countPastEvents', async function (request, response) {
+    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
+    if (!uid) return;
+
+    const businessid = request.query.businessId;
+    const num = await asyncGet(
+        `
+        SELECT 
+            COUNT(*) AS total_count
+        FROM
+            Events
+        WHERE 
+            business_id = ?
+            AND endtimestamp <= ?
+        `,
+        [businessid, Math.round(Date.now() / 1000)],
+    );
+    response.send(num);
 });
 
 // ============================ ATTENDANCE EXPORTS ============================

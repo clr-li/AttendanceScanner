@@ -34,6 +34,13 @@ class Navbar extends Component {
                             ? 'Admin'
                             : '<i class="fa fa-user-gear"></i>'
                     }</a>
+                    <a href="/stats.html" class="${
+                        location.pathname === '/stats.html' ? 'active' : ''
+                    }">${
+                        window.innerWidth > SIZE_THRESHOLD
+                            ? 'Stats'
+                            : '<i class="fa-solid fa-chart-column"></i>'
+                    }</a>
                 </nav>
                 <user-icon></user-icon>
             </header>

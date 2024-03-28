@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Stats</title>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/assets/logo.png" />
+
+        <!-- import the webpage's stylesheet -->
+        <link rel="stylesheet" href="/style.css" />
+
+        <!-- Custom Components -->
+        <script type="module" src="/components/Navigation.js"></script>
+        <script type="module" src="/components/TypeSelect.js"></script>
+
+        <style>
+            /* smooth load */
+            body {
+                opacity: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <navigation-manager>
+            <section>
+                <h1>Stats</h1>
+                <type-select id="business-selector" name="businesses" label="Group:"></type-select>
+                <div class="scroll">
+                    <table id="user-stats-table" class="calendar"></table>
+                </div>
+            </section>
+        </navigation-manager>
+
+        <script type="module" src="/stats.js"></script>
+        <noscript>
+            Please enable JavaScript for full functionality.
+            <!-- smooth load -->
+            <style>
+                body {
+                    opacity: 1;
+                }
+            </style>
+        </noscript>
+    </body>
+</html>

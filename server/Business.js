@@ -177,45 +177,6 @@ router.get('/removeMember', async (request, response) => {
 });
 
 /**
- * Returns all the attendance records for the specified business.
- * @queryParams businessId - id of the business to get attendance records for
- * @requiredPrivileges read for the business
- * @response json list of records for all users in the business as well as empty records for users with no attendance records.
- */
-router.get('/attendancedata', async function (request, response) {
-    const uid = await handleAuth(request, response, request.query.businessId, { read: true });
-    if (!uid) return;
-
-    const businessid = request.query.businessId;
-    const attendanceinfo = await asyncAll(
-        `
-    SELECT 
-      UserData.name, Records.*, UserData.role, UserData.email, UserData.custom_data
-    FROM
-      Records 
-      INNER JOIN (SELECT * FROM Users INNER JOIN Members ON Members.user_id = Users.id WHERE Members.business_id = ?) as UserData ON Records.user_id = UserData.id
-    WHERE 
-      Records.business_id = ? 
-    GROUP BY 
-      UserData.id,
-      Records.event_id,
-      UserData.role
-    ORDER BY
-      UserData.role ASC,
-      Records.timestamp DESC`,
-        [businessid, businessid],
-    );
-    response.send(
-        attendanceinfo.concat(
-            await asyncAll(
-                `SELECT Users.name, Users.id, Users.email, role, Members.custom_data FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`,
-                [businessid],
-            ),
-        ),
-    );
-});
-
-/**
  * Gets all the metadata of a business that a user is a member of.
  * @queryParams businessId - id of the business to get metadata for
  * @requiredPrivileges member of the business
