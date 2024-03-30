@@ -311,11 +311,10 @@ router.get('/eventtags', async (request, response) => {
     const uid = await handleAuth(request, response, request.query.businessId, { read: true });
     if (!uid) return;
 
-    const tags = await asyncAll(`SELECT tag FROM Events WHERE business_id = ?`, [
-        request.query.businessId,
-    ]);
-
-    console.log(tags);
+    const tags = await asyncAll(
+        `SELECT DISTINCT tag FROM Events WHERE business_id = ? AND tag <> ''`,
+        [request.query.businessId],
+    );
     response.send(tags);
 });
 

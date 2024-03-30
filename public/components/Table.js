@@ -19,7 +19,7 @@ export class Table extends Component {
                 <label for="filtername">Name: </label>
                 <input type="text" id="filtername" name="filtername" placeholder="person name"><br>
                 <type-select label="Event Name:" name="eventName" id="filterEventName" placeholder="select/type event"></type-select>
-                <type-select label="Event Tags:" name="eventTags" id="filter-event-tags" placeholder="select/type event tag"></type-select>
+                <type-select label="Event Tag:" name="eventTags" id="filter-event-tags" placeholder="select/type event tag"></type-select>
                 <label for="filterstart">Start Date: </label>
                 <input type="date" id="filterstart" name="filterstart">
                 <label for="filterend">End Date: </label>

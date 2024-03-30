@@ -308,9 +308,11 @@ router.get('/memberattendancedata', async function (request, response) {
     if (!uid) return;
 
     const businessid = request.query.businessId;
-    // const starttimestamp = request.query.starttimestamp;
-    // const endtimestamp = request.query.endtimestamp;
-    // const role = request.query.role;
+    let tag = '%,' + request.query.tag + ',%';
+    const role = request.query.role;
+    // const start = request.query.start;
+    // const end = request.query.end;
+    if (tag === '%,,%') tag = '';
     const memberAttendance = await asyncAll(
         `
         SELECT 
@@ -325,30 +327,38 @@ router.get('/memberattendancedata', async function (request, response) {
             AND Events.business_id = ?
             AND Records.event_id = Events.id
             AND Events.endtimestamp <= ?
+            AND (? = '' OR Members.role = ?)
+            AND (? = '' OR Events.tag LIKE ?)
         GROUP BY
             Records.user_id, Records.status
         ORDER BY
             Users.name ASC
         `,
-        [businessid, businessid, businessid, Math.round(Date.now() / 1000)],
+        [businessid, businessid, businessid, Math.round(Date.now() / 1000), role, role, tag, tag],
     );
 
     response.send(
         memberAttendance.concat(
             await asyncAll(
                 `
-        SELECT Users.name, Users.id as user_id, Users.email, role, Members.custom_data FROM Members LEFT JOIN Users ON Members.user_id = Users.id WHERE business_id = ? ORDER BY Members.role`,
-                [businessid],
+                SELECT Users.name, Users.id as user_id, Users.email, role, Members.custom_data 
+                FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
+                WHERE business_id = ? AND (? = '' OR Members.role = ?) 
+                ORDER BY Members.role`,
+                [businessid, role, role],
             ),
         ),
     );
 });
 
-router.get('/countPastEvents', async function (request, response) {
+router.get('/countAllEvents', async function (request, response) {
     const uid = await handleAuth(request, response, request.query.businessId, { read: true });
     if (!uid) return;
 
     const businessid = request.query.businessId;
+    let tag = '%,' + request.query.tag + ',%';
+    if (tag === '%,,%') tag = '';
+    console.log(tag);
     const num = await asyncGet(
         `
         SELECT 
@@ -358,8 +368,9 @@ router.get('/countPastEvents', async function (request, response) {
         WHERE 
             business_id = ?
             AND endtimestamp <= ?
+            AND (? = '' OR tag LIKE ?)
         `,
-        [businessid, Math.round(Date.now() / 1000)],
+        [businessid, Math.round(Date.now() / 1000), tag, tag],
     );
     response.send(num);
 });

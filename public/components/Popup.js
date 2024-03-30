@@ -40,19 +40,18 @@ export class Popup extends Component {
                     bottom: 0;
                     margin: auto;
                     min-width: 300px;
-                    width: 30%;
+                    width: fit-content;
                     max-width: var(--max-width);
-                    aspect-ratio: 1/1;
                     min-height: 300px;
-                    max-height: var(--max-width);
+                    height: fit-content;
                     background-color: white;
                     text-align: center;
-                    padding: 5px;
                     border: 8px solid ${borderColor};
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     border-radius: 10px;
+                    padding: 1em;
                 }
 
                 :host:before {
