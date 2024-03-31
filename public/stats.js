@@ -1,7 +1,7 @@
 import { requireLogin } from './util/Auth.js';
 import { GET } from './util/Client.js';
-import { initBusinessSelector, initEventSelector } from './util/selectors.js';
-import { sanitizeText } from '../util/util.js';
+import { initBusinessSelector } from './util/selectors.js';
+import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { Popup } from './components/Popup.js';
 await requireLogin();
 
@@ -69,6 +69,50 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     attendance.innerHTML = html;
 }
 
+function sortStudents(searchword) {
+    searchword = searchword.toLowerCase();
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById('user-stats-table');
+    switching = true;
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+        // Start by saying: no switching is done:
+        switching = false;
+        rows = table.rows;
+        /* Loop through all table rows (except the
+        first, which contains table headers): */
+        for (i = 1; i < rows.length - 1; i++) {
+            // Start by saying there should be no switching:
+            shouldSwitch = false;
+            /* Get the two elements you want to compare,
+            one from current row and one from the next: */
+            x = rows[i].getElementsByTagName('TD')[0];
+            y = rows[i + 1].getElementsByTagName('TD')[0];
+            /** @type {string} */
+            let xName = x.dataset.name.toLowerCase();
+            let yName = y.dataset.name.toLowerCase();
+            // Check if the two rows should switch place:
+            if (!xName.includes(searchword) && yName.includes(searchword)) {
+                shouldSwitch = true;
+                break;
+            } else if (xName.includes(searchword) && !yName.includes(searchword)) {
+                // Do nothing
+            } else if (calcSimilarity(xName, searchword) < calcSimilarity(yName, searchword)) {
+                // If so, mark as a switch and break the loop:
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            /* If a switch has been marked, make the switch
+            and mark that a switch has been done: */
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+}
+
 document.getElementById('show-filter').onclick = async () => {
     const filter = new Popup();
     filter.innerHTML = /* html */ `
@@ -76,6 +120,8 @@ document.getElementById('show-filter').onclick = async () => {
         <h1>Filter</h1>
         <div class="rows">
         <div class="cols">
+            <label for="filter-name">Name: </label>
+            <input type="text" id="filter-name" name="filter-name" placeholder="person name"><br>
             <type-select label="Role:" name="role" id="filter-role" placeholder="select/type role"></type-select>
         </div>
         <div class="cols">
@@ -161,6 +207,18 @@ document.getElementById('show-filter').onclick = async () => {
         );
         const numPastEvents = (await numRes.json())['total_count'];
         runMemberStatsTable(memberAttArr, numPastEvents);
+        [...document.getElementById('user-stats-table').firstChild.querySelectorAll('tr')].forEach(
+            row => {
+                if (
+                    row.firstChild.nodeName === 'TD' &&
+                    document.getElementById('filter-name').value
+                ) {
+                    sortStudents(document.getElementById('filter-name').value);
+                } else {
+                    row.style.display = 'table-row';
+                }
+            },
+        );
     };
 };
 
