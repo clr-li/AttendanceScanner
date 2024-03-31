@@ -6,9 +6,17 @@ import { Popup } from './components/Popup.js';
 await requireLogin();
 
 const { get: getBusinessId } = await initBusinessSelector('business-selector', async () => {
-    const res = await GET(`/memberattendancedata?businessId=${getBusinessId()}&tag=&role=`);
+    const res = await GET(
+        `/memberattendancedata?businessId=${getBusinessId()}&tag=&role=&start=&end=${Math.round(
+            Date.now() / 1000,
+        )}`,
+    );
     const memberAttArr = await res.json();
-    const numRes = await GET(`/countAllEvents?businessId=${getBusinessId()}&tag=`);
+    const numRes = await GET(
+        `/countAllEvents?businessId=${getBusinessId()}&tag=&start=&end=${Math.round(
+            Date.now() / 1000,
+        )}`,
+    );
     const numPastEvents = (await numRes.json())['total_count'];
     runMemberStatsTable(memberAttArr, numPastEvents);
 });
@@ -66,13 +74,21 @@ document.getElementById('show-filter').onclick = async () => {
     filter.innerHTML = /* html */ `
     <form id="filterform" class="form" onsubmit="return false;">
         <h1>Filter</h1>
-        <type-select label="Event Tag:" name="event-tag" id="filter-tag" placeholder="select/type event tag"></type-select>
-        <type-select label="Role:" name="role" id="filter-role" placeholder="select/type role"></type-select>
-        <!--<label for="filter-start">Start Date: </label>
-        <input type="date" id="filter-start" name="filter-start">
-        <label for="filter-end">End Date: </label>
-        <input type="date" id="filter-end" name="filter-end"><br>-->
-        <button type="button" value="Submit" id="submit-filterform" class="button">Apply</button>
+        <div class="rows">
+        <div class="cols">
+            <type-select label="Role:" name="role" id="filter-role" placeholder="select/type role"></type-select>
+        </div>
+        <div class="cols">
+            <type-select label="Event Tag:" name="event-tag" id="filter-tag" placeholder="select/type tag"></type-select>
+            <label for="filter-start">Start Date: </label>
+            <input type="date" id="filter-start" name="filter-start"><br>
+            <label for="filter-end">End Date: </label>
+            <input type="date" id="filter-end" name="filter-end">
+        </div>  
+        </div>
+        <div class="rows">  
+            <button type="button" value="Submit" id="submit-filterform" class="button">Apply</button>
+        </div>    
     </form>
     `;
     document.body.appendChild(filter);
@@ -106,21 +122,59 @@ document.getElementById('show-filter').onclick = async () => {
         tag = e.detail.value;
     });
     document.getElementById('submit-filterform').onclick = async () => {
-        const start = document.getElementById('filter-start').value;
-        const end = document.getElementById('filter-end').value;
+        let start = document.getElementById('filter-start').value;
+        let end = document.getElementById('filter-end').value;
+        start = new Date(start + 'T00:00').getTime() / 1000;
+        const month = new Date(Date.now()).getMonth() + 1;
+        let monthString = month.toString();
+        if (month < 10) monthString = '0' + month;
+        if (
+            end ===
+            new Date(Date.now()).getFullYear() +
+                '-' +
+                monthString +
+                '-' +
+                new Date(Date.now()).getDate()
+        ) {
+            end =
+                new Date(
+                    end + 'T' + new Date().getHours() + ':' + new Date().getMinutes(),
+                ).getTime() / 1000;
+        } else {
+            end = new Date(end + 'T23:59').getTime() / 1000;
+        }
+        if (isNaN(start)) start = '';
+        if (isNaN(end)) end = Math.round(Date.now() / 1000);
+        if (end != '' && start != '' && end < start) {
+            Popup.alert('End date must be after start date', 'var(--error)');
+            return;
+        } else if (end > Math.round(Date.now() / 1000) || start > Math.round(Date.now() / 1000)) {
+            Popup.alert('Start and end date must be before today', 'var(--error)');
+            return;
+        }
         const res = await GET(
             `/memberattendancedata?businessId=${getBusinessId()}&tag=${tag}&role=${role}&start=${start}&end=${end}`,
         );
         const memberAttArr = await res.json();
-        const numRes = await GET(`/countAllEvents?businessId=${getBusinessId()}&tag=${tag}`);
+        const numRes = await GET(
+            `/countAllEvents?businessId=${getBusinessId()}&tag=${tag}&start=${start}&end=${end}`,
+        );
         const numPastEvents = (await numRes.json())['total_count'];
         runMemberStatsTable(memberAttArr, numPastEvents);
     };
 };
 
-const res = await GET(`/memberattendancedata?businessId=${getBusinessId()}&tag=&role=`);
+const res = await GET(
+    `/memberattendancedata?businessId=${getBusinessId()}&tag=&role=&start=&end=${Math.round(
+        Date.now() / 1000,
+    )}`,
+);
 const memberAttArr = await res.json();
-const numRes = await GET(`/countAllEvents?businessId=${getBusinessId()}&tag=`);
+const numRes = await GET(
+    `/countAllEvents?businessId=${getBusinessId()}&tag=&start=&end=${Math.round(
+        Date.now() / 1000,
+    )}`,
+);
 const numPastEvents = (await numRes.json())['total_count'];
 runMemberStatsTable(memberAttArr, numPastEvents);
 

@@ -310,8 +310,8 @@ router.get('/memberattendancedata', async function (request, response) {
     const businessid = request.query.businessId;
     let tag = '%,' + request.query.tag + ',%';
     const role = request.query.role;
-    // const start = request.query.start;
-    // const end = request.query.end;
+    let start = request.query.start;
+    let end = request.query.end;
     if (tag === '%,,%') tag = '';
     const memberAttendance = await asyncAll(
         `
@@ -326,15 +326,16 @@ router.get('/memberattendancedata', async function (request, response) {
             AND Members.business_id = ?
             AND Events.business_id = ?
             AND Records.event_id = Events.id
-            AND Events.endtimestamp <= ?
             AND (? = '' OR Members.role = ?)
             AND (? = '' OR Events.tag LIKE ?)
+            AND (? = '' OR Events.starttimestamp >= ?)
+            AND (? = '' OR Events.endtimestamp <= ?)
         GROUP BY
             Records.user_id, Records.status
         ORDER BY
             Users.name ASC
         `,
-        [businessid, businessid, businessid, Math.round(Date.now() / 1000), role, role, tag, tag],
+        [businessid, businessid, businessid, role, role, tag, tag, start, start, end, end],
     );
 
     response.send(
@@ -356,9 +357,10 @@ router.get('/countAllEvents', async function (request, response) {
     if (!uid) return;
 
     const businessid = request.query.businessId;
+    let start = request.query.start;
+    let end = request.query.end;
     let tag = '%,' + request.query.tag + ',%';
     if (tag === '%,,%') tag = '';
-    console.log(tag);
     const num = await asyncGet(
         `
         SELECT 
@@ -367,10 +369,11 @@ router.get('/countAllEvents', async function (request, response) {
             Events
         WHERE 
             business_id = ?
-            AND endtimestamp <= ?
+            AND (? = '' OR Events.starttimestamp >= ?)
+            AND (? = '' OR Events.endtimestamp <= ?)
             AND (? = '' OR tag LIKE ?)
         `,
-        [businessid, Math.round(Date.now() / 1000), tag, tag],
+        [businessid, start, start, end, end, tag, tag],
     );
     response.send(num);
 });
