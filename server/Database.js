@@ -1,10 +1,9 @@
 'use strict';
 
 const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
 
 // ============================ INIT SQLite DATABASE ============================
-/** @type { import('sqlite3').Database } */
+/** @type { import('sqlite-auto-migrator').Database } */
 let db;
 /**
  * Reinitializes the database if the database file does not exist.
@@ -16,48 +15,25 @@ async function reinitializeIfNotExists(
     dbFile = ':memory:',
     schemaFile = './server/databaseSchema.sql',
 ) {
+    const { Migrator, Database } = await import('sqlite-auto-migrator');
+
     const exists = dbFile !== ':memory:' && fs.existsSync(dbFile);
     if (exists) console.log('Database file found: ' + dbFile);
-    if (db)
-        await new Promise((resolve, reject) => {
-            db.close(err => {
-                if (err) console.error('Failed to close previous database connection: ' + err);
-                else console.log('Closed previous database connection');
-                resolve();
-            });
+    else console.log('Database file not found (creating a new one): ' + dbFile);
+
+    if (db) await db.close();
+    db = await Database.connect(dbFile);
+
+    if (dbFile === ':memory:' || dbFile === '') {
+        const schema = fs.readFileSync(schemaFile, 'utf8');
+        await db.exec(schema);
+    } else {
+        const migrator = new Migrator({
+            dbPath: dbFile,
+            schemaPath: schemaFile,
         });
-    await new Promise((resolve, reject) => {
-        db = new sqlite3.Database(dbFile, err => {
-            if (err) console.error('Failed to open database: ' + err);
-            resolve();
-        });
-    });
-    if (!exists) {
-        await new Promise((resolve, reject) => {
-            console.log(
-                'No database file found, writing a new one using the schema file: ' +
-                    schemaFile +
-                    ' and the database file: ' +
-                    dbFile +
-                    '!',
-            );
-            const schema = fs.readFileSync(schemaFile, 'utf8');
-            db.serialize(() => {
-                let resolvedCount = 0;
-                let shouldResolveCount = schema.split(';').filter(x => x).length;
-                for (const sql of schema.split(';')) {
-                    if (sql)
-                        db.run(sql, err => {
-                            if (err)
-                                console.error(
-                                    'Failed to initialize database: ' + err + '\n SQL: ' + sql,
-                                );
-                            resolvedCount++;
-                            if (resolvedCount === shouldResolveCount) resolve();
-                        });
-                }
-            });
-        });
+        await migrator.make();
+        await migrator.migrate();
     }
     return exists;
 }
@@ -69,15 +45,8 @@ async function reinitializeIfNotExists(
  * @param {any[]} params optional list of sql parameters
  * @returns a Promise of an object representing the first result of the sql query.
  */
-function asyncGet(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.get(sql, params, (err, result) => {
-            if (err) {
-                console.log('sql error: ' + sql);
-                reject(err);
-            } else resolve(result);
-        });
-    });
+async function asyncGet(sql, params = []) {
+    return await db.get(sql, params);
 }
 
 /**
@@ -86,15 +55,8 @@ function asyncGet(sql, params = []) {
  * @param {any[]} params optional list of sql parameters
  * @returns a Promise of an array representing all the results of the sql query.
  */
-function asyncAll(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.all(sql, params, (err, result) => {
-            if (err) {
-                console.log('sql error: ' + sql);
-                reject(err);
-            } else resolve(result);
-        });
-    });
+async function asyncAll(sql, params = []) {
+    return await db.all(sql, params);
 }
 
 /**
@@ -103,15 +65,8 @@ function asyncAll(sql, params = []) {
  * @param {any[]} params optional list of sql parameters
  * @returns Promise<void>
  */
-function asyncRun(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, err => {
-            if (err) {
-                console.log('sql error: ' + sql);
-                reject(err);
-            } else resolve();
-        });
-    });
+async function asyncRun(sql, params = []) {
+    await db.run(sql, params);
 }
 
 /**
@@ -121,15 +76,9 @@ function asyncRun(sql, params = []) {
  * @requires sql should be an INSERT statement
  * @returns a Promise of the id of the last inserted row (if the sql query was an INSERT statement!).
  */
-function asyncRunWithID(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) {
-                console.log('sql error: ' + sql);
-                reject(err);
-            } else resolve(this.lastID);
-        });
-    });
+async function asyncRunWithID(sql, params = []) {
+    const { lastID } = await db.run(sql, params);
+    return lastID;
 }
 
 /**
@@ -139,15 +88,9 @@ function asyncRunWithID(sql, params = []) {
  * @requires sql should be an INSERT, UPDATE, or DELETE statement
  * @returns a Promise of the number of rows changed by the sql query.
  */
-function asyncRunWithChanges(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) {
-                console.log('sql error: ' + sql);
-                reject(err);
-            } else resolve(this.changes);
-        });
-    });
+async function asyncRunWithChanges(sql, params = []) {
+    const { changes } = await db.run(sql, params);
+    return changes;
 }
 
 // ============================ MODULE EXPORTS ============================

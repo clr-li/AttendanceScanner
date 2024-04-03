@@ -1,0 +1,13 @@
+{
+    "DB_PATH": "./.data/ATT.db",
+    "SCHEMA_PATH": "./server/databaseSchema.sql",
+    "MIGRATIONS_PATH": "migrations",
+    "MIGRATION_TABLE": "migrations",
+    "CREATE_IF_NO_CHANGES": false,
+    "ON_RENAME": "PROMPT",
+    "ON_DESTRUCTIVE_CHANGE": "PROMPT",
+    "ON_CHANGED_INDEX": "PROCEED",
+    "ON_CHANGED_VIEW": "PROCEED",
+    "ON_CHANGED_TRIGGER": "PROCEED",
+    "CREATE_DB_IF_MISSING": true
+}

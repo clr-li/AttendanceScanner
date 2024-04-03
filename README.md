@@ -1,15 +1,12 @@
 # Attendance Scanner
 
-<!-- [![LineCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner)](https://github.com/clr-li/AttendanceScanner)
-[![FileCount](https://tokei.ekzhang.com/b1/github/clr-li/AttendanceScanner?category=files)](https://github.com/clr-li/AttendanceScanner) -->
-
 [![LOC](./.badges/lines-of-code.svg)](https://github.com/clr-li/AttendanceScanner)
 [![FileCount](./.badges/file-count.svg)](https://github.com/clr-li/AttendanceScanner)
-[![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F)](https://github.com/clr-li/AttendanceScanner)
+[![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F)](https://attendancescannerqr.web.app)
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
-[![Coverage](./.badges/coverage.svg)](https://raw.githubusercontent.com/clr-li/AttendanceScanner/main/public/assets/coverage.svg)
+[![Coverage](./.badges/coverage.svg)](https://github.com/clr-li/AttendanceScanner)
 
-This project (in progress) uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and CI/CD run through Github Actions.
+This project uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and CI/CD run through Github Actions.
 URL: https://attendancescannerqr.web.app
 
 # Development
@@ -59,8 +56,7 @@ URL: https://attendancescannerqr.web.app
 
 ### Update database
 
--   To reset the database and its schema, change the `databaseSchema.sql` file accordingly, `npm run deploy` changes like normal, then delete the `.data/ATT.db` file on Glitch and restart the server. The database will automatically get reinitialized.
--   To make updates while keeping the existing data, add an update script to the `migrations` folder with the version number and date in its name. Then run it on Glitch.
+-   To update the database schema, change the `databaseSchema.sql` file accordingly (note this file should only contain DDL statements). If you are running the `npm run dev` server, a new migration file will automatically be created in the `migration` folder and applied locally. Otherwise, you can run `sam make` to create it and `sam migrate` to apply it locally. Run `sam status` to verify your changes and optionally inspect the autocreated migration file. Once you are satisfied everything is in order, `npm run deploy` changes like normal and the production server will automatically apply the new migration file.
 -   To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
 
 ## Automated Testing
@@ -97,13 +93,4 @@ By default tests mock the Firebase Authentication layer (to run faster and not r
 
 ## Glitch Development
 
-Preferably don't edit directly on Glitch except to change the production `.data` or `.env`. If necessary,
-
-1. Make changes on Glitch
-2. Locally `git checkout master` and `git pull glitch` to obtain changes locally
-3. `git push origin` changes to the Github `master` branch
-4. On Github, create a pull request and merge changes with the Github `main`
-
-### To change the production (Glitch server) `.data` or `.env`
-
-If the changes only apply to Glitch and not local development, just change directly. Otherwise, make sure leave a note somewhere lol
+We should not edit directly on Glitch except to change .gitignored content like the production `.data` or `.env`. If the changes only apply to Glitch and not local development, just change directly. Otherwise, make sure leave a note somewhere.
