@@ -10,11 +10,7 @@
         <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css" />
         <!-- Add the evo-calendar.css for styling -->
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="https://cdn.jsdelivr.net/npm/evo-calendar@1.1.2/evo-calendar/css/evo-calendar.min.css"
-        />
+        <link rel="stylesheet" type="text/css" href="/lib/evo-calendar.min.css"/>
 
         <!-- Custom Components -->
         <script type="module" src="/components/Navigation.js"></script>
@@ -30,11 +26,8 @@
         <navigation-manager>
             <div id="calendar" style="min-height: 100%"></div>
         </navigation-manager>
-        <!-- Add jQuery library (required) -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
-
-        <!-- Add the evo-calendar.js for.. obviously, functionality! -->
-        <script src="https://cdn.jsdelivr.net/npm/evo-calendar@1.1.2/evo-calendar/js/evo-calendar.min.js"></script>
+        <script src="/lib/jquery.min.js"></script> <!-- jQuery is required for evo-calendar -->
+        <script src="/lib/evo-calendar.min.js"></script>
         <script type="module" src="/calendar.js"></script>
         <noscript>
             Please enable JavaScript for full functionality.
