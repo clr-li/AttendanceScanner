@@ -3,7 +3,6 @@ import { GET } from './util/Client.js';
 import { initBusinessSelector } from './util/selectors.js';
 import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { Popup } from './components/Popup.js';
-const Chart = window.Chart;
 await requireLogin();
 
 const { get: getBusinessId } = await initBusinessSelector('business-selector', async () => {
@@ -68,7 +67,7 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     }
     const attendance = document.getElementById('user-stats-table');
     attendance.innerHTML = html;
-    runMemberStatsChart(uidToUserinfo);
+
     const presentButton = document.getElementById('sort-present');
     const absentButton = document.getElementById('sort-absent');
     const lateButton = document.getElementById('sort-late');
@@ -110,68 +109,6 @@ function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, index) {
     otherBtn1.innerHTML = '<i class="fa-solid fa-sort"></i>';
     otherBtn2.innerHTML = '<i class="fa-solid fa-sort"></i>';
     otherBtn3.innerHTML = '<i class="fa-solid fa-sort"></i>';
-}
-
-function runMemberStatsChart(uidToUserInfo) {
-    let xValues = [];
-    // get all present values for each user
-    let yPresent = [];
-    let yAbsent = [];
-    let yLate = [];
-    let yExcused = [];
-    for (const user of uidToUserInfo.keys()) {
-        const userinfo = uidToUserInfo.get(user);
-        yPresent.push(userinfo.PRESENT);
-        yAbsent.push(userinfo.ABSENT);
-        yLate.push(userinfo.LATE);
-        yExcused.push(userinfo.EXCUSED);
-        xValues.push(userinfo.name);
-    }
-
-    new Chart(document.getElementById('member-chart'), {
-        type: 'bar',
-        data: {
-            labels: xValues,
-            datasets: [
-                {
-                    label: 'PRESENT',
-                    data: yPresent,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'ABSENT',
-                    data: yAbsent,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'LATE',
-                    data: yLate,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'EXCUSED',
-                    data: yExcused,
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Member Attendance',
-                },
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                },
-                y: {
-                    stacked: true,
-                },
-            },
-        },
-    });
 }
 
 function sortStudents(searchword) {
