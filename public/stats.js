@@ -48,7 +48,7 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     }
 
     let html =
-        '</th><th data-csv="Name">Name (id)</th><th data-csv="Present Count">Present Count</th><th data-csv="Absent Count">Absent Count</th><th data-csv="Late Count">Late Count</th><th data-csv="Excused Count">Excused Count</th><th data-csv="Total Count">Total Count</th></tr>';
+        '</th><th data-csv="Name">Name (id)</th><th data-csv="Present">Present <button id="sort-present" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></i></th><th data-csv="Absent">Absent <button id="sort-absent" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Late">Late <button id="sort-late" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Excused">Excused <button id="sort-excused" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Total Count">Total Count</th></tr>';
     for (const uid of uidToUserinfo.keys()) {
         const userinfo = uidToUserinfo.get(uid);
         html += `<tr id="row-${sanitizeText(uid)}"><td data-name="${userinfo.name}" data-csv="${
@@ -69,6 +69,47 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     const attendance = document.getElementById('user-stats-table');
     attendance.innerHTML = html;
     runMemberStatsChart(uidToUserinfo);
+    const presentButton = document.getElementById('sort-present');
+    const absentButton = document.getElementById('sort-absent');
+    const lateButton = document.getElementById('sort-late');
+    const excusedButton = document.getElementById('sort-excused');
+    presentButton.onclick = () => {
+        sortStatus(presentButton, absentButton, lateButton, excusedButton, 1);
+    };
+    absentButton.onclick = () => {
+        sortStatus(absentButton, presentButton, lateButton, excusedButton, 2);
+    };
+    lateButton.onclick = () => {
+        sortStatus(lateButton, presentButton, absentButton, excusedButton, 3);
+    };
+    excusedButton.onclick = () => {
+        sortStatus(excusedButton, presentButton, absentButton, lateButton, 4);
+    };
+}
+
+function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, index) {
+    const sortDirection = statusBtn.value;
+    const table = document.getElementById('user-stats-table');
+    const rows = table.rows;
+    const sortedRows = [...rows].slice(1);
+    sortedRows.sort((a, b) => {
+        const aVal = parseInt(a.cells[index].innerText);
+        const bVal = parseInt(b.cells[index].innerText);
+        if (sortDirection === 'asc') {
+            return bVal - aVal;
+        } else {
+            return aVal - bVal;
+        }
+    });
+    sortedRows.forEach(row => table.appendChild(row));
+    statusBtn.value = sortDirection === 'desc' ? 'asc' : 'desc';
+    statusBtn.innerHTML =
+        sortDirection === 'desc'
+            ? '<i class="fa-solid fa-caret-up"></i>'
+            : '<i class="fa-solid fa-caret-down"></i>';
+    otherBtn1.innerHTML = '<i class="fa-solid fa-sort"></i>';
+    otherBtn2.innerHTML = '<i class="fa-solid fa-sort"></i>';
+    otherBtn3.innerHTML = '<i class="fa-solid fa-sort"></i>';
 }
 
 function runMemberStatsChart(uidToUserInfo) {
