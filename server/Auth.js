@@ -111,11 +111,11 @@ async function getAccess(uid, businessId, requiredPrivileges = {}) {
  * @effects sends response status error codes for failed auth
  */
 async function handleAuth(request, response, businessId = false, requiredPrivileges = {}) {
-    if (!request.headers.idtoken) {
+    if (!request.headers.authorization || !request.headers.authorization.startsWith('Bearer ')) {
         response.status(400).send('No idtoken provided, user does not appear to be signed in');
         return false;
     }
-    const uid = await getUID(request.headers.idtoken);
+    const uid = await getUID(request.headers.authorization.substring(7));
     if (!uid) {
         response.status(401).send('Idtoken is invalid, login has likely expired');
         return false;

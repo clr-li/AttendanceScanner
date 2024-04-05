@@ -64,7 +64,7 @@ export async function login() {
         console.log('Logging in...');
         if (auth.currentUser) {
             // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
-            let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
+            const idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
             sessionStorage.setItem('idtoken', idToken);
         } else if (!sessionStorage.getItem('idtoken')) return false;
         const res = await GET('/isLoggedIn');

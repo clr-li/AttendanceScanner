@@ -1,6 +1,8 @@
 const fs = require('fs');
 const exec = require('child_process').exec;
 
+if (!fs.existsSync('./.badges')) fs.mkdirSync('./.badges');
+
 function createBadge(label, value, leftWidth, rightWidth, color, filename) {
     const totalWidth = leftWidth + rightWidth;
     const svg = /*html*/ `
@@ -18,10 +20,10 @@ function createBadge(label, value, leftWidth, rightWidth, color, filename) {
             }" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)">${label}</text>
             <text x="${5 * leftWidth}" y="140" transform="scale(.1)" fill="#fff">${label}</text>
             <text aria-hidden="true" x="${
-                8 * leftWidth + 8 * rightWidth
+                10 * leftWidth + value.toString().length + 5 * rightWidth
             }" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)">${value}</text>
             <text x="${
-                8 * leftWidth + 8 * rightWidth
+                10 * leftWidth + value.toString().length + 5 * rightWidth
             }" y="140" transform="scale(.1)" fill="#fff">${value}</text>
         </g>
     </svg>
