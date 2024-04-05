@@ -3,7 +3,6 @@ import { GET } from './util/Client.js';
 import { initBusinessSelector } from './util/selectors.js';
 import { calcSimilarity, sanitizeText } from '../util/util.js';
 import { Popup } from './components/Popup.js';
-const Chart = window.Chart;
 await requireLogin();
 
 const { get: getBusinessId } = await initBusinessSelector('business-selector', async () => {
@@ -44,7 +43,7 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     }
 
     let html =
-        '</th><th data-csv="Name">Name (id)</th><th data-csv="Present Count">Present Count</th><th data-csv="Absent Count">Absent Count</th><th data-csv="Late Count">Late Count</th><th data-csv="Excused Count">Excused Count</th><th data-csv="Total Count">Total Count</th></tr>';
+        '</th><th data-csv="Name">Name (id)</th><th data-csv="Present">Present <button id="sort-present" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></i></th><th data-csv="Absent">Absent <button id="sort-absent" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Late">Late <button id="sort-late" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Excused">Excused <button id="sort-excused" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Total Count">Total Count</th></tr>';
     for (const uid of uidToUserinfo.keys()) {
         const userinfo = uidToUserinfo.get(uid);
         html += `<tr id="row-${sanitizeText(uid)}"><td data-name="${userinfo.name}" data-csv="${
@@ -64,69 +63,48 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     }
     const attendance = document.getElementById('user-stats-table');
     attendance.innerHTML = html;
-    runMemberStatsChart(uidToUserinfo);
+
+    const presentButton = document.getElementById('sort-present');
+    const absentButton = document.getElementById('sort-absent');
+    const lateButton = document.getElementById('sort-late');
+    const excusedButton = document.getElementById('sort-excused');
+    presentButton.onclick = () => {
+        sortStatus(presentButton, absentButton, lateButton, excusedButton, 1);
+    };
+    absentButton.onclick = () => {
+        sortStatus(absentButton, presentButton, lateButton, excusedButton, 2);
+    };
+    lateButton.onclick = () => {
+        sortStatus(lateButton, presentButton, absentButton, excusedButton, 3);
+    };
+    excusedButton.onclick = () => {
+        sortStatus(excusedButton, presentButton, absentButton, lateButton, 4);
+    };
 }
 
-function runMemberStatsChart(uidToUserInfo) {
-    let xValues = [];
-    // get all present values for each user
-    let yPresent = [];
-    let yAbsent = [];
-    let yLate = [];
-    let yExcused = [];
-    for (const user of uidToUserInfo.keys()) {
-        const userinfo = uidToUserInfo.get(user);
-        yPresent.push(userinfo.PRESENT);
-        yAbsent.push(userinfo.ABSENT);
-        yLate.push(userinfo.LATE);
-        yExcused.push(userinfo.EXCUSED);
-        xValues.push(userinfo.name);
-    }
-
-    new Chart(document.getElementById('member-chart'), {
-        type: 'bar',
-        data: {
-            labels: xValues,
-            datasets: [
-                {
-                    label: 'PRESENT',
-                    data: yPresent,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'ABSENT',
-                    data: yAbsent,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'LATE',
-                    data: yLate,
-                    borderWidth: 1,
-                },
-                {
-                    label: 'EXCUSED',
-                    data: yExcused,
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Member Attendance',
-                },
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                },
-                y: {
-                    stacked: true,
-                },
-            },
-        },
+function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, index) {
+    const sortDirection = statusBtn.value;
+    const table = document.getElementById('user-stats-table');
+    const rows = table.rows;
+    const sortedRows = [...rows].slice(1);
+    sortedRows.sort((a, b) => {
+        const aVal = parseInt(a.cells[index].innerText);
+        const bVal = parseInt(b.cells[index].innerText);
+        if (sortDirection === 'asc') {
+            return bVal - aVal;
+        } else {
+            return aVal - bVal;
+        }
     });
+    sortedRows.forEach(row => table.appendChild(row));
+    statusBtn.value = sortDirection === 'desc' ? 'asc' : 'desc';
+    statusBtn.innerHTML =
+        sortDirection === 'desc'
+            ? '<i class="fa-solid fa-caret-up"></i>'
+            : '<i class="fa-solid fa-caret-down"></i>';
+    otherBtn1.innerHTML = '<i class="fa-solid fa-sort"></i>';
+    otherBtn2.innerHTML = '<i class="fa-solid fa-sort"></i>';
+    otherBtn3.innerHTML = '<i class="fa-solid fa-sort"></i>';
 }
 
 function sortStudents(searchword) {
