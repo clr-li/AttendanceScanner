@@ -47,7 +47,7 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     }
 
     let html =
-        '</th><th data-csv="Name">Name (id)</th><th data-csv="Present">Present <button id="sort-present" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></i></th><th data-csv="Absent">Absent <button id="sort-absent" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Late">Late <button id="sort-late" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Excused">Excused <button id="sort-excused" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Total Count">Total Count</th></tr>';
+        '</th><th data-csv="Name">Name (id) <button id="sort-name" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Present">Present <button id="sort-present" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></i></th><th data-csv="Absent">Absent <button id="sort-absent" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Late">Late <button id="sort-late" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Excused">Excused <button id="sort-excused" value="asc" style="border: none; background-color: white;"><i class="fa-solid fa-sort"></i></button></th><th data-csv="Total Count">Total Count</th></tr>';
     for (const uid of uidToUserinfo.keys()) {
         const userinfo = uidToUserinfo.get(uid);
         html += `<tr id="row-${sanitizeText(uid)}"><td data-name="${userinfo.name}" data-csv="${
@@ -72,32 +72,38 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
     const absentButton = document.getElementById('sort-absent');
     const lateButton = document.getElementById('sort-late');
     const excusedButton = document.getElementById('sort-excused');
+    const nameButton = document.getElementById('sort-name');
+    nameButton.onclick = () => {
+        sortStatus(nameButton, presentButton, absentButton, lateButton, excusedButton, 0);
+    };
     presentButton.onclick = () => {
-        sortStatus(presentButton, absentButton, lateButton, excusedButton, 1);
+        sortStatus(presentButton, absentButton, lateButton, excusedButton, nameButton, 1);
     };
     absentButton.onclick = () => {
-        sortStatus(absentButton, presentButton, lateButton, excusedButton, 2);
+        sortStatus(absentButton, presentButton, lateButton, excusedButton, nameButton, 2);
     };
     lateButton.onclick = () => {
-        sortStatus(lateButton, presentButton, absentButton, excusedButton, 3);
+        sortStatus(lateButton, presentButton, absentButton, excusedButton, nameButton, 3);
     };
     excusedButton.onclick = () => {
-        sortStatus(excusedButton, presentButton, absentButton, lateButton, 4);
+        sortStatus(excusedButton, presentButton, absentButton, lateButton, nameButton, 4);
     };
 }
 
-function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, index) {
+function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, otherBtn4, index) {
     const sortDirection = statusBtn.value;
     const table = document.getElementById('user-stats-table');
     const rows = table.rows;
     const sortedRows = [...rows].slice(1);
     sortedRows.sort((a, b) => {
-        const aVal = parseInt(a.cells[index].innerText);
-        const bVal = parseInt(b.cells[index].innerText);
+        const aVal = a.cells[index].innerText;
+        const bVal = b.cells[index].innerText;
         if (sortDirection === 'asc') {
-            return bVal - aVal;
+            if (index === 0) return aVal.localeCompare(bVal);
+            return parseInt(bVal) - parseInt(aVal);
         } else {
-            return aVal - bVal;
+            if (index === 0) return bVal.localeCompare(aVal);
+            return parseInt(aVal) - parseInt(bVal);
         }
     });
     sortedRows.forEach(row => table.appendChild(row));
@@ -109,6 +115,7 @@ function sortStatus(statusBtn, otherBtn1, otherBtn2, otherBtn3, index) {
     otherBtn1.innerHTML = '<i class="fa-solid fa-sort"></i>';
     otherBtn2.innerHTML = '<i class="fa-solid fa-sort"></i>';
     otherBtn3.innerHTML = '<i class="fa-solid fa-sort"></i>';
+    otherBtn4.innerHTML = '<i class="fa-solid fa-sort"></i>';
 }
 
 function sortStudents(searchword) {
