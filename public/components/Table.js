@@ -617,7 +617,7 @@ export class Table extends Component {
                 return;
             }
             const res = await PATCH(
-                `/businesses/${this.businessID}/${
+                `/businesses/${this.businessID}/events/${
                     this.event_to_alter.dataset.id
                 }/attendance?ids=${ids_to_alter.join(',')}&status=${this.status}`,
             );

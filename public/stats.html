@@ -8,6 +8,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/png" href="/assets/logo.png" />
 
+        <!-- Charts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css" />
 
@@ -30,6 +33,11 @@
                 <button id="show-filter" class="button" type="button"><i class="fa-solid fa-filter"></i>&nbsp;Filter</button>
                 <div class="scroll">
                     <table id="user-stats-table" class="calendar"></table>
+                </div><br>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="margin: auto; flex-grow: 1; max-width: var(--max-width); min-width: 30%; min-height: 100px;" class="load-wrapper">
+                        <canvas id="member-chart" style="background-color: white; border: 2px black solid; padding: 5px; border-radius: 5px;"></canvas>
+                    </div>
                 </div>
             </section>
         </navigation-manager>
