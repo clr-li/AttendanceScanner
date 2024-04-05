@@ -7,13 +7,13 @@ await requireLogin();
 
 const { get: getBusinessId } = await initBusinessSelector('business-selector', async () => {
     const res = await GET(
-        `/memberattendancedata?businessId=${getBusinessId()}&tag=&role=&start=&end=${Math.round(
+        `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Math.round(
             Date.now() / 1000,
         )}`,
     );
     const memberAttArr = await res.json();
     const numRes = await GET(
-        `/countAllEvents?businessId=${getBusinessId()}&tag=&start=&end=${Math.round(
+        `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Math.round(
             Date.now() / 1000,
         )}`,
     );
@@ -48,11 +48,11 @@ async function runMemberStatsTable(memberAttArr, numPastEvents) {
 
     let html =
         '</th><th data-csv="Name">Name (id)</th><th data-csv="Present Count">Present Count</th><th data-csv="Absent Count">Absent Count</th><th data-csv="Late Count">Late Count</th><th data-csv="Excused Count">Excused Count</th><th data-csv="Total Count">Total Count</th></tr>';
-    for (const userid of uidToUserinfo.keys()) {
-        const userinfo = uidToUserinfo.get(userid);
-        html += `<tr id="row-${sanitizeText(userid)}"><td data-name="${userinfo.name}" data-csv="${
+    for (const uid of uidToUserinfo.keys()) {
+        const userinfo = uidToUserinfo.get(uid);
+        html += `<tr id="row-${sanitizeText(uid)}"><td data-name="${userinfo.name}" data-csv="${
             userinfo.name
-        }">${sanitizeText(userinfo.name)} (${sanitizeText(userid.substr(0, 4))}`;
+        }">${sanitizeText(userinfo.name)} (${sanitizeText(uid.substr(0, 4))}`;
         if (userinfo.role === 'user') {
             html += `)`;
         } else {
@@ -147,7 +147,7 @@ document.getElementById('show-filter').onclick = async () => {
         roleFilter.addOption('owner', 'owner');
         roleFilter.addOption('moderator', 'moderator');
     });
-    const res = await GET(`/eventtags?businessId=${getBusinessId()}`);
+    const res = await GET(`/businesses/${getBusinessId()}/eventtags`);
     const tags = await res.json();
     let tagSet = new Set();
     for (let tag of tags) {
@@ -199,11 +199,11 @@ document.getElementById('show-filter').onclick = async () => {
             return;
         }
         const res = await GET(
-            `/memberattendancedata?businessId=${getBusinessId()}&tag=${tag}&role=${role}&start=${start}&end=${end}`,
+            `/businesses/${getBusinessId()}/attendance/statuscounts?tag=${tag}&role=${role}&start=${start}&end=${end}`,
         );
         const memberAttArr = await res.json();
         const numRes = await GET(
-            `/countAllEvents?businessId=${getBusinessId()}&tag=${tag}&start=${start}&end=${end}`,
+            `/businesses/${getBusinessId()}/events/count?tag=${tag}&start=${start}&end=${end}`,
         );
         const numPastEvents = (await numRes.json())['total_count'];
         runMemberStatsTable(memberAttArr, numPastEvents);
@@ -223,15 +223,13 @@ document.getElementById('show-filter').onclick = async () => {
 };
 
 const res = await GET(
-    `/memberattendancedata?businessId=${getBusinessId()}&tag=&role=&start=&end=${Math.round(
+    `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Math.round(
         Date.now() / 1000,
     )}`,
 );
 const memberAttArr = await res.json();
 const numRes = await GET(
-    `/countAllEvents?businessId=${getBusinessId()}&tag=&start=&end=${Math.round(
-        Date.now() / 1000,
-    )}`,
+    `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Math.round(Date.now() / 1000)}`,
 );
 const numPastEvents = (await numRes.json())['total_count'];
 runMemberStatsTable(memberAttArr, numPastEvents);

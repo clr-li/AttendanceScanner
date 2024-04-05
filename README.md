@@ -56,7 +56,7 @@ URL: https://attendancescannerqr.web.app
 
 ### Update database
 
--   To update the database schema, change the `databaseSchema.sql` file accordingly (note this file should only contain DDL statements). If you are running the `npm run dev` server, a new migration file will automatically be created in the `migration` folder and applied locally. Otherwise, you can run `sam make` to create it and `sam migrate` to apply it locally. Run `sam status` to verify your changes and optionally inspect the autocreated migration file. Once you are satisfied everything is in order, `npm run deploy` changes like normal and the production server will automatically apply the new migration file.
+-   To update the database schema, change the `schema.sql` file accordingly (note this file should only contain DDL statements). If you are running the `npm run dev` server, a new migration file will automatically be created in the `migration` folder and applied locally. Otherwise, you can run `sam make` to create it and `sam migrate` to apply it locally. Run `sam status` to verify your changes and optionally inspect the autocreated migration file. Once you are satisfied everything is in order, `npm run deploy` changes like normal and the production server will automatically apply the new migration file.
 -   To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
 
 ## Automated Testing

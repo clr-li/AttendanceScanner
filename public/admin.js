@@ -1,4 +1,4 @@
-import { GET, sendEmail } from './util/Client.js';
+import { GET, PATCH, PUT, DELETE, POST, sendGmail } from './util/Client.js';
 import { requireLogin, requestGoogleCredential, getCurrentUser } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { initBusinessSelector, initEventSelector } from './util/selectors.js';
@@ -39,7 +39,7 @@ const { get: getEventId, updateEvents } = await initEventSelector(
 if (getEventId()) getEventData();
 
 async function updateJoinLink() {
-    const res = await GET('/joincode?businessId=' + getBusinessId());
+    const res = await GET('/businesses/' + getBusinessId() + '/joincode');
     const data = await res.json();
     const joincode = data.joincode;
     const joinlink =
@@ -62,7 +62,7 @@ async function updateJoinLink() {
             "Are you sure you want to reset the group's join code? This will make the old join code and any pending email invites invalid.",
         );
         if (!allow) return;
-        const res = await GET('/resetJoincode?businessId=' + getBusinessId());
+        const res = await PATCH('/businesses/' + getBusinessId() + '/joincode');
         if (res.ok) {
             updateJoinLink();
         } else {
@@ -84,7 +84,7 @@ async function updateJoinLink() {
         ]);
         let success = true;
         for (const email of emails.split(',')) {
-            const res = await sendEmail(
+            const res = await sendGmail(
                 email.trim(),
                 'Attendance Scanner Invitation',
                 `
@@ -119,7 +119,7 @@ updateJoinLink();
 
 const members = new Set();
 async function runTable() {
-    let attendancearr = await (await GET(`/attendancedata?businessId=${getBusinessId()}`)).json();
+    const attendancearr = await (await GET(`/businesses/${getBusinessId()}/attendance`)).json();
     for (const user of attendancearr) {
         members.add({ name: user.name, email: user.email });
     }
@@ -142,7 +142,7 @@ document.getElementById('sent-email').onclick = async () => {
     ]);
     let success = true;
     for (const member of members) {
-        const res = await sendEmail(
+        const res = await sendGmail(
             member.email,
             'Attendance Scanner Notification',
             email_notification.textContent.replace('[MEMBER_NAME]', member.name),
@@ -164,7 +164,7 @@ document.getElementById('sent-email').onclick = async () => {
 };
 
 async function setRecordSettings() {
-    const res = await (await GET(`/getRecordSettings?businessId=${getBusinessId()}`)).json();
+    const res = await (await GET(`/businesses/${getBusinessId()}/settings/requirejoin`)).json();
     const requireJoin = res.requireJoin;
     if (requireJoin) {
         document.getElementById('require-join').checked = true;
@@ -174,7 +174,7 @@ async function setRecordSettings() {
 
 document.getElementById('require-join').addEventListener('change', async e => {
     const requireJoin = e.target.checked ? 1 : 0;
-    await GET(`/changeRecordSettings?businessId=${getBusinessId()}&newStatus=${requireJoin}`);
+    await PUT(`/businesses${getBusinessId()}/settings/requirejoin?new=${requireJoin}`);
 });
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating = false) {
@@ -257,8 +257,8 @@ document.getElementById('submitevent').addEventListener('click', () => {
             }
             counter++;
         }
-        GET(
-            `/makeRecurringEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(
+        POST(
+            `/businesses/${getBusinessId()}/events/recurring?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&frequency=${frequency}&interval=${interval}&daysoftheweek=${daysoftheweek.join(
                 ',',
             )}&timezoneOffsetMS=${timezoneOffsetMS}&tag=${tag}`,
         ).then(async res => {
@@ -271,8 +271,8 @@ document.getElementById('submitevent').addEventListener('click', () => {
             }
         });
     } else {
-        GET(
-            `/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&tag=${tag}`,
+        POST(
+            `/businesses/${getBusinessId()}/events?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&tag=${tag}`,
         ).then(async res => {
             if (res.ok) {
                 showSuccessDialog('new-event-success');
@@ -319,7 +319,7 @@ document.getElementById('add-tag').onclick = () => {
 };
 
 function getEventData() {
-    GET(`/eventdata?eventid=${getEventId()}&businessId=${getBusinessId()}`).then(res =>
+    GET(`/businesses/${getBusinessId()}/events/${getEventId()}`).then(res =>
         res.json().then(eventinfo => {
             tagHTMLString(eventinfo.tag);
             var startDate = new Date(eventinfo.starttimestamp * 1000);
@@ -411,8 +411,8 @@ function getEventData() {
                 const starttime = document.getElementById('update-starttime').value;
                 const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
 
-                GET(
-                    `/deleteevent?eventid=${getEventId()}&businessId=${getBusinessId()}&repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${
+                DELETE(
+                    `/businesses/${getBusinessId()}/events/${getEventId()}?repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${
                         eventinfo.repeat_id
                     }`,
                 ).then(async res => {
@@ -497,8 +497,8 @@ function getEventData() {
                     return;
                 }
 
-                GET(
-                    `/updateevent?eventid=${getEventId()}&name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}&repeatId=${
+                PATCH(
+                    `/businesses/${getBusinessId()}/events/${getEventId()}?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&repeatId=${
                         eventinfo.repeat_id
                     }&repeatEffect=${repeatEffect}&starttimedelta=${starttimedelta}&endtimedelta=${endtimedelta}&tag=${tag}`,
                 ).then(async res => {
@@ -535,7 +535,7 @@ setRecordSettings();
 document.getElementById('changeName').onclick = async () => {
     const newName = await Popup.prompt('Enter a new name for your group');
     if (newName) {
-        const res = await GET(`/renameBusiness?businessId=${getBusinessId()}&name=${newName}`);
+        const res = await PUT(`/businesses/${getBusinessId()}/name?new=${newName}`);
         if (!res.ok) {
             Popup.alert(res.statusText, 'var(--error)');
         } else {

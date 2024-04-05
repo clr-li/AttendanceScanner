@@ -58,7 +58,7 @@ export async function initBusinessSelector(
 
 export async function initEventSelector(id, getBusinessId, onselect, onupdate) {
     async function updateEvents(selector) {
-        const res = await GET('/events?businessId=' + getBusinessId());
+        const res = await GET(`/businesses/${getBusinessId()}/events`);
         const events = await res.json();
         const eventNames = new Set();
         const options = events.map(event => {

@@ -4,7 +4,8 @@ admin.initializeApp({
     credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
 });
 // database access for user registration and roles
-const { asyncGet, asyncRun } = require('./Database');
+const { db } = require('./Database');
+const { SQL } = require('sql-strings');
 // express for routing
 const express = require('express'),
     router = express.Router();
@@ -59,13 +60,11 @@ async function getUID(idToken, registerIfNewUser = true) {
     try {
         const [uid, truename, email] = await module.exports.verifyIdToken(idToken);
         if (registerIfNewUser) {
-            let name = await asyncGet(`SELECT name FROM Users WHERE id = ?`, [uid]);
+            const name = await db().get(...SQL`SELECT name FROM Users WHERE id = ${uid}`);
             if (!name) {
-                await asyncRun(`INSERT INTO Users (id, name, email) VALUES (?, ?, ?)`, [
-                    uid,
-                    truename,
-                    email,
-                ]);
+                await db().run(
+                    ...SQL`INSERT INTO Users (id, name, email) VALUES (${uid}, ${truename}, ${email})`,
+                );
             }
         }
         return uid;
@@ -77,19 +76,18 @@ async function getUID(idToken, registerIfNewUser = true) {
 
 /**
  * Checks that the given user has the specified privileges for the given business.
- * @param {string} userid the uid of the user to check access for
- * @param {number} businessid the business to check access within
+ * @param {string} uid the uid of the user to check access for
+ * @param {number} businessId the business to check access within
  * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPrivileges the privileges to check if they are allowed the users role
  * @returns true if the user is a member of the specified business and has a role with at least the privileges specified as true in requiredPrivileges (and none of the priveledges specified as false), false otherwise.
  */
-async function getAccess(userid, businessid, requiredPrivileges = {}) {
+async function getAccess(uid, businessId, requiredPrivileges = {}) {
     try {
-        const role = (
-            await asyncGet(`SELECT role FROM Members WHERE user_id = ? AND business_id = ?`, [
-                userid,
-                businessid,
-            ])
-        ).role;
+        const role = await db()
+            .get(
+                ...SQL`SELECT role FROM Members WHERE user_id = ${uid} AND business_id = ${businessId}`,
+            )
+            .then(row => row?.role);
         if (!(role in ACCESS_TABLE)) return false; // if the role is invalid, user doesn't have access
         const access = ACCESS_TABLE[role];
         for (const [priviledge, isRequired] of Object.entries(requiredPrivileges)) {
@@ -106,13 +104,13 @@ async function getAccess(userid, businessid, requiredPrivileges = {}) {
  * Handles the authentication and authorization of the user.
  * @param {Request} request the request object
  * @param {Response} response the response object
- * @param {number} businessid the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid
+ * @param {number} businessId the id of the business to check access for; true => checks if user is member of business_id, false => only checks if user_id is valid
  * @param {{owner?: boolean , read?: boolean , write?: boolean , scanner?: boolean}} requiredPrivileges  an object of which privileges are required, empty if no privileges are required, ignored if business_id is false
- * @requires request and response are valid, businessid is a valid id if requiredPrivileges is not empty
+ * @requires request and response are valid, businessId is a valid id if requiredPrivileges is not empty
  * @returns the uid of the user if auth succeeded, false otherwise.
  * @effects sends response status error codes for failed auth
  */
-async function handleAuth(request, response, businessid = false, requiredPrivileges = {}) {
+async function handleAuth(request, response, businessId = false, requiredPrivileges = {}) {
     if (!request.headers.idtoken) {
         response.status(400).send('No idtoken provided, user does not appear to be signed in');
         return false;
@@ -122,7 +120,7 @@ async function handleAuth(request, response, businessid = false, requiredPrivile
         response.status(401).send('Idtoken is invalid, login has likely expired');
         return false;
     }
-    if (businessid && !(await getAccess(uid, businessid, requiredPrivileges))) {
+    if (businessId && !(await getAccess(uid, businessId, requiredPrivileges))) {
         response
             .status(403)
             .send('Access denied, user does not have the necessary privileges for this endpoint');

@@ -10,7 +10,8 @@ const gateway = new braintree.BraintreeGateway({
     privateKey: process.env.MERCHANTPRIVATE,
 });
 // database access
-const { asyncGet, asyncRun } = require('./Database');
+const { db } = require('./Database');
+const { SQL } = require('sql-strings');
 // user auth
 const handleAuth = require('./Auth').handleAuth;
 // business creation and deletion
@@ -31,7 +32,7 @@ const PLAN_NAME = new Map(Object.entries(PLAN_IDS).map(keyval => [keyval[1], key
  * @returns customer_id of user with uid if it exists, otherwise returns false.
  */
 async function getCustomerId(uid) {
-    const user = await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid]);
+    const user = await db().get(...SQL`SELECT customer_id FROM Users WHERE id = ${uid}`);
     if (!user) return false;
     return user.customer_id;
 }
@@ -42,9 +43,9 @@ async function getCustomerId(uid) {
  * @returns name of the business paid for by the given subscriptionId.
  */
 async function getBusinessName(subscriptionId) {
-    const business = await asyncGet('SELECT name FROM Businesses WHERE subscriptionId = ?', [
-        subscriptionId,
-    ]);
+    const business = await db().get(
+        ...SQL`SELECT name FROM Businesses WHERE subscriptionId = ${subscriptionId}`,
+    );
     return business.name;
 }
 
@@ -74,8 +75,9 @@ async function verifySubscription(uid, planId) {
 // this token authorizes the client to access the payment portal and modify customer payment information
 // if the client is already a customer, we give them access to their braintree customer via the stored customer_id
 async function getClientToken(uid) {
-    const customerId = (await asyncGet(`SELECT customer_id FROM Users WHERE id = ?`, [uid]))
-        .customer_id;
+    const customerId = await db()
+        .get(...SQL`SELECT customer_id FROM Users WHERE id = ${uid}`)
+        .then(row => row?.customer_id);
     const tokenOptions = {};
     console.log('CustomerId requested a client token: ' + customerId);
     if (customerId) {
@@ -122,7 +124,7 @@ router.post('/checkout', async (request, response) => {
         response.status(400).send('No business name specified');
         return;
     }
-    const user = await asyncGet(`SELECT customer_id, name FROM Users WHERE id = ?`, [uid]);
+    const user = await db().get(...SQL`SELECT customer_id, name FROM Users WHERE id = ${uid}`);
 
     let paymentToken;
     if (user.customer_id) {
@@ -169,7 +171,7 @@ router.post('/checkout', async (request, response) => {
         console.log('Created customer with id: ' + customerId);
 
         // save customer id in database so we can find their information in the braintree vault later
-        await asyncRun(`UPDATE Users SET customer_id = ? WHERE id = ?`, [customerId, uid]);
+        await db().run(...SQL`UPDATE Users SET customer_id = ${customerId} WHERE id = ${uid}`);
     }
 
     const subscriptionResult = await gateway.subscription.create({
@@ -248,9 +250,9 @@ router.get('/cancelSubscription', async (request, response) => {
         let subscription = subscriptions[i];
         if (subscription.id === subscriptionId) {
             await gateway.subscription.cancel(subscriptionId);
-            const business = await asyncGet('SELECT id FROM Businesses WHERE subscriptionId = ?', [
-                subscriptionId,
-            ]);
+            const business = await db().get(
+                ...SQL`SELECT id FROM Businesses WHERE subscriptionId = ${subscriptionId}`,
+            );
             deleteBusiness(business.id);
             response.sendStatus(200);
             return;

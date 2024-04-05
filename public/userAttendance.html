@@ -23,7 +23,7 @@
         </navigation-manager>
 
         <script type="module" defer>
-            import { GET } from './util/Client.js';
+            import { POST } from './util/Client.js';
             import { requireLogin, getCurrentUser } from './util/Auth.js';
             import { useURL } from './util/StateManager.js';
             import { sanitizeText } from './util/util.js';
@@ -31,12 +31,12 @@
             const user = await getCurrentUser();
 
             const { code } = useURL('code');
-            const { eventid } = useURL('eventid');
+            const { eventId } = useURL('eventId');
             const { businessId } = useURL('businessId');
             const { status } = useURL('status');
 
-            const res = await GET(
-                `/recordMyAttendance?code=${code}&eventid=${eventid}&businessId=${businessId}&status=${status}`,
+            const res = await POST(
+                `/businesses/${businessId}/events/${eventId}/attendance/me?code=${code}&status=${status}`,
             );
             if (res.ok) {
                 document.getElementById('content').innerHTML = /* html */ `

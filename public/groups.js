@@ -1,5 +1,5 @@
 import { requireLogin } from './util/Auth.js';
-import { GET } from './util/Client.js';
+import { GET, PUT, POST, DELETE } from './util/Client.js';
 import { Popup } from './components/Popup.js';
 import { sanitizeText } from './util/util.js';
 const Html5QrcodeScanner = window.Html5QrcodeScanner;
@@ -15,7 +15,7 @@ async function joinFromUrl(urlstr) {
     const joincode = params.get('code');
     if (businessId && joincode) {
         console.log('joined: ' + businessId + '_' + joincode);
-        const res = await GET(`/join?businessId=${businessId}&code=${joincode}`);
+        const res = await POST(`/businesses/${businessId}/members?joincode=${joincode}`);
         if (!res.ok) {
             await Popup.alert(sanitizeText(await res.text()), 'var(--error)');
         } else {
@@ -65,7 +65,7 @@ async function handleBusinessLoad(business) {
             'Are you sure you want to leave this group? Your attendance records will be kept but you wont be able to see events and take attendance for this group unless you re-join.',
         );
         if (shouldLeave) {
-            const res = await GET(`/leave?businessId=${business.id}`);
+            const res = await DELETE(`/businesses/${business.id}/members/me`);
             if (!res.ok) {
                 Popup.alert(
                     `<h1>Failed to leave ${sanitizeText(
@@ -78,7 +78,7 @@ async function handleBusinessLoad(business) {
         }
     });
 
-    const userdata = await (await GET(`/userdata?businessId=${business.id}`)).json();
+    const userdata = await (await GET(`/businesses/${business.id}`)).json();
 
     const description = document.getElementById('description-' + business.id);
     description.classList.remove('load-wrapper');
@@ -104,9 +104,9 @@ async function handleBusinessLoad(business) {
         dayOfTheWeekCounts[status] = [0, 0, 0, 0, 0, 0, 0];
     }
     for (const event of userdata.userEvents) {
-        const status = event.status || (event.starttimestamp <= now ? 'ABSENT' : 'N/A');
-        statusCounts[status]++;
         const start = new Date(event.starttimestamp * 1000);
+        const status = event.status || (start <= now ? 'ABSENT' : 'N/A');
+        statusCounts[status]++;
         dayOfTheWeekCounts[status][start.getDay()]++;
     }
 
@@ -196,7 +196,7 @@ async function handleBusinessLoad(business) {
 
 const userBusinesses = await (await GET(`/businesses`)).json();
 let businessHTML = '';
-let ownerIds = [];
+const ownedBusinessIds = [];
 userBusinesses.forEach(business => {
     business.id = sanitizeText(business.id);
     business.name = sanitizeText(business.name);
@@ -206,7 +206,7 @@ userBusinesses.forEach(business => {
         renameHTML = /* html */ `
             <button id="${business.id}" type="button" style="background: none; border: none;"><i class="fa-regular fa-pen-to-square" style="font-size: 1rem;"></i></button>
         `;
-        ownerIds.push(business.id);
+        ownedBusinessIds.push(business.id);
     }
     businessHTML += /* html */ `
         <div class="business-card" id="card-${business.id}">
@@ -252,11 +252,11 @@ userBusinesses.forEach(business => {
     });
 });
 document.getElementById('businesses').innerHTML = businessHTML;
-for (const ownerId of ownerIds) {
-    document.getElementById(ownerId).addEventListener('click', async () => {
+for (const businessId of ownedBusinessIds) {
+    document.getElementById(businessId).addEventListener('click', async () => {
         const newName = await Popup.prompt('Enter a new name for your group');
         if (newName) {
-            const res = await GET(`/renameBusiness?businessId=${ownerId}&name=${newName}`);
+            const res = await PUT(`/businesses/${businessId}/name?new=${newName}`);
             if (!res.ok) {
                 Popup.alert(res.statusText, 'var(--error)');
             } else {

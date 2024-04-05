@@ -11,7 +11,7 @@ const { handleAuth } = require('./Auth');
  * @requiredPrivileges the user to be logged in
  * @returns the response from the Gmail API
  */
-router.post('/sendEmail', async (req, res) => {
+router.post('/gmail', async (req, res) => {
     await handleAuth(req, res);
 
     const message = req.body.message;

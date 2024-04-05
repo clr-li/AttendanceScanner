@@ -1,4 +1,4 @@
-import { GET } from './util/Client.js';
+import { GET, PUT } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { sanitizeText } from './util/util.js';
 import { Popup } from './components/Popup.js';
@@ -53,7 +53,7 @@ sidebar[0].innerHTML += /* html */ `
 
 for (const [i, business] of Object.entries(businesses)) {
     const businessColor = colors[i % colors.length];
-    const resEvent = await GET('/userEvents?businessId=' + business.id);
+    const resEvent = await GET('/businesses/' + business.id + '/events/me');
     const events = await resEvent.json();
     events.sort((a, b) => {
         return a.starttimestamp - b.starttimestamp;
@@ -141,7 +141,7 @@ window.toggleBusinessEvents = businessIX => {
 };
 
 window.markAbsent = async (businessId, eventId) => {
-    const res = await GET(`/markSelfAbsent?businessId=${businessId}&eventId=${eventId}`);
+    const res = await PUT(`/businesses/${businessId}/events/${eventId}/attendance/markabsent`);
     if (!res.ok) {
         await Popup.alert(await res.text(), 'var(--error)');
         return;

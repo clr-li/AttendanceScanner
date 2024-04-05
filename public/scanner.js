@@ -1,4 +1,4 @@
-import { GET } from './util/Client.js';
+import { GET, POST } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { QRCode } from './components/QRCode.js';
@@ -8,7 +8,7 @@ import { sanitizeText } from './util/util.js';
 const Html5QrcodeScanner = window.Html5QrcodeScanner;
 await requireLogin();
 
-const { get: getEventid, set: setEventId } = useURL('eventId');
+const { get: getEventId, set: setEventId } = useURL('eventId');
 const { get: getBusinessId } = useURL('businessId');
 
 function canCreateEvent(role) {
@@ -22,8 +22,8 @@ async function autoCreateEvent() {
     const name = date.toDateString();
     const description = 'Auto generated event created on ' + date.toString();
 
-    const res = await GET(
-        `/makeEvent?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}&businessId=${getBusinessId()}`,
+    const res = await POST(
+        `/businesses/${getBusinessId()}/events?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}`,
     );
     const id = await res.json();
     setEventId(id);
@@ -50,7 +50,7 @@ if (location.hash === '#new') {
     } else {
         document.getElementById('create').addEventListener('click', autoCreateEvent);
     }
-} else if (!getEventid() || !getBusinessId()) {
+} else if (!getEventId() || !getBusinessId()) {
     const pop = new Popup();
     pop.innerHTML = /* html */ `
         <type-select id="businessId" name="businesses" label="Please select a business: "></type-select>
@@ -67,12 +67,12 @@ if (location.hash === '#new') {
     await initBusinessSelector('businessId', async e => {
         setEventId(undefined);
         await updateEvents();
-        document.getElementById('selected').disabled = getEventid() == null;
+        document.getElementById('selected').disabled = getEventId() == null;
         document.getElementById('create').disabled = !canCreateEvent(e.detail.textContent);
     });
     const { updateEvents } = await initEventSelector('eventId', getBusinessId);
 
-    document.getElementById('selected').disabled = getEventid() == null;
+    document.getElementById('selected').disabled = getEventId() == null;
     document.getElementById('create').disabled = !canCreateEvent(
         document.getElementById('businessId').getSelected().textContent,
     );
@@ -80,10 +80,10 @@ if (location.hash === '#new') {
     document.getElementById('create').addEventListener('click', autoCreateEvent);
     document.getElementById('selected').addEventListener('click', () => location.reload());
 
-    throw new Error('No eventid or businessId'); // stop execution
+    throw new Error('No eventId or businessId'); // stop execution
 }
 
-const res = await GET(`/eventdata?eventid=${getEventid()}&businessId=${getBusinessId()}`);
+const res = await GET(`/businesses/${getBusinessId()}/events/${getEventId()}`);
 const eventInfo = await res.json();
 
 const { get: getStatus, set: setStatus } = useURL(
@@ -109,8 +109,8 @@ async function onScanSuccess(decodedText, decodedResult) {
     console.log(`Scan result: ${decodedText}`, decodedResult);
 
     if (lastUserId !== decodedText) {
-        const res = await GET(
-            `/recordAttendance?eventid=${getEventid()}&userid=${decodedText}&status=${getStatus()}&businessId=${getBusinessId()}`,
+        const res = await POST(
+            `/businesses/${getBusinessId()}/events/${getEventId()}/attendance?userId=${decodedText}&status=${getStatus()}`,
         );
         console.log(res.status);
         if (!res.ok) {
@@ -138,14 +138,12 @@ const qr_button = document.getElementById('qr-button');
 const member_scan = document.getElementById('member-scan');
 const scanner = document.getElementById('scan');
 
-const codeRes = await GET(
-    `/getOrSetTempAttendanceCode?eventid=${getEventid()}&businessId=${getBusinessId()}`,
-);
+const codeRes = await GET(`/businesses/${getBusinessId()}/events/${getEventId()}/attendance/code`);
 const code = await codeRes.text();
 const qrElement = new QRCode(
     `${
         location.origin
-    }/userAttendance.html?eventid=${getEventid()}&businessId=${getBusinessId()}&status=${getStatus()}&code=${code}`,
+    }/userAttendance.html?eventId=${getEventId()}&businessId=${getBusinessId()}&status=${getStatus()}&code=${code}`,
     'attendanceCode',
 );
 qrElement.innerHTML = /* html */ `
@@ -170,8 +168,8 @@ member_scan.append(qrElement);
 const { get: getExpiration, set: setExpiration } = useURL('expiration', 300_000);
 
 async function refreshTempAttendanceCode() {
-    const res = await GET(
-        `/refreshTempAttendanceCode?eventid=${getEventid()}&businessId=${getBusinessId()}&expiration=${getExpiration()}&code=${code}`,
+    const res = await PATCH(
+        `/businesses/${getBusinessId()}/events/${getEventId()}/refresh?expiration=${getExpiration()}&code=${code}`,
     );
     if (!res.ok) {
         Popup.alert(sanitizeText(await res.text()), 'var(--error)');
@@ -190,14 +188,14 @@ setInterval(() => {
 }, 250_000);
 
 document.getElementById('regen-button').addEventListener('click', async () => {
-    const codeRes = await GET(
-        `/setNewTempAttendanceCode?eventid=${getEventid()}&businessId=${getBusinessId()}&expiration=${getExpiration()}`,
+    const codeRes = await PUT(
+        `/businesses/${getBusinessId()}/events/${getEventId()}/attendance/code?expiration=${getExpiration()}`,
     );
     const code = await codeRes.text();
     qrElement.update(
         `${
             location.origin
-        }/userAttendance.html?eventid=${getEventid()}&businessId=${getBusinessId()}&status=${getStatus()}&code=${code}`,
+        }/userAttendance.html?eventId=${getEventId()}&businessId=${getBusinessId()}&status=${getStatus()}&code=${code}`,
     );
 });
 

@@ -1,7 +1,7 @@
 import { Component } from '../util/Component.js';
 import { Popup } from './Popup.js';
 import { calcSimilarity, sanitizeText } from '../util/util.js';
-import { GET, POST } from '../util/Client.js';
+import { PATCH, POST, PUT, DELETE } from '../util/Client.js';
 import { useURL } from '../util/StateManager.js';
 
 /**
@@ -179,9 +179,9 @@ export class Table extends Component {
         }
         html += '</tr>';
         for (let i = 0; i < [...map.keys()].length; i++) {
-            let userid = [...map.keys()][i];
-            userIds.push(userid);
-            let records = map.get(userid);
+            const uid = [...map.keys()][i];
+            userIds.push(uid);
+            const records = map.get(uid);
             const roleChangeHTML = `<br>
             <form>
                 <select class="newrole" style="border-radius: 10px; border: 2px solid var(--accent); font-size: 1rem;">
@@ -194,14 +194,14 @@ export class Table extends Component {
             </form>
             `;
             html += `<tr id="row-${sanitizeText(
-                userid,
+                uid,
             )}"><td><input type="checkbox" id="select-${sanitizeText(
-                userid,
+                uid,
             )}" class="selectedrows"></td><td data-name="${records[0].name}" data-csv="${
                 records[0].name
             }" data-tag="${sanitizeText(records[0].tag)}">${sanitizeText(
                 records[0].name,
-            )} (${sanitizeText(userid.substr(0, 4))}`;
+            )} (${sanitizeText(uid.substr(0, 4))}`;
             if (records[0].role !== 'owner') {
                 html += `)${roleChangeHTML}`;
             } else {
@@ -213,7 +213,7 @@ export class Table extends Component {
 
             // Custom data
             let customData = JSON.parse(records[0].custom_data);
-            for (const [key, value] of Object.entries(customData)) {
+            for (const value of Object.values(customData)) {
                 html += `<td data-csv="${sanitizeText(value)}" data-tag="${sanitizeText(
                     records[0].tag,
                 )}">${sanitizeText(value)}</td>`;
@@ -282,7 +282,7 @@ export class Table extends Component {
                 allRoleSelects[button_index].value = map.get(userIds[i])[0].role;
                 allRoleSelects[button_index].addEventListener('change', () => {
                     let role = allRoleSelects[b_id].value;
-                    GET(`/assignRole?businessId=${businessID}&userId=${id}&role=${role}`).then(
+                    PUT(`/businesses/${businessID}/members/${id}/role?new=${role}`).then(
                         async res => {
                             console.log(res.status);
                             if (res.ok) {
@@ -294,7 +294,7 @@ export class Table extends Component {
                     );
                 });
                 allKickButtons[button_index].addEventListener('click', () => {
-                    GET(`/removeMember?businessId=${businessID}&userId=${id}`).then(async res => {
+                    DELETE(`/businesses/${businessID}/members/${id}`).then(async res => {
                         console.log(res.status);
                         if (res.ok) {
                             this.showSuccessDialog('success');
@@ -400,7 +400,7 @@ export class Table extends Component {
             reader.addEventListener(
                 'load',
                 async () => {
-                    const res = await POST(`/importCustomData?businessId=${businessID}`, {
+                    const res = await POST(`/businesses/${businessID}/import/customdata`, {
                         data: reader.result,
                         mergeCol: this.mergeCol.toLowerCase(),
                         overwrite: overwrite,
@@ -616,10 +616,10 @@ export class Table extends Component {
                 Popup.alert('Please select a valid status.', 'var(--warning)');
                 return;
             }
-            const res = await GET(
-                `/alterAttendance?businessId=${this.businessID}&ids=${ids_to_alter.join(
-                    ',',
-                )}&status=${this.status}&event=${this.event_to_alter.dataset.id}`,
+            const res = await PATCH(
+                `/businesses/${this.businessID}/${
+                    this.event_to_alter.dataset.id
+                }/attendance?ids=${ids_to_alter.join(',')}&status=${this.status}`,
             );
             if (res.ok) {
                 const event = new CustomEvent('reloadTable', {});

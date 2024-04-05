@@ -44,7 +44,7 @@ export async function getCurrentUser() {
         : sessionStorage.getItem('idtoken');
     if (!token) return null;
     const decoded = parseJwt(token);
-    const res = await GET('/getName');
+    const res = await GET('/username');
     const name = await res.json();
     return {
         name: name.name,

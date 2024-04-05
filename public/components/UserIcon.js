@@ -1,7 +1,7 @@
 import { Component } from '../util/Component.js';
 import { getCurrentUser } from '../util/Auth.js';
 import { Popup } from './Popup.js';
-import { GET } from '../util/Client.js';
+import { PUT } from '../util/Client.js';
 import { sanitizeText } from '../util/util.js';
 
 const user = await getCurrentUser();
@@ -58,7 +58,7 @@ export class UserIcon extends Component {
     async changeName() {
         const name = await Popup.prompt('Change my name to: ');
         if (name) {
-            await GET(`/changeName?name=${name}`);
+            await PUT(`/username?new=${name}`);
             location.reload();
         }
     }

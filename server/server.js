@@ -21,7 +21,7 @@ app.use(cors(corsOptions));
 app.use(express.static('public'));
 
 // ============================ DATABASE ============================
-const schemaFile = './server/databaseSchema.sql'; // filepath for the database schema
+const schemaFile = './server/schema.sql'; // filepath for the database schema
 module.exports.initPromise = require('./Database').reinitializeIfNotExists(
     process.env.DB_FILE,
     schemaFile,

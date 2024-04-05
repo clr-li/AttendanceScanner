@@ -654,6 +654,22 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "newcolumn",
+        "verbose": "newcolumn",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": "\"newvalue\"",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
