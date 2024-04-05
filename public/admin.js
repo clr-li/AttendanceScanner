@@ -174,7 +174,7 @@ async function setRecordSettings() {
 
 document.getElementById('require-join').addEventListener('change', async e => {
     const requireJoin = e.target.checked ? 1 : 0;
-    await PUT(`/businesses${getBusinessId()}/settings/requirejoin?new=${requireJoin}`);
+    await PUT(`/businesses/${getBusinessId()}/settings/requirejoin?new=${requireJoin}`);
 });
 
 function validateEventTime(startDate, endDate, startTime, endTime, isRepeating = false) {
