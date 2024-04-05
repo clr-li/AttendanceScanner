@@ -217,8 +217,8 @@ document.getElementById('submitevent').addEventListener('click', () => {
     const starttime = document.getElementById('starttime').value;
     const enddate = document.getElementById('enddate').value;
     const endtime = document.getElementById('endtime').value;
-    const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
-    const endtimestamp = new Date(enddate + 'T' + endtime).getTime() / 1000;
+    const starttimestamp = new Date(startdate + 'T' + starttime).getTime();
+    const endtimestamp = new Date(enddate + 'T' + endtime).getTime();
     const isRepeating = document.getElementById('repeat').checked;
     const allTags = document.getElementById('all-tags');
 
@@ -242,7 +242,7 @@ document.getElementById('submitevent').addEventListener('click', () => {
     if (isRepeating) {
         const frequency = document.getElementById('frequency').value.toLowerCase();
         const interval = document.getElementById('interval').value;
-        const timezoneOffsetMS = new Date().getTimezoneOffset() * 60 * 1000;
+        const timezoneOffsetMS = new Date().getTimezoneOffset() * 60_000;
         let daysoftheweek = [];
         let counter = 0;
         if (interval < 1) {
@@ -322,8 +322,8 @@ function getEventData() {
     GET(`/businesses/${getBusinessId()}/events/${getEventId()}`).then(res =>
         res.json().then(eventinfo => {
             tagHTMLString(eventinfo.tag);
-            var startDate = new Date(eventinfo.starttimestamp * 1000);
-            var endDate = new Date(eventinfo.endtimestamp * 1000);
+            var startDate = new Date(+eventinfo.starttimestamp);
+            var endDate = new Date(+eventinfo.endtimestamp);
             document.getElementById('eventdetails').innerHTML = /* html */ `
             <label for="update-name">Name:</label><br>
             <input style="min-width: var(--max-width-medium);" type="text" value="${sanitizeText(
@@ -409,7 +409,7 @@ function getEventData() {
 
                 const startdate = document.getElementById('update-startdate').value;
                 const starttime = document.getElementById('update-starttime').value;
-                const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
+                const starttimestamp = new Date(startdate + 'T' + starttime).getTime();
 
                 DELETE(
                     `/businesses/${getBusinessId()}/events/${getEventId()}?repeatEffect=${repeatEffect}&starttimestamp=${starttimestamp}&repeatId=${
@@ -478,8 +478,8 @@ function getEventData() {
                 const starttime = document.getElementById('update-starttime').value;
                 const enddate = document.getElementById('update-enddate').value;
                 const endtime = document.getElementById('update-endtime').value;
-                const starttimestamp = new Date(startdate + 'T' + starttime).getTime() / 1000;
-                const endtimestamp = new Date(enddate + 'T' + endtime).getTime() / 1000;
+                const starttimestamp = new Date(startdate + 'T' + starttime).getTime();
+                const endtimestamp = new Date(enddate + 'T' + endtime).getTime();
                 const starttimedelta = starttimestamp - eventinfo.starttimestamp;
                 const endtimedelta = endtimestamp - eventinfo.endtimestamp;
                 const allTags = document.getElementById('current-tags');

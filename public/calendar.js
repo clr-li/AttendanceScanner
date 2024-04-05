@@ -60,8 +60,8 @@ for (const [i, business] of Object.entries(businesses)) {
     });
     business['events'] = [];
     for (const event of events) {
-        const startDate = new Date(event.starttimestamp * 1000);
-        const endDate = new Date(event.endtimestamp * 1000);
+        const startDate = new Date(+event.starttimestamp);
+        const endDate = new Date(+event.endtimestamp);
         const status = event.status ?? (Date.now() > endDate.getTime() ? 'ABSENT' : null);
         let edit = '<br>';
         const starttime = startDate.toLocaleTimeString(undefined, {

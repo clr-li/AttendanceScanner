@@ -151,8 +151,8 @@ function createEventSequence(
         db().run(
             ...SQL`INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, repeat_id, tag) 
             VALUES (${businessId}, ${name}, ${description}, ${
-                (current.getTime() + timezoneOffsetMS) / 1000
-            }, ${(currentEndDate.getTime() + timezoneOffsetMS) / 1000}, ${repeatId}, ${tag})`,
+                current.getTime() + timezoneOffsetMS
+            }, ${currentEndDate.getTime() + timezoneOffsetMS}, ${repeatId}, ${tag})`,
         );
         if (frequency === 'daily') current.setDate(current.getDate() + interval);
         else if (frequency === 'weekly') current.setDate(current.getDate() + 7 * interval);
@@ -182,9 +182,9 @@ router.post('/businesses/:businessId/events/recurring', async function (request,
     const name = request.query.name;
     const description = request.query.description;
     const timezoneOffsetMS =
-        parseInt(request.query.timezoneOffsetMS) - new Date().getTimezoneOffset() * 60 * 1000; // actual offset includes server offset
-    const startDate = new Date(parseInt(request.query.starttimestamp) * 1000 - timezoneOffsetMS);
-    const endDate = new Date(parseInt(request.query.endtimestamp) * 1000 - timezoneOffsetMS);
+        parseInt(request.query.timezoneOffsetMS) - new Date().getTimezoneOffset() * 60_000; // actual offset includes server offset
+    const startDate = new Date(request.query.starttimestamp - timezoneOffsetMS);
+    const endDate = new Date(request.query.endtimestamp - timezoneOffsetMS);
     const frequency = request.query.frequency;
     const interval = parseInt(request.query.interval);
     const daysoftheweek = request.query.daysoftheweek;

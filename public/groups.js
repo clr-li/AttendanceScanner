@@ -104,7 +104,7 @@ async function handleBusinessLoad(business) {
         dayOfTheWeekCounts[status] = [0, 0, 0, 0, 0, 0, 0];
     }
     for (const event of userdata.userEvents) {
-        const start = new Date(event.starttimestamp * 1000);
+        const start = new Date(+event.starttimestamp);
         const status = event.status || (start <= now ? 'ABSENT' : 'N/A');
         statusCounts[status]++;
         dayOfTheWeekCounts[status][start.getDay()]++;
@@ -172,14 +172,14 @@ async function handleBusinessLoad(business) {
             ${
                 userdata.userEvents
                     .sort((a, b) => a.starttimestamp - b.starttimestamp)
-                    .filter(ev => ev.starttimestamp * 1000 >= now)
+                    .filter(ev => ev.starttimestamp >= now)
                     .slice(0, 10)
                     .map(
                         ev =>
                             '<li>' +
                             sanitizeText(ev.name) +
                             ' - ' +
-                            sanitizeText(new Date(ev.starttimestamp * 1000).toDateString()) +
+                            sanitizeText(new Date(+ev.starttimestamp).toDateString()) +
                             '</li>',
                     )
                     .join('') || 'No upcoming events'

@@ -164,8 +164,8 @@ export class Table extends Component {
         }
         // Event headers
         for (let i = 0; i < events.length; i++) {
-            var startDate = new Date(events[i].starttimestamp * 1000);
-            var endDate = new Date(events[i].endtimestamp * 1000);
+            var startDate = new Date(+events[i].starttimestamp);
+            var endDate = new Date(+events[i].endtimestamp);
             let eventName = events[i].name || '[Unnamed]';
             html += `<th style="min-width: max-content; text-wrap: nowrap;" class="cell" data-time="${sanitizeText(
                 events[i].starttimestamp,
@@ -227,7 +227,7 @@ export class Table extends Component {
                         if (statusColor[records[k].status]) {
                             color = statusColor[records[k].status];
                         }
-                        let recordTimestamp = new Date(records[k].timestamp * 1000)
+                        let recordTimestamp = new Date(+records[k].timestamp)
                             .toString()
                             .split(' ')
                             .slice(1, 5)
@@ -249,8 +249,7 @@ export class Table extends Component {
                     }
                 }
                 if (!statusupdate) {
-                    const status =
-                        Date.now() > parseInt(events[j].endtimestamp) * 1000 ? 'ABSENT' : 'N/A';
+                    const status = Date.now() > parseInt(events[j].endtimestamp) ? 'ABSENT' : 'N/A';
                     if (statusColor[status]) {
                         color = statusColor[status];
                     }
@@ -555,18 +554,14 @@ export class Table extends Component {
                         showCell &&
                         new Date(
                             this.shadowRoot.getElementById('filterstart').value + 'T00:00',
-                        ).getTime() /
-                            1000 <
-                            cell.dataset.time;
+                        ).getTime() < cell.dataset.time;
                 }
                 if (showend) {
                     showCell =
                         showCell &&
                         new Date(
                             this.shadowRoot.getElementById('filterend').value + 'T23:59',
-                        ).getTime() /
-                            1000 >
-                            cell.dataset.time;
+                        ).getTime() > cell.dataset.time;
                 }
                 if (eventName) {
                     showCell = showCell && cell.dataset.name === eventName;

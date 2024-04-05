@@ -62,8 +62,8 @@ export async function initEventSelector(id, getBusinessId, onselect, onupdate) {
         const events = await res.json();
         const eventNames = new Set();
         const options = events.map(event => {
-            const startDate = new Date(event.starttimestamp * 1000);
-            const endDate = new Date(event.endtimestamp * 1000);
+            const startDate = new Date(+event.starttimestamp);
+            const endDate = new Date(+event.endtimestamp);
             eventNames.add(event.name);
             const option = document.createElement('option');
             option.value = event.name + ' (' + event.id + ')';

@@ -22,7 +22,7 @@ export class CircleLoader extends HTMLElement {
         // Create HTML for this component
         const html = htmlToElements(/* html */ `
             <div class="center">
-                <div class="tip"><p style="font-size: 18px;"><span style="color: var(--secondary); font-size: 22px; font-weight: 1000">&#9432;&#160;&#160;</span>${
+                <div class="tip"><p style="font-size: 18px;"><span style="color: var(--secondary); font-size: 22px">&#9432;&#160;&#160;</span>${
                     tips[randomTip]
                 }</p></div>
             </div>

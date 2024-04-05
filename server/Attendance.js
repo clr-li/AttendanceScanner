@@ -53,7 +53,7 @@ router.post('/businesses/:businessId/events/:eventId/attendance', async (request
 
     await db().run(
         ...SQL`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) 
-        VALUES (${eventId}, ${businessId}, ${userId}, ${Math.round(Date.now() / 1000)}, ${status})`,
+        VALUES (${eventId}, ${businessId}, ${userId}, ${Date.now()}, ${status})`,
     );
     response.sendStatus(200);
 });
@@ -80,7 +80,7 @@ router.patch('/businesses/:businessId/events/:eventId/attendance', async (reques
     for (const id of ids.split(',')) {
         await db().run(
             ...SQL`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) 
-            VALUES (${status}, ${businessId}, ${eventId}, ${id}, ${Math.round(Date.now() / 1000)})`,
+            VALUES (${status}, ${businessId}, ${eventId}, ${id}, ${Date.now()})`,
         );
     }
     response.sendStatus(200);
@@ -111,16 +111,14 @@ router.put(
             response.status(400).send('Attendance already recorded');
             return;
         }
-        if (existingRecord && parseInt(existingRecord.endtimestamp) * 1000 < Date.now()) {
+        if (existingRecord && parseInt(existingRecord.endtimestamp) < Date.now()) {
             response.status(400).send('Can only alter attendance for future events');
             return;
         }
 
         await db().run(
             ...SQL`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) 
-            VALUES ('ABSENT(self-marked)', ${businessId}, ${eventId}, ${uid}, ${Math.round(
-                Date.now() / 1000,
-            )})`,
+            VALUES ('ABSENT(self-marked)', ${businessId}, ${eventId}, ${uid}, ${Date.now()})`,
         );
 
         response.sendStatus(200);
@@ -263,7 +261,7 @@ router.post('/businesses/:businessId/events/:eventId/attendance/me', async (requ
 
     await db().run(
         ...SQL`INSERT INTO Records (event_id, business_id, user_id, timestamp, status) 
-        VALUES (${eventId}, ${businessId}, ${uid}, ${Math.round(Date.now() / 1000)}, ${status})`,
+        VALUES (${eventId}, ${businessId}, ${uid}, ${Date.now()}, ${status})`,
     );
     response.sendStatus(200);
 });
