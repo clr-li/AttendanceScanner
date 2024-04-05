@@ -17,8 +17,8 @@ function canCreateEvent(role) {
 
 async function autoCreateEvent() {
     const date = new Date(); // current date and time
-    const starttimestamp = date.getTime() / 1000;
-    const endtimestamp = starttimestamp + 3600; // 1 hour
+    const starttimestamp = date.getTime();
+    const endtimestamp = starttimestamp + 3_600_000; // add 1 hour
     const name = date.toDateString();
     const description = 'Auto generated event created on ' + date.toString();
 
@@ -88,7 +88,7 @@ const eventInfo = await res.json();
 
 const { get: getStatus, set: setStatus } = useURL(
     'status',
-    Date.now() <= parseInt(eventInfo.starttimestamp) * 1000 ? 'PRESENT' : 'LATE',
+    Date.now() <= parseInt(eventInfo.starttimestamp) ? 'PRESENT' : 'LATE',
 );
 const statusSelector = document.getElementById('status');
 statusSelector.addEventListener('select', e => {

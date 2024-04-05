@@ -7,15 +7,11 @@ await requireLogin();
 
 const { get: getBusinessId } = await initBusinessSelector('business-selector', async () => {
     const res = await GET(
-        `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Math.round(
-            Date.now() / 1000,
-        )}`,
+        `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Date.now()}`,
     );
     const memberAttArr = await res.json();
     const numRes = await GET(
-        `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Math.round(
-            Date.now() / 1000,
-        )}`,
+        `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Date.now()}`,
     );
     const numPastEvents = (await numRes.json())['total_count'];
     runMemberStatsTable(memberAttArr, numPastEvents);
@@ -219,7 +215,7 @@ document.getElementById('show-filter').onclick = async () => {
     document.getElementById('submit-filterform').onclick = async () => {
         let start = document.getElementById('filter-start').value;
         let end = document.getElementById('filter-end').value;
-        start = new Date(start + 'T00:00').getTime() / 1000;
+        start = new Date(start + 'T00:00').getTime();
         const month = new Date(Date.now()).getMonth() + 1;
         let monthString = month.toString();
         if (month < 10) monthString = '0' + month;
@@ -231,19 +227,18 @@ document.getElementById('show-filter').onclick = async () => {
                 '-' +
                 new Date(Date.now()).getDate()
         ) {
-            end =
-                new Date(
-                    end + 'T' + new Date().getHours() + ':' + new Date().getMinutes(),
-                ).getTime() / 1000;
+            end = new Date(
+                end + 'T' + new Date().getHours() + ':' + new Date().getMinutes(),
+            ).getTime();
         } else {
-            end = new Date(end + 'T23:59').getTime() / 1000;
+            end = new Date(end + 'T23:59').getTime();
         }
         if (isNaN(start)) start = '';
-        if (isNaN(end)) end = Math.round(Date.now() / 1000);
+        if (isNaN(end)) end = Math.round(Date.now());
         if (end != '' && start != '' && end < start) {
             Popup.alert('End date must be after start date', 'var(--error)');
             return;
-        } else if (end > Math.round(Date.now() / 1000) || start > Math.round(Date.now() / 1000)) {
+        } else if (end > Math.round(Date.now()) || start > Math.round(Date.now())) {
             Popup.alert('Start and end date must be before today', 'var(--error)');
             return;
         }
@@ -272,13 +267,11 @@ document.getElementById('show-filter').onclick = async () => {
 };
 
 const res = await GET(
-    `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Math.round(
-        Date.now() / 1000,
-    )}`,
+    `/businesses/${getBusinessId()}/attendance/statuscounts?tag=&role=&start=&end=${Date.now()}`,
 );
 const memberAttArr = await res.json();
 const numRes = await GET(
-    `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Math.round(Date.now() / 1000)}`,
+    `/businesses/${getBusinessId()}/events/count?tag=&start=&end=${Date.now()}`,
 );
 const numPastEvents = (await numRes.json())['total_count'];
 runMemberStatsTable(memberAttArr, numPastEvents);
