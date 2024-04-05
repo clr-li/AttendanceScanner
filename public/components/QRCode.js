@@ -2,7 +2,7 @@ import { Component } from '../util/Component.js';
 
 /**
  * Shows a downloadable QR Code with fullscreen toggle.
- * @requires module: <script src="util/qrcode.min.js"></script>
+ * @requires module: <script src="lib/qrcode.min.js"></script>
  */
 export class QRCode extends Component {
     constructor(qr_data, download_filename, sharedTemplate = false) {

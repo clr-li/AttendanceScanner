@@ -4,7 +4,7 @@ const { describe, it, before, beforeEach } = require('node:test'); // read about
 const assert = require('node:assert');
 const request = require('supertest'); // we use supertest to test HTTP requests/responses. Read more here: https://github.com/ladjs/supertest
 const { v4 } = require('uuid');
-const { captureConsole } = require('./utils.js');
+const { captureConsole } = require('./captureConsole.js');
 captureConsole('./test.server.log');
 
 // import code to test
@@ -145,16 +145,24 @@ describe('Server', () => {
             request(app).get('/isLoggedIn').expect(400).end(done);
         });
         it('Should return 401 Unauthorized when an invalid token is provided', (t, done) => {
-            request(app).get('/isLoggedIn').set('idtoken', INVALID_TOKEN).expect(401).end(done);
+            request(app)
+                .get('/isLoggedIn')
+                .set('Authorization', 'Bearer ' + INVALID_TOKEN)
+                .expect(401)
+                .end(done);
         });
         it('Should return 401 Unauthorized when a valid but expired token is provided', (t, done) => {
-            request(app).get('/isLoggedIn').set('idToken', EXPIRED_TOKEN).expect(401).end(done);
+            request(app)
+                .get('/isLoggedIn')
+                .set('Authorization', 'Bearer ' + EXPIRED_TOKEN)
+                .expect(401)
+                .end(done);
         });
         it('Should return 200 OK and the correct userid when a valid token is provided', (t, done) => {
             mockToken(t);
             request(app)
                 .get('/isLoggedIn')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200)
                 .expect('Content-Type', /text/)
                 .expect(VALID_AUTH.user_id)
@@ -274,14 +282,14 @@ describe('Server', () => {
             ]);
             await request(app)
                 .get('/businesses/1/joincode')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(403);
         });
         it('Should create a new user when handleAuth is called with a valid but unseen userid', async t => {
             mockToken(t);
             await request(app)
                 .get('/isLoggedIn')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200)
                 .expect('Content-Type', /text/)
                 .expect(VALID_AUTH.user_id);
@@ -388,7 +396,7 @@ describe('Server', () => {
             mockToken(t);
             await request(app)
                 .get('/businesses')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200)
                 .expect('Content-Type', /json/)
                 .expect([
@@ -412,7 +420,7 @@ describe('Server', () => {
             mockToken(t);
             await request(app)
                 .put('/businesses/' + businessId1 + '/name')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'testname2' })
                 .expect(200);
 
@@ -431,7 +439,7 @@ describe('Server', () => {
             mockToken(t);
             await request(app)
                 .put('/businesses/' + businessId2 + '/name')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'testname2' })
                 .expect(403);
 
@@ -444,7 +452,7 @@ describe('Server', () => {
             mockToken(t);
             await request(app)
                 .put('/businesses/' + businessId2 + '/name')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'testname2' })
                 .expect(403);
         });
@@ -461,14 +469,14 @@ describe('Server', () => {
             skipTokenVerification(t, 'testuid', 'testname', 'testemail');
             const res = await request(app)
                 .get('/businesses/' + businessId + '/joincode')
-                .set('idToken', 'testtoken')
+                .set('Authorization', 'Bearer testtoken')
                 .expect(200)
                 .expect('Content-Type', /json/);
             mockToken(t);
             const joincode = JSON.parse(res.text).joincode;
             await request(app)
                 .post('/businesses/' + businessId + '/members')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ joincode: joincode })
                 .expect(200);
             const members = await db().all(
@@ -490,14 +498,14 @@ describe('Server', () => {
             skipTokenVerification(t, 'testuid', 'testname', 'testemail');
             const res = await request(app)
                 .get('/businesses/' + businessId1 + '/joincode')
-                .set('idToken', 'testtoken')
+                .set('Authorization', 'Bearer testtoken')
                 .expect(200)
                 .expect('Content-Type', /json/);
             mockToken(t);
             const joincode = JSON.parse(res.text).joincode;
             await request(app)
                 .post('/businesses/' + businessId2 + '/members')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ joincode: joincode })
                 .expect(403);
             const members = await db().all(
@@ -533,11 +541,11 @@ describe('Server', () => {
             mockToken(t, 2);
             await request(app)
                 .delete('/businesses/' + businessId1 + '/members/me')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200);
             await request(app)
                 .delete('/businesses/' + businessId2 + '/members/me')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(403);
         });
         it('Should only allow kicking non-owner members', async t => {
@@ -567,17 +575,17 @@ describe('Server', () => {
             // owner can't be removed
             await request(app)
                 .delete('/businesses/' + businessId + '/members/' + VALID_AUTH.user_id)
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(400);
             // member can be removed
             await request(app)
                 .delete('/businesses/' + businessId + '/members/testuid')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200);
             // non-member can't be removed
             await request(app)
                 .delete('/businesses/' + businessId + '/members/testuid')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(400);
         });
         it('Should return the correct attendance data for a business', async t => {
@@ -616,7 +624,7 @@ describe('Server', () => {
             mockToken(t, 1);
             await request(app)
                 .get('/businesses/' + businessId + '/attendance')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200)
                 .expect('Content-Type', /json/)
                 .expect([
@@ -708,7 +716,7 @@ describe('Server', () => {
             mockToken(t, 1);
             await request(app)
                 .get('/businesses/' + businessId1)
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ businessId: businessId1 })
                 .expect(200)
                 .expect('Content-Type', /json/)
@@ -751,19 +759,19 @@ describe('Server', () => {
             // don't allow setting owner role
             await request(app)
                 .put('/businesses/' + businessId + '/members/testuid/role')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'owner' })
                 .expect(403);
             // don't allow changing the owner's role
             await request(app)
                 .put('/businesses/' + businessId + '/members/' + VALID_AUTH.user_id + '/role')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'admin' })
                 .expect(403);
             // allow setting other roles
             await request(app)
                 .put('/businesses/' + businessId + '/members/testuid/role')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'admin' })
                 .expect(200);
             const members = await db().all(
@@ -777,12 +785,12 @@ describe('Server', () => {
             mockToken(t, 2);
             await request(app)
                 .put('/username')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .query({ new: 'testname' })
                 .expect(200);
             await request(app)
                 .get('/username')
-                .set('idToken', VALID_TOKEN)
+                .set('Authorization', 'Bearer ' + VALID_TOKEN)
                 .expect(200)
                 .expect('Content-Type', /json/)
                 .expect({ name: 'testname' });

@@ -329,7 +329,7 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
     const end = request.query.end;
     const memberAttendance = await db().all(
         ...SQL`
-        SELECT 
+        SELECT
             Users.name, Users.id as user_id, Records.status, Members.role, COUNT(*) AS total_count
         FROM
             Users, Records, Members, Events

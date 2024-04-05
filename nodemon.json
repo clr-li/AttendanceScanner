@@ -1,4 +1,4 @@
 {
     "ignore": [".git", "node_modules/**/node_modules", "server/super_admin/**"],
-    "watch": ["server/**", "public/**", "server/schema.sql"]
+    "watch": ["server/**", "server/schema.sql"]
 }

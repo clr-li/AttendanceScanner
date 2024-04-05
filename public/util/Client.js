@@ -9,7 +9,7 @@ export const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAge
 /** Requests a resource from the server. Should only retrieve data */
 export async function GET(url) {
     return await fetch(SERVER_URL + url, {
-        headers: { idtoken: sessionStorage.getItem('idtoken') },
+        headers: { Authorization: 'Bearer ' + sessionStorage.getItem('idtoken') },
     });
 }
 
@@ -20,7 +20,7 @@ export async function POST(url, data) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            idtoken: sessionStorage.getItem('idtoken'),
+            Authorization: 'Bearer ' + sessionStorage.getItem('idtoken'),
         },
         body: JSON.stringify(data),
     });
@@ -33,7 +33,7 @@ export async function PATCH(url, data) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            idtoken: sessionStorage.getItem('idtoken'),
+            Authorization: 'Bearer ' + sessionStorage.getItem('idtoken'),
         },
         body: JSON.stringify(data),
     });
@@ -43,7 +43,7 @@ export async function PATCH(url, data) {
 export async function DELETE(url) {
     return await fetch(SERVER_URL + url, {
         method: 'DELETE',
-        headers: { idtoken: sessionStorage.getItem('idtoken') },
+        headers: { Authorization: 'Bearer ' + sessionStorage.getItem('idtoken') },
     });
 }
 
@@ -54,7 +54,7 @@ export async function PUT(url, data) {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            idtoken: sessionStorage.getItem('idtoken'),
+            Authorization: 'Bearer ' + sessionStorage.getItem('idtoken'),
         },
         body: JSON.stringify(data),
     });

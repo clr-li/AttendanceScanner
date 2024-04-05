@@ -5,7 +5,7 @@ const assert = require('node:assert');
 // eslint-disable-next-line no-unused-vars
 const { Builder, Browser, By, Key, until, WebDriver } = require('selenium-webdriver'); // read about selenium here: https://www.selenium.dev/documentation/en/webdriver/
 const chrome = require('selenium-webdriver/chrome'); // read about chrome options here: https://chromedriver.chromium.org/capabilities
-const { captureConsole } = require('./utils.js');
+const { captureConsole } = require('./captureConsole.js');
 captureConsole('./test.client.log');
 
 describe('Client', () => {
