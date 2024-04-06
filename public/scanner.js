@@ -151,15 +151,15 @@ qrElement.innerHTML = /* html */ `
     <label>
     Expires 
     <select class="themify" id="expiration-select">
-        <option value="300000">5 minutes</option>
-        <option value="1800000">30 minutes</option>
+        <option value="300000">5 min</option>
+        <option value="1800000">30 min</option>
         <option value="3600000">1 hour</option>
         <option value="7200000">2 hours</option>
         <option value="14400000">4 hours</option>
         <option value="28800000">8 hours</option>
         <option value="86400000">1 day</option>
     </select>
-    after closing this tab or <button class="themify" id="regen-button">regen now</button>
+    after closing the tab or <button class="themify" id="regen-button" style="padding: 4px">regen now</button>
     </label>
     </span>
 `;
