@@ -70,3 +70,14 @@ export async function sendGmail(to_email, subject, text, credential) {
 
     return await POST('/gmail', { message: message, accessToken: credential.accessToken });
 }
+
+// polyfills
+if (!Object.groupBy) {
+    Object.groupBy = (values, keyFinder) => {
+        return values.reduce((a, b) => {
+            const key = keyFinder(b);
+            a[key] = a[key] ? [...a[key], b] : [b];
+            return a;
+        }, {});
+    };
+}

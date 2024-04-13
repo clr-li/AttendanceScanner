@@ -9,8 +9,10 @@ select.stylish {
     border-radius: 6px;
     border: 6px solid white;
     border-bottom: 5px solid white;
-    outline: 2px solid var(--secondary);
+    box-shadow: 0 0 0 2px var(--secondary);
     height: 28px;
+    -webkit-appearance: none;
+    appearance: none;
 }
 textarea.stylish {
     resize: vertical;

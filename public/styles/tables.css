@@ -86,8 +86,12 @@
     border-radius: 6px;
     border: 6px solid white;
     border-bottom: 5px solid white;
-    outline: 2px solid var(--secondary);
+    box-shadow: 0 0 0 2px var(--secondary);
+    height: 28px;
     vertical-align: top;
+    text-align: center;
+    -webkit-appearance: none;
+    appearance: none;
 }
 .table-paginator input[type=number] {
     margin: 5px;
@@ -98,18 +102,16 @@
     font-size: 0.8rem;
     border-radius: 6px;
     border: 6px solid white;
-    outline: 2px solid var(--secondary);
+    box-shadow: 0 0 0 2px var(--secondary);
     text-align: center;
     -moz-appearance: textfield;
+    appearance: textfield;
     vertical-align: top;
 }
 .table-paginator input::-webkit-outer-spin-button,
 .table-paginator input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-.table-paginator select:focus, .table-paginator input[type=number]:focus {
-    outline: 2px dashed var(--accent);
 }
 
 .table-wrapper input {
