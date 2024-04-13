@@ -1,10 +1,10 @@
 {
-  "Users": {
-    "slug": "Users",
+  "migrations": {
+    "slug": "migrations",
     "table": {
-      "name": "Users",
+      "name": "migrations",
       "pk": "id",
-      "verbose": "Users"
+      "verbose": "migrations"
     },
     "columns": [
       {
@@ -14,7 +14,7 @@
           "text": true
         },
         "type": "TEXT",
-        "allowNull": false,
+        "allowNull": true,
         "defaultValue": null,
         "listview": {
           "show": true
@@ -40,52 +40,29 @@
         }
       },
       {
-        "name": "customer_id",
-        "verbose": "customer_id",
+        "name": "applied_at",
+        "verbose": "applied_at",
         "control": {
           "text": true
         },
         "type": "TEXT",
-        "allowNull": true,
-        "defaultValue": null,
+        "allowNull": false,
+        "defaultValue": "strftime('%Y-%m-%d %H:%M:%f', 'now')",
         "listview": {
           "show": true
         },
         "editview": {
           "show": true
         }
-      }
-    ],
-    "mainview": {
-      "show": true
-    },
-    "listview": {
-      "order": {},
-      "page": 25,
-      "filter": [
-        "name"
-      ]
-    },
-    "editview": {
-      "readonly": false
-    }
-  },
-  "sqlite_sequence": {
-    "slug": "sqlite_sequence",
-    "table": {
-      "name": "sqlite_sequence",
-      "pk": "",
-      "verbose": "sqlite_sequence"
-    },
-    "columns": [
+      },
       {
-        "name": "name",
-        "verbose": "name",
+        "name": "content_hash",
+        "verbose": "content_hash",
         "control": {
           "text": true
         },
-        "type": "",
-        "allowNull": true,
+        "type": "TEXT",
+        "allowNull": false,
         "defaultValue": null,
         "listview": {
           "show": true
@@ -95,13 +72,13 @@
         }
       },
       {
-        "name": "seq",
-        "verbose": "seq",
+        "name": "content",
+        "verbose": "content",
         "control": {
           "text": true
         },
-        "type": "",
-        "allowNull": true,
+        "type": "TEXT",
+        "allowNull": false,
         "defaultValue": null,
         "listview": {
           "show": true
@@ -122,205 +99,12 @@
       "readonly": false
     }
   },
-  "Records": {
-    "slug": "Records",
+  "events": {
+    "slug": "events",
     "table": {
-      "name": "Records",
-      "pk": [
-        "event_id",
-        "user_id"
-      ],
-      "verbose": "Records"
-    },
-    "columns": [
-      {
-        "name": "event_id",
-        "verbose": "event_id",
-        "control": {
-          "text": true
-        },
-        "type": "INTEGER",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "business_id",
-        "verbose": "business_id",
-        "control": {
-          "text": true
-        },
-        "type": "INTEGER",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "user_id",
-        "verbose": "user_id",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "timestamp",
-        "verbose": "timestamp",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "status",
-        "verbose": "status",
-        "control": {
-          "select": true,
-          "options": [
-            "PRESENT",
-            "ABSENT",
-            "LATE",
-            "EXCUSED",
-            "ABSENT(self-marked)"
-          ]
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      }
-    ],
-    "mainview": {
-      "show": true
-    },
-    "listview": {
-      "order": {},
-      "page": 25,
-      "filter": [
-        "status",
-        "business_id",
-        "event_id",
-        "user_id",
-        "timestamp"
-      ]
-    },
-    "editview": {
-      "readonly": false
-    }
-  },
-  "Members": {
-    "slug": "Members",
-    "table": {
-      "name": "Members",
-      "pk": [
-        "business_id",
-        "user_id"
-      ],
-      "verbose": "Members"
-    },
-    "columns": [
-      {
-        "name": "business_id",
-        "verbose": "business_id",
-        "control": {
-          "text": true
-        },
-        "type": "INTEGER",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "user_id",
-        "verbose": "user_id",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "role",
-        "verbose": "role",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      }
-    ],
-    "mainview": {
-      "show": true
-    },
-    "listview": {
-      "order": {},
-      "page": 25,
-      "filter": [
-        "role",
-        "business_id",
-        "user_id"
-      ]
-    },
-    "editview": {
-      "readonly": false
-    }
-  },
-  "Businesses": {
-    "slug": "Businesses",
-    "table": {
-      "name": "Businesses",
+      "name": "events",
       "pk": "id",
-      "verbose": "Businesses"
+      "verbose": "events"
     },
     "columns": [
       {
@@ -330,7 +114,7 @@
           "text": true
         },
         "type": "INTEGER",
-        "allowNull": false,
+        "allowNull": true,
         "defaultValue": null,
         "listview": {
           "show": true
@@ -339,96 +123,9 @@
           "show": true
         }
       },
-      {
-        "name": "name",
-        "verbose": "name",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "joincode",
-        "verbose": "joincode",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "subscriptionId",
-        "verbose": "subscriptionId",
-        "control": {
-          "text": true
-        },
-        "type": "TEXT",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      }
-    ],
-    "mainview": {
-      "show": true
-    },
-    "listview": {
-      "order": {},
-      "page": 25,
-      "filter": [
-        "name"
-      ]
-    },
-    "editview": {
-      "readonly": false
-    }
-  },
-  "Events": {
-    "slug": "Events",
-    "table": {
-      "name": "Events",
-      "pk": "id",
-      "verbose": "Events"
-    },
-    "columns": [
       {
         "name": "business_id",
         "verbose": "business_id",
-        "control": {
-          "text": true
-        },
-        "type": "INTEGER",
-        "allowNull": false,
-        "defaultValue": null,
-        "listview": {
-          "show": true
-        },
-        "editview": {
-          "show": true
-        }
-      },
-      {
-        "name": "id",
-        "verbose": "id",
         "control": {
           "text": true
         },
@@ -521,6 +218,22 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "tag",
+        "verbose": "tag",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {
@@ -528,16 +241,375 @@
     },
     "listview": {
       "order": {},
-      "page": 25,
-      "filter": [
-        "name",
-        "business_id",
-        "id",
-        "description",
-        "starttimestamp",
-        "endtimestamp",
-        "repeat_id"
-      ]
+      "page": 25
+    },
+    "editview": {
+      "readonly": false
+    }
+  },
+  "members": {
+    "slug": "members",
+    "table": {
+      "name": "members",
+      "pk": "business_id",
+      "verbose": "members"
+    },
+    "columns": [
+      {
+        "name": "business_id",
+        "verbose": "business_id",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "user_id",
+        "verbose": "user_id",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "role",
+        "verbose": "role",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "custom_data",
+        "verbose": "custom_data",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": "\"{}\"",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      }
+    ],
+    "mainview": {
+      "show": true
+    },
+    "listview": {
+      "order": {},
+      "page": 25
+    },
+    "editview": {
+      "readonly": false
+    }
+  },
+  "businesses": {
+    "slug": "businesses",
+    "table": {
+      "name": "businesses",
+      "pk": "id",
+      "verbose": "businesses"
+    },
+    "columns": [
+      {
+        "name": "id",
+        "verbose": "id",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "name",
+        "verbose": "name",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "joincode",
+        "verbose": "joincode",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "subscriptionId",
+        "verbose": "subscriptionId",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "requireJoin",
+        "verbose": "requireJoin",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": "0",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      }
+    ],
+    "mainview": {
+      "show": true
+    },
+    "listview": {
+      "order": {},
+      "page": 25
+    },
+    "editview": {
+      "readonly": false
+    }
+  },
+  "records": {
+    "slug": "records",
+    "table": {
+      "name": "records",
+      "pk": "event_id",
+      "verbose": "records"
+    },
+    "columns": [
+      {
+        "name": "event_id",
+        "verbose": "event_id",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "business_id",
+        "verbose": "business_id",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "user_id",
+        "verbose": "user_id",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "timestamp",
+        "verbose": "timestamp",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "status",
+        "verbose": "status",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      }
+    ],
+    "mainview": {
+      "show": true
+    },
+    "listview": {
+      "order": {},
+      "page": 25
+    },
+    "editview": {
+      "readonly": false
+    }
+  },
+  "users": {
+    "slug": "users",
+    "table": {
+      "name": "users",
+      "pk": "id",
+      "verbose": "users"
+    },
+    "columns": [
+      {
+        "name": "id",
+        "verbose": "id",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "name",
+        "verbose": "name",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "customer_id",
+        "verbose": "customer_id",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": true,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "email",
+        "verbose": "email",
+        "control": {
+          "text": true
+        },
+        "type": "TEXT",
+        "allowNull": false,
+        "defaultValue": null,
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      }
+    ],
+    "mainview": {
+      "show": true
+    },
+    "listview": {
+      "order": {},
+      "page": 25
     },
     "editview": {
       "readonly": false

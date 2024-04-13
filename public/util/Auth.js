@@ -1,13 +1,21 @@
-import { GET } from "./Client.js";
+import { GET } from './Client.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js';
-import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
+import {
+    getAuth,
+    setPersistence,
+    browserSessionPersistence,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
+} from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js';
 
 // Initialize the current auth session and Firebase app
 const app = initializeApp({
     // see https://stackoverflow.com/questions/37482366/is-it-safe-to-expose-firebase-apikey-to-the-public#:~:text=The%20apiKey%20in%20this%20configuration,interact%20with%20your%20Firebase%20project.
-    apiKey: "AIzaSyBwrJdz4Ht-QMAzWQ3q3Eb02l69QQAIR9c",  // gitleaks:allow
-    projectId: "attendancescannerqr",
-    authDomain: "attendancescannerqr.firebaseapp.com",
+    apiKey: 'AIzaSyBwrJdz4Ht-QMAzWQ3q3Eb02l69QQAIR9c', // gitleaks:allow
+    projectId: 'attendancescannerqr',
+    authDomain: 'attendancescannerqr.firebaseapp.com',
 });
 const auth = getAuth(app);
 auth.useDeviceLanguage();
@@ -15,7 +23,7 @@ const googleProvider = new GoogleAuthProvider(); // sign in with Google, could e
 // Got rid of await for setPersistence and getRedirectResult because Safari spasms and an if(false) still runs the two lines
 setPersistence(auth, browserSessionPersistence); // auth session ends when browser session ends (closing window/browser will end session, refresh and closing tab will not)
 getRedirectResult(auth); // initialize auth with redirect login results if available
-console.log("Initialized auth!");
+console.log('Initialized auth!');
 
 /**
  * Parses the main body of a JWT bearer token.
@@ -28,15 +36,22 @@ function parseJwt(token) {
 
 /**
  * Gets the current user profile.
- * @returns an object representing the currently logged in user or null if no user has logged in. 
+ * @returns an object representing the currently logged in user or null if no user has logged in.
  */
 export async function getCurrentUser() {
-    const token = auth.currentUser ? auth.currentUser.accessToken : sessionStorage.getItem('idtoken');
+    const token = auth.currentUser
+        ? auth.currentUser.accessToken
+        : sessionStorage.getItem('idtoken');
     if (!token) return null;
     const decoded = parseJwt(token);
-    const res = await GET("/getName");
+    const res = await GET('/username');
     const name = await res.json();
-    return { name: name.name, picture: decoded.picture, uid: decoded.user_id, email: decoded.email_verified ? decoded.email : null }
+    return {
+        name: name.name,
+        picture: decoded.picture,
+        uid: decoded.user_id,
+        email: decoded.email_verified ? decoded.email : null,
+    };
 }
 
 /**
@@ -46,13 +61,14 @@ export async function getCurrentUser() {
  */
 export async function login() {
     try {
-        console.log("Logging in...");
-        if (auth.currentUser) { // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
-            let idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
-            sessionStorage.setItem("idtoken", idToken);
-        } else if (!sessionStorage.getItem("idtoken")) return false;
+        console.log('Logging in...');
+        if (auth.currentUser) {
+            // use firebase auth information if available (otherwise we rely on the existing idtoken session storage item if it has been set)
+            const idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true);
+            sessionStorage.setItem('idtoken', idToken);
+        } else if (!sessionStorage.getItem('idtoken')) return false;
         const res = await GET('/isLoggedIn');
-        console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
+        console.log(res.status === 200 ? 'Server Approved' : 'Server Did Not Approve');
         return res.status === 200;
     } catch (error) {
         console.error(error);
@@ -63,12 +79,14 @@ export async function login() {
 /**
  * Guarantees the user is logged in by redirecting to the login page if the user is not logged in.
  * Should be called before using any features that require the user to be logged in.
- * 
+ *
  * Automatically reruns itself when the token expires.
  */
 export async function requireLogin() {
-    if (!(await login())) location.assign('/login.html?redirect=' + encodeURIComponent(location.href));
-    else if (auth.currentUser) setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
+    if (!(await login()))
+        location.assign('/login.html?redirect=' + encodeURIComponent(location.href));
+    else if (auth.currentUser)
+        setTimeout(requireLogin, parseJwt(auth.currentUser.accessToken).exp * 1000 - Date.now());
     else console.log('Using dev login');
 }
 
@@ -81,7 +99,7 @@ export function redirectLogin() {
         signInWithRedirect(auth, googleProvider);
     } catch (e) {
         // TODO: Error handling
-        console.error(error);
+        console.error(e);
     }
 }
 
@@ -91,11 +109,11 @@ export function redirectLogin() {
  */
 export async function popUpLogin(handleLogin) {
     try {
-        await signInWithPopup(auth, googleProvider)
+        await signInWithPopup(auth, googleProvider);
         handleLogin(await login());
     } catch (e) {
         // TODO: Error handling
-        console.error(error);
+        console.error(e);
     }
 }
 
@@ -106,9 +124,9 @@ export async function popUpLogin(handleLogin) {
  */
 export async function devLogin(handleLogin, token) {
     await auth.signOut();
-    sessionStorage.setItem("idtoken", token);
+    sessionStorage.setItem('idtoken', token);
     let res = await GET('/isLoggedIn');
-    console.log(res.status === 200 ? "Server Approved" : "Server Did Not Approve");
+    console.log(res.status === 200 ? 'Server Approved' : 'Server Did Not Approve');
     handleLogin(res.status === 200);
 }
 
@@ -118,10 +136,25 @@ export async function devLogin(handleLogin, token) {
 export async function logout() {
     try {
         const signout = auth.signOut();
-        sessionStorage.removeItem("idtoken");
+        sessionStorage.removeItem('idtoken');
         await signout;
-        console.log("Signed out!");
-    } catch (e){
+        console.log('Signed out!');
+    } catch (e) {
         console.error(e);
-    } 
+    }
+}
+
+/**
+ * Prompts the user to log in to a google account and give permission for the specified scopes.
+ * @param {string[]} scopes Google API scopes to request permission for (if we already have them, the user will not be prompted for them)
+ * @returns the user's Google credential (with the user's name and email) if the user has logged in and given permission, otherwise null.
+ */
+export async function requestGoogleCredential(scopes) {
+    for (const scope of scopes) {
+        googleProvider.addScope(scope);
+    }
+    const signinResult = await signInWithPopup(auth, googleProvider);
+    const credential = GoogleAuthProvider.credentialFromResult(signinResult);
+
+    return { ...credential, name: signinResult.user.displayName, email: signinResult.user.email };
 }

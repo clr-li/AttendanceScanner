@@ -1,38 +1,151 @@
-.calendar {
-    border-collapse: collapse;
+/* table */
+.table-wrapper {
+    max-width: var(--max-width);
+    width: 100%;
     margin: 0 auto;
+    overflow-x: auto;
+    padding: 0 1em 0 1em;
+}
+.table-wrapper table {
+    width: 100%;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    border-collapse: collapse;
+    background-color: aliceblue;
+    margin-bottom: 1em;
+}
+.table-wrapper th,
+.table-wrapper td {
+    padding: 1em;
+    text-align: left;
+    border-top: 1px solid rgba(220, 228, 235);
+}
+.table-wrapper th {
+    border-top: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.table-wrapper tr:hover {
+    background-color: rgba(220, 228, 235);
+}
+.table-wrapper th:hover {
+    color: var(--accent);
+}
+.table-wrapper tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+}
+.table-wrapper tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+}
+.table-wrapper tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+.table-wrapper tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
 }
 
-.calendar > table, th, td {
-    border: 2px solid;
-    padding: 0.5rem;
-    font-size: 1.2rem;
-    background-color: white;
-    color: black;
-    table-layout: fixed;
+.table-wrapper .name {
+    margin-left: 5px;
+}
+.table-pill {
+    font-size: 12px;
+    color: hsl(0, 0%, 50%);
+    border-radius: 20px;
+    border: 1px solid hsl(0, 0%, 50%);
+    vertical-align: middle;
+    padding: 4px 8px;
+    white-space: nowrap;
+    background-color: transparent;
+}
+.table-pill__color {
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
 }
 
-.calendar th:nth-child(2), .calendar td:nth-child(2) {
-    --width: 150px;
-    min-width: var(--width);
-    width: var(--width);
-    max-width: var(--width);
+.table-action-bar {
+    display: flex;
+    white-space: nowrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+    margin-bottom: 1em;
+    min-width: fit-content;
+    width: calc(100% - 32px);
+    margin-left: 16px;
+}
+.table-paginator button {
+    min-width: 5ch;
+}
+.table-paginator select {
+    margin: 5px;
+    margin-top: 8px;
+    min-width: fit-content;
+    font-size: 0.8rem;
+    padding: 0px 2px 0px 2px;
+    border-radius: 6px;
+    border: 6px solid white;
+    border-bottom: 5px solid white;
+    box-shadow: 0 0 0 2px var(--secondary);
+    height: 28px;
+    vertical-align: top;
+    text-align: center;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.table-paginator input[type=number] {
+    margin: 5px;
+    margin-top: 8px;
+    min-width: 4ch;
+    width: 4ch;
+    height: 28px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: 6px solid white;
+    box-shadow: 0 0 0 2px var(--secondary);
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    vertical-align: top;
+}
+.table-paginator input::-webkit-outer-spin-button,
+.table-paginator input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
+.table-wrapper input {
+    cursor: pointer;
+}
+
+/* General */
 .smaller-text {
     font-size: 0.8rem;
+    vertical-align: middle;
 }
 
-.scroll {
-    overflow-x: auto; 
-    max-width: var(--max-width);
-    width: 100vw;
-    margin: auto;
+/* overlay red background with white x icon on hover*/
+.delete-on-hover {
+    position: relative;
 }
-
-.calendar {
-    border-collapse: collapse;
-    margin: 0 auto;
+.delete-on-hover:hover {
+    border-color: transparent;
+}
+.delete-on-hover:hover::after {
+    content: '✖';
+    background-color: var(--secondary);
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: inherit;
+    border: 1px solid var(--secondary);
 }
 
 /* Columns */

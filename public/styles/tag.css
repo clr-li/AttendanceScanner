@@ -1,0 +1,15 @@
+.tag {
+    padding: 5px;
+    border-radius: 15px;
+    margin: 3px;
+    border: 2px solid black;
+    width: fit-content;
+    background-color: var(--success-lighter);
+}
+
+.cross {
+    font-size: 0.9rem;
+    color: var(--delete-darker);
+    background-color: var(--success-lighter);
+    border: none;
+}

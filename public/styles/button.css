@@ -1,11 +1,15 @@
 /* Fancy button with background gradient and animation */
-.buttonize button, .button {
+.buttonize button,
+.button {
     align-items: center;
     appearance: none;
     background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
     border: 0;
     border-radius: 6px;
-    box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
+    box-shadow:
+        rgba(45, 35, 66, 0.4) 0 2px 4px,
+        rgba(45, 35, 66, 0.3) 0 7px 13px -3px,
+        rgba(58, 65, 111, 0.5) 0 -3px 0 inset;
     color: #fff;
     padding: 10px;
     cursor: pointer;
@@ -17,12 +21,14 @@
     position: relative;
     text-align: left;
     text-decoration: none;
-    transition: box-shadow .15s, transform .15s;
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
     white-space: nowrap;
-    will-change: box-shadow,transform;
+    will-change: box-shadow, transform;
     margin: 5px;
     min-width: 15ch;
     font-size: 0.8rem;
@@ -30,14 +36,17 @@
 
 .buttonize button:disabled,
 .button:disabled {
-    opacity: .5;
+    opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
 }
 
-.buttonize button:hover:not(:active), 
+.buttonize button:hover:not(:active),
 .button:hover:not(:active) {
-    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+    box-shadow:
+        rgba(45, 35, 66, 0.4) 0 4px 8px,
+        rgba(45, 35, 66, 0.3) 0 7px 13px -3px,
+        #3c4fe0 0 -3px 0 inset;
     transform: translateY(-2px);
 }
 .buttonize button:active,
@@ -51,21 +60,69 @@
 }
 
 .delete {
-    background-image: radial-gradient(100% 100% at 100% 0, var(--delete-lighter) 0, var(--delete) 100%);
+    background-image: radial-gradient(
+        100% 100% at 100% 0,
+        var(--delete-lighter) 0,
+        var(--delete) 100%
+    );
 }
 .delete:hover:not(:active) {
-    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--delete-darker) 0 -3px 0 inset;
+    box-shadow:
+        rgba(45, 35, 66, 0.4) 0 4px 8px,
+        rgba(45, 35, 66, 0.3) 0 7px 13px -3px,
+        var(--delete-darker) 0 -3px 0 inset;
 }
 
 .success {
-    background-image: radial-gradient(100% 100% at 100% 0, var(--success-lighter) 0, var(--success) 100%);
+    background-image: radial-gradient(
+        100% 100% at 100% 0,
+        var(--success-lighter) 0,
+        var(--success) 100%
+    );
 }
 .success:hover:not(:active) {
-    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, var(--success-darker) 0 -3px 0 inset;
+    box-shadow:
+        rgba(45, 35, 66, 0.4) 0 4px 8px,
+        rgba(45, 35, 66, 0.3) 0 7px 13px -3px,
+        var(--success-darker) 0 -3px 0 inset;
 }
 
 .big-button {
     padding: 15px;
+    font-size: 1.5rem;
+}
+
+.plus-button {
+    align-items: center;
+    appearance: none;
+    background-image: radial-gradient(100% 100% at 100% 0, var(--success-lighter) 0, var(--success) 100%);
+    border: 0;
+    border-radius: 10px;
+    box-shadow:
+        rgba(45, 35, 66, 0.4) 0 2px 4px,
+        rgba(45, 35, 66, 0.3) 0 7px 13px -3px,
+        rgba(58, 65, 111, 0.5) 0 -3px 0 inset;
+    color: #fff;
+    padding: 2px;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    will-change: box-shadow, transform;
+    margin: 5px;
+    width: 2ch;
+    height: 2ch;
     font-size: 1.5rem;
 }
 
@@ -77,31 +134,4 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-}
-
-.subscription {
-    max-width: calc(var(--max-width)/2); 
-    border: 1px solid black; 
-    border-radius: 20px; 
-    padding: 10px; 
-    margin: auto; 
-    position: relative;
-    display: inline-block;
-    margin-bottom: 5px;
-}
-
-.subscription:hover {
-    border: 1px solid black;
-    background-color: var(--accent-lighter);
-}
-
-.subscription-list {
-    text-align: left; 
-    margin-bottom: 3px;
-}
-
-.subscription.active-subscription {
-    border: 3px solid black;
-    background-color: var(--accent);
-    color: white;
 }

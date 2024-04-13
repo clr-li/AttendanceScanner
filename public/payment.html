@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Payment</title>
-        <meta name="description" content="A service to automate attendance">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/assets/logo.png" />
 
         <!-- import the webpage's stylesheet -->
-        <link rel="stylesheet" href="/style.css">
-        
+        <link rel="stylesheet" href="/style.css" />
+
         <!-- Payment with Braintree -->
         <script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>
         <script src="https://js.braintreegateway.com/web/3.88.6/js/client.min.js"></script>
@@ -20,50 +20,59 @@
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/CircleLoader.js"></script>
     </head>
-    <body>
+    <body style="background-color: var(--medium-section);">
         <navigation-manager>
-            <section id="subscriptions">
+            <section class="light-section">
                 <h1>Manage Subscriptions</h1>
+                <br>
+                <div id="subscriptions"></div>
             </section>
 
-            <section class="light-section">
-                <h2>
-                    Choose Subscription
-                </h2>
+            <section class="medium-section">
+                <h2>Choose Subscription</h2>
+                <br>
                 <div id="free" class="subscription">
-                    <h3 style="margin-bottom: 3px;">Free Plan</h3>
-                    <div style="text-align: center; max-width: 80%; margin: auto;">
-                        <li class="subscription-list">Price per Month: $0.00</li>
-                        <li class="subscription-list">Allow up to 50 members</li>
-                        <li class="subscription-list">Includes admin, moderator, scanner, and user privileges</li>
-                        <li class="subscription-list">FAQ and GitHub community support</li>
+                    <h3 style="margin-bottom: 3px">Free Plan</h3>
+                    <hr>
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Price per Month: $0.00</li>
+                        <li>Allow up to 50 members</li>
+                        <li>
+                            Includes admin, moderator, scanner, and user privileges
+                        </li>
+                        <li>FAQ and GitHub community support</li>
                     </div>
                 </div>
                 <div id="standard" class="subscription">
-                    <h3 style="margin-bottom: 3px;">Standard Plan</h3>
-                    <div style="text-align: center; max-width: 80%; margin: auto;">
-                        <li class="subscription-list">Price per Month: $7.00</li>
-                        <li class="subscription-list">Allow up to 100 members</li>
-                        <li class="subscription-list">Includes custom roles, admin, moderator, scanner, and user privileges</li>
-                        <li class="subscription-list">Email support (response within 3 days)</li>
+                    <h3 style="margin-bottom: 3px">Standard Plan</h3>
+                    <hr>
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Price per Month: $7.00</li>
+                        <li>Allow up to 100 members</li>
+                        <li>
+                            Includes custom roles, admin, moderator, scanner, and user privileges
+                        </li>
+                        <li>Email support (response within 3 days)</li>
                     </div>
                 </div>
             </section>
-            
-            <section id="purchase-subscription" class="medium-section" style="display: none;">
-            <h2>
-                Purchase Subscriptions
-            </h2>
-            <form id="payment-form" style ="max-width: var(--max-width); margin: auto;">
-                <div id="dropin-container"></div>
+
+            <section id="purchase-subscription" class="purple-section" style="display: none">
+                <h2>Purchase Subscription</h2>
+                <p>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</p>
                 <br>
-                <label for="businessName">Business Name:</label>
-                <input type="text" id="businessName" name="BusinessName"/>
-                <button class="button" type="submit">Purchase Standard Subscription</button>
-            </form>
+                <form id="payment-form" style="max-width: var(--max-width); margin: auto">
+                    <div id="dropin-container"></div>
+                    <br />
+                    <div class="form" style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                        <label for="businessName">Group Name:</label>
+                        <input type="text" id="businessName" name="BusinessName" />
+                        <button id="purchase-btn" style="width: 32ch" class="button" type="submit">Purchase</button>
+                    </div>
+                </form>
             </section>
         </navigation-manager>
-        
+
         <circle-loader id="loader"></circle-loader>
 
         <script type="module" src="/payment.js"></script>

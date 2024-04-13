@@ -1,19 +1,20 @@
-import { Component } from "../util/Component.js";
-import { sanitizeText } from "../util/util.js";
+import { Component } from '../util/Component.js';
+import { sanitizeText } from '../util/util.js';
 
- export class ActionIcon extends Component {
+export class ActionIcon extends Component {
     constructor() {
         super(false);
     }
     initialHTML() {
-        const actionName = sanitizeText(this.getAttribute('name')) ?? "Action Name";
-        const actionIcon = sanitizeText(this.getAttribute('icon') ?? "fa-solid fa-users");
-        const link = sanitizeText(this.getAttribute('link') ?? "payment.html");
-        const description = sanitizeText(this.getAttribute('description') ?? "Description");
-        return /* html */`
+        const actionName = sanitizeText(this.getAttribute('name')) ?? 'Action Name';
+        const actionIcon = sanitizeText(this.getAttribute('icon') ?? 'fa-solid fa-users');
+        const link = sanitizeText(this.getAttribute('link') ?? 'payment.html');
+        const description = sanitizeText(this.getAttribute('description') ?? 'Description');
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/tables.css">
-            <link rel="stylesheet" href="/font-alexesome/icon.css">
+            <link rel="stylesheet" href="/styles/inputs.css">
+            <link rel="stylesheet" href="/font-alexsome/icon.css">
             <div class="cols" style="margin-bottom: 16px; width: 190px;">
                 <div role="link" class="actions" onclick="location.assign('${link}')">
                     <i class="${actionIcon}"></i>
@@ -22,14 +23,14 @@ import { sanitizeText } from "../util/util.js";
                 <h3>${actionName}
                     <span style="position: relative;">
                         <i role="button" id="info-btn" class="fa-solid fa-circle-info smaller-text"></i>
-                        <dialog id="info-dialog" class="action-info">${description}</dialog>
+                        <dialog id="info-dialog" class="tooltip-info">${description}</dialog>
                     </span>
                 </h3>
             </div>
             <style>${CSS}</style>
         `;
     }
-    
+
     /**
      * Called when this component is attached to the DOM. Has access to attributes and properties of this component and can be used to attach event listeners.
      */
@@ -40,12 +41,12 @@ import { sanitizeText } from "../util/util.js";
             console.log(actionInfo.open);
             actionInfo.show();
         });
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (e.target.tagName.toLowerCase() !== 'action-icon') {
                 actionInfo.close();
             }
         });
-        actionInfo.addEventListener('click', (e) => {
+        actionInfo.addEventListener('click', e => {
             actionInfo.close();
         });
     }
@@ -57,7 +58,7 @@ import { sanitizeText } from "../util/util.js";
     }
 }
 
-const CSS = /* css */`
+const CSS = /* css */ `
 h3 {
     white-space: nowrap;
 }
@@ -102,37 +103,6 @@ h3 {
 
 .actions:active {
     transform: translateY(2px);
-}
-
-.action-info {
-    white-space: normal;
-    width: 150px;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 5;
-    margin-left: -900%;
-    margin-top: 35%;
-    border: none;
-    border-left: 10px solid var(--primary);
-    color: white;
-    background-color: var(--dark-background);
-    font-size: 0.8em;
-}
-
-.action-info:focus {
-    outline: none;
-}
-
-.action-info::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 78%;
-    margin-left: -7px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent transparent var(--dark-background) transparent;
 }
 `;
 

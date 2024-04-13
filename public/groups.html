@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Groups</title>
-        <meta name="description" content="A service to automate attendance">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="assets/logo.png"/>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="assets/logo.png" />
 
         <!-- Import the webpage's stylesheet -->
-        <link rel="stylesheet" href="/style.css">
-        
+        <link rel="stylesheet" href="/style.css" />
+
         <!-- Import QR scanning capabilities -->
-        <script src="util/html5_qrcode.min.js"></script>
+        <script src="lib/html5_qrcode.min.js"></script>
 
         <!-- Charts -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -27,7 +27,7 @@
             }
         </style>
     </head>
-    <body>
+    <body style="background-color: var(--light-section);">
         <navigation-manager>
             <section class="light-section" style="min-height: 65%">
                 <h1>My Groups</h1>
@@ -36,36 +36,10 @@
                 <div class="qr-container">
                     <div id="qr-reader" class="buttonize"></div>
                 </div>
-                <br>
+                <br />
                 <div id="businesses"></div>
             </section>
         </navigation-manager>
-        <style>
-            .business-card {
-                background-color: aliceblue;
-                width: 80%;
-                min-width: min(100%, 500px);
-                margin: auto;
-                padding: 10px;
-                border-radius: 10px;
-                margin-bottom: 1rem;
-                position: relative;
-                max-width: var(--max-width);
-            }
-
-            .business-card > h1 > span {
-                font-size: medium;
-                display: inline;
-            }
-
-            .business-card > hr {
-                border: 1px solid var(--accent);
-                width: 30%;
-                margin: auto;
-                margin-top: 6px;
-                margin-bottom: 6px;
-            }
-        </style>
 
         <script type="module" src="/groups.js"></script>
         <noscript>

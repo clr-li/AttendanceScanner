@@ -1,18 +1,19 @@
-import { Component } from "../util/Component.js";
-import "./Navbar.js";
-import "./Footer.js";
+import { Component } from '../util/Component.js';
+import './Navbar.js';
+import './Footer.js';
 
 /**
  * The Navigation component adds basic page navigation such as a navbar, footer, and hidden navigation links for accessibility
  */
 export class NavigationManager extends Component {
     initialHTML() {
-        return /* html */`
+        const mainStyle = this.getAttribute('main-style') ?? '';
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/navigation.css">
             <a href="#main-content" class="skip">Skip to main content</a>
             <navigation-bar id="navigation-bar"></navigation-bar>
-            <main id="main-content">
+            <main id="main-content" style="${mainStyle}">
                 <slot></slot>
             </main>
             <a href="#main-content" class="skip">Skip back to main content</a>

@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Attendance Taken</title>
-        <meta name="description" content="A service to automate attendance">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="/assets/logo.png"/>
+        <meta name="description" content="A service to automate attendance" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/assets/logo.png" />
 
         <!-- Import the webpage's stylesheet -->
-        <link rel="stylesheet" href="/style.css">
-        
+        <link rel="stylesheet" href="/style.css" />
+
         <script type="module" src="/components/Navigation.js"></script>
     </head>
     <body>
@@ -21,9 +21,9 @@
                 </noscript>
             </section>
         </navigation-manager>
-        
+
         <script type="module" defer>
-            import { GET } from './util/Client.js';
+            import { POST } from './util/Client.js';
             import { requireLogin, getCurrentUser } from './util/Auth.js';
             import { useURL } from './util/StateManager.js';
             import { sanitizeText } from './util/util.js';
@@ -31,26 +31,28 @@
             const user = await getCurrentUser();
 
             const { code } = useURL('code');
-            const { eventid } = useURL('eventid');
+            const { eventId } = useURL('eventId');
             const { businessId } = useURL('businessId');
             const { status } = useURL('status');
-            
-            const res = await GET(`/recordMyAttendance?code=${code}&eventid=${eventid}&businessId=${businessId}&status=${status}`);
+
+            const res = await POST(
+                `/businesses/${businessId}/events/${eventId}/attendance/me?code=${code}&status=${status}`,
+            );
             if (res.ok) {
-                document.getElementById('content').innerHTML = /* html */`
+                document.getElementById('content').innerHTML = /* html */ `
                     <h1>Hi, ${sanitizeText(user.name)}</h1>
                     <p>Your attendance has been taken for this event!</p>
                     <a href="/groups.html" class="button">Back to Home</a>
                 `;
             } else {
-                console.error(res.status, await res.text());
-                document.getElementById('content').innerHTML = /* html */`
+                const errorMessage = await res.text();
+                console.error(res.status, errorMessage);
+                document.getElementById('content').innerHTML = /* html */ `
                     <h1>Hi, ${sanitizeText(user.name)}</h1>
-                    <p>This attendance code has expired, please ask your organization to create a new one.</p>
+                    <p>${errorMessage}</p>
                     <a href="/groups.html" class="button">Back to Home</a>
                 `;
             }
-            
         </script>
     </body>
 </html>

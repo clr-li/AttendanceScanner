@@ -3,30 +3,29 @@ name: Automated Tests
 on: [push, pull_request]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.17'
-      - name: Setup Selenium Server
-        run: docker pull selenium/standalone-chrome:latest
-      - name: Start Selenium Server with access to host's localhost
-        run: docker run -d -p 4444:4444 --network="host" --shm-size=2g selenium/standalone-chrome:latest
-      - name: Install dependencies
-        run: npm ci
-      - name: Create Service Account key for Firebase
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
-      - name: Run tests with chrome
-        run: |
-          SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=chrome npm test
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS: "gcloud.json"
-          MERCHANTID: ${{ secrets.MERCHANTID }}
-          MERCHANTPUBLIC: ${{ secrets.MERCHANTPUBLIC }}
-          MERCHANTPRIVATE: ${{ secrets.MERCHANTPRIVATE }}
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.17'
+            - name: Setup Selenium Server
+              run: docker pull selenium/standalone-chrome:latest
+            - name: Start Selenium Server with access to host's localhost
+              run: docker run -d -p 4444:4444 --network="host" --shm-size=2g selenium/standalone-chrome:latest
+            - name: Install dependencies
+              run: npm ci
+            - name: Create Service Account key for Firebase
+              run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > gcloud.json
+            - name: Run tests with chrome
+              run: |
+                  SELENIUM_REMOTE_URL="http://localhost:4444/wd/hub" SELENIUM_BROWSER=chrome npm test
+              env:
+                  TOKEN: ${{ secrets.TOKEN }}
+                  GOOGLE_APPLICATION_CREDENTIALS: 'gcloud.json'
+                  MERCHANTID: ${{ secrets.MERCHANTID }}
+                  MERCHANTPUBLIC: ${{ secrets.MERCHANTPUBLIC }}
+                  MERCHANTPRIVATE: ${{ secrets.MERCHANTPRIVATE }}

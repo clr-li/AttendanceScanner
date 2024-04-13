@@ -6,7 +6,7 @@ export async function initSelector(id, onselect, addOptions) {
     const selector = document.getElementById(id);
     const state = useURL(id);
     const { get, set } = state;
-    selector.addEventListener("select", (e) => {
+    selector.addEventListener('select', e => {
         set(e.detail.dataset.id);
         if (onselect) onselect(e);
     });
@@ -26,23 +26,30 @@ export async function initSelector(id, onselect, addOptions) {
     };
 }
 
-export async function initBusinessSelector(id, onselect, require=true, roleFilter=(role) => role != "user") {
-    const selectorResults = await initSelector(id, onselect, async (selector) => {
+export async function initBusinessSelector(
+    id,
+    onselect,
+    require = true,
+    roleFilter = role => role !== 'user',
+) {
+    const selectorResults = await initSelector(id, onselect, async selector => {
         const businessRes = await GET('/businesses');
         const businesses = await businessRes.json();
         let noBusinesses = true;
         businesses.forEach(business => {
             if (roleFilter(business.role)) {
                 noBusinesses = false;
-                selector.addOption(business.name, business.role, {"data-id": business.id});
+                selector.addOption(business.name, business.role, { 'data-id': business.id });
             }
         });
         return noBusinesses;
     });
-    const { initResults: noBusinesses} = selectorResults;
+    const { initResults: noBusinesses } = selectorResults;
     if (noBusinesses && require) {
         document.body.style.opacity = '1';
-        const shouldRedirect = await Popup.confirm("You own no groups. You'll be redirected to the start-a-group page");
+        const shouldRedirect = await Popup.confirm(
+            "You own no groups. You'll be redirected to the start-a-group page",
+        );
         if (shouldRedirect) location.assign('/payment.html');
         else history.back();
     }
@@ -51,32 +58,35 @@ export async function initBusinessSelector(id, onselect, require=true, roleFilte
 
 export async function initEventSelector(id, getBusinessId, onselect, onupdate) {
     async function updateEvents(selector) {
-        const res = await GET('/events?businessId=' + getBusinessId());
+        const res = await GET(`/businesses/${getBusinessId()}/events`);
         const events = await res.json();
         const eventNames = new Set();
         const options = events.map(event => {
-            const startDate = new Date(event.starttimestamp*1000);
-            const endDate = new Date(event.endtimestamp*1000);
+            const startDate = new Date(+event.starttimestamp);
+            const endDate = new Date(+event.endtimestamp);
             eventNames.add(event.name);
             const option = document.createElement('option');
-            option.value = event.name + " (" + event.id + ")";
-            option.textContent = startDate.toDateString() + " to " + endDate.toDateString();
-            option.setAttribute("data-id", event.id);
+            option.value = event.name + ' (' + event.id + ')';
+            option.textContent = startDate.toDateString() + ' to ' + endDate.toDateString();
+            option.setAttribute('data-id', event.id);
             return option;
         });
         selector.replaceChildren(...options);
         if (onupdate) onupdate(events, options, eventNames);
     }
-    const selectorResults = await initSelector(id, onselect, async (selector) => {
+    const selectorResults = await initSelector(id, onselect, async selector => {
         await updateEvents(selector);
-        return selector.childElementCount == 0;
+        return selector.childElementCount === 0;
     });
-    const { get: getEventId, set: setEventId, selector: eventSelector, initResults: noEvents} = selectorResults;
-    return { ...selectorResults, updateEvents: async () => {
-        await updateEvents(eventSelector);
-        if (eventSelector.firstElementChild && !getEventId()) {
-            setEventId(eventSelector.firstElementChild.dataset.id);
-            if (onselect) onselect({ detail: eventSelector.firstElementChild });
-        }
-    }};
+    const { get: getEventId, set: setEventId, selector: eventSelector } = selectorResults;
+    return {
+        ...selectorResults,
+        updateEvents: async () => {
+            await updateEvents(eventSelector);
+            if (eventSelector.firstElementChild && !getEventId()) {
+                setEventId(eventSelector.firstElementChild.dataset.id);
+                if (onselect) onselect({ detail: eventSelector.firstElementChild });
+            }
+        },
+    };
 }

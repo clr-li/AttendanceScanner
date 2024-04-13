@@ -1,10 +1,10 @@
-import { getCurrentUser } from "./util/Auth.js";
+import { getCurrentUser } from './util/Auth.js';
 const user = await getCurrentUser();
 
 if (user) {
     const QRCode = (await import('./components/QRCode.js')).QRCode;
     const myqr = new QRCode(user.uid, user.name);
-    myqr.innerHTML = /* html */`
+    myqr.innerHTML = /* html */ `
         <h1>My QR Code</h1>
         <p>Event hosts will scan your unique code to take your attendance!</p>
     `;
@@ -12,11 +12,11 @@ if (user) {
 
     for (const element of document.getElementsByClassName('only-logged-in')) {
         element.style.display = 'block';
-    };
+    }
 
     for (const element of document.getElementsByClassName('not-logged-in')) {
         element.style.display = 'none';
-    };
+    }
 }
 
 // smooth load (keep previous page visible until content loaded)

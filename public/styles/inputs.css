@@ -1,9 +1,48 @@
+input.stylish,
+textarea.stylish,
+select.stylish {
+    margin: 5px;
+    margin-top: 8px;
+    min-width: fit-content;
+    font-size: 0.8rem;
+    padding: 0px 2px 0px 2px;
+    border-radius: 6px;
+    border: 6px solid white;
+    border-bottom: 5px solid white;
+    box-shadow: 0 0 0 2px var(--secondary);
+    height: 28px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+textarea.stylish {
+    resize: vertical;
+    min-height: 10lh;
+    max-height: 50vh;
+}
+textarea.stylish::-webkit-resizer {
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent var(--secondary) var(--secondary) transparent;
+}
+.stylish:disabled {
+    opacity: 0.5;
+}
+
+.form hr {
+    width: 3rem;
+    border: 2px solid var(--accent);
+    margin: 0 auto;
+}
+
 .form label {
     font-size: 1.5rem;
     padding: 0.2rem;
 }
 
-.form input[type="text"], input[type="list"], input[type="email"], .basic-input {
+.form input[type='text'],
+input[type='list'],
+input[type='email'],
+.basic-input {
     min-width: min(30ch, 100%);
 }
 
@@ -15,39 +54,43 @@ input:-webkit-autofill:active {
 }
 
 .form textarea {
-    min-width: min(850px, calc(95vw));
+    max-width: var(--max-width-medium);
+    width: 100%;
     border: 2px solid var(--accent);
     resize: none;
 }
 
-.form input, .form textarea, .form select, .basic-input { 
+.form input,
+.form textarea,
+.form select,
+.basic-input {
     padding: 0.5rem;
     font-size: 1.2em;
     border-radius: 10px;
     margin-bottom: 0.5em;
+    margin-top: 0.5em;
     border: 2px solid var(--accent);
 }
 
-.weekDays-selector input {
-    display: none!important;
+.weekdays-selector input {
+    display: none !important;
 }
-  
-.weekDays-selector input[type=checkbox] + label {
-    display: inline-block;
+.weekdays-selector input + label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px;
+    min-width: fit-content;
+    font-size: 0.8rem;
     border-radius: 6px;
-    background: white;
-    height: 40px;
-    width: 30px;
-    margin-right: 1px;
-    margin-left: 1px;
-    line-height: 40px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid var(--accent);
-    font-size: 16px;
+    border: 2px solid var(--secondary);
+    height: 28px;
+    aspect-ratio: 1 / 1;
 }
-  
-.weekDays-selector input[type=checkbox]:checked + label {
+.weekdays-selector input:disabled + label {
+    opacity: 0.5;
+}
+.weekdays-selector input:checked + label {
     background: var(--primary);
     color: #ffffff;
 }
@@ -83,8 +126,8 @@ input:-webkit-autofill:active {
 .checkbox-wrapper-6 .tgl + .tgl-btn {
     outline: 0;
     display: block;
-    width: 4em;
-    height: 2em;
+    width: 2.2em;
+    height: 1.2em;
     position: relative;
     cursor: pointer;
     -webkit-user-select: none;
@@ -96,7 +139,7 @@ input:-webkit-autofill:active {
 .checkbox-wrapper-6 .tgl + .tgl-btn:before {
     position: relative;
     display: block;
-    content: "";
+    content: '';
     width: 50%;
     height: 100%;
 }
@@ -122,7 +165,7 @@ input:-webkit-autofill:active {
     transition: all 0.2s ease;
 }
 .checkbox-wrapper-6 .tgl-light:checked + .tgl-btn {
-    background: var(--success);
+    background: var(--secondary);
 }
 .radios > div {
     display: inline-block;
@@ -130,7 +173,7 @@ input:-webkit-autofill:active {
     width: 20vw;
     height: 0;
 }
-input[type="radio"] {
+input[type='radio'] {
     opacity: 0;
     width: 20px;
     height: 20px;
@@ -138,31 +181,31 @@ input[type="radio"] {
     left: 0;
     z-index: 7;
 }
-input[type="radio"]:checked + .overlay .circle:before {
+input[type='radio']:checked + .overlay .circle:before {
     background: var(--secondary);
 }
-input[type="radio"]:checked:hover + .overlay .circle:before {
+input[type='radio']:checked:hover + .overlay .circle:before {
     background: var(--accent);
 }
-input[type="radio"]:hover:not(:disabled) + .overlay .circle {
+input[type='radio']:hover:not(:disabled) + .overlay .circle {
     border-color: var(--accent);
 }
-input[type="radio"]:disabled + .overlay .circle:before {
+input[type='radio']:disabled + .overlay .circle:before {
     opacity: 0.5;
 }
-input[type="radio"]:disabled + .overlay .circle {
+input[type='radio']:disabled + .overlay .circle {
     opacity: 0.5;
 }
-input[type="radio"]:disabled + .overlay {
+input[type='radio']:disabled + .overlay {
     cursor: default;
 }
-input[type="radio"] + .overlay {
+input[type='radio'] + .overlay {
     font-size: 1.2rem;
     clear: both;
     width: 100%;
     cursor: pointer;
 }
-input[type="radio"] + .overlay .text {
+input[type='radio'] + .overlay .text {
     position: relative;
     text-align: left;
     margin-left: 23px;
@@ -209,10 +252,12 @@ input[type="radio"] + .overlay .text {
 }
 
 .button-tab {
-    color: var(--accent); 
-    background: transparent; 
-    border: none; 
+    color: var(--accent);
+    background: transparent;
+    border: none;
     min-width: 3rem;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .button-tab.active {
     border-bottom: 2px solid var(--accent);
@@ -222,24 +267,54 @@ input[type="radio"] + .overlay .text {
 }
 
 .themify {
-    border: 1px solid var(--accent); 
-    color: var(--accent); 
-    border-radius: 8px; 
-    padding: 2px; 
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    padding: 2px;
     background: white;
 }
 
 button.themify:hover {
-    border: 1px solid var(--accent-lighter); 
-    color: var(--accent-lighter); 
+    border: 1px solid var(--accent-lighter);
+    color: var(--accent-lighter);
 }
 
 button.themify:active {
-    border: 1px solid var(--accent); 
+    border: 1px solid var(--accent);
     color: var(--accent);
     transform: translateY(2px);
 }
 
-input[type="time"] {
+input[type='time'] {
     width: 141px;
+}
+
+.tooltip-info {
+    white-space: normal;
+    min-width: 150px;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 5;
+    margin-left: -115px;
+    margin-top: 35%;
+    border: none;
+    border-left: 10px solid var(--primary);
+    color: white;
+    background-color: var(--dark-background);
+    font-size: 0.8em;
+}
+
+.tooltip-info:focus {
+    outline: none;
+}
+
+.tooltip-info::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 1px);
+    left: 101.5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent var(--dark-background) transparent;
 }

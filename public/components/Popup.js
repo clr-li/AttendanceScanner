@@ -1,4 +1,4 @@
-import { Component } from "../util/Component.js";
+import { Component } from '../util/Component.js';
 
 /**
  * The Popup component represents a popup message box that blurs the background content.
@@ -8,8 +8,8 @@ export class Popup extends Component {
         super(false); // each instance has its own html to allow multiple popups
     }
     initialHTML() {
-        const borderColor = this.getAttribute("color") ?? "var(--accent)";
-        return /* html */`
+        const borderColor = this.getAttribute('color') ?? 'var(--accent)';
+        return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/animations.css">
             <div id="popup">
@@ -40,19 +40,18 @@ export class Popup extends Component {
                     bottom: 0;
                     margin: auto;
                     min-width: 300px;
-                    width: 30%;
+                    width: fit-content;
                     max-width: var(--max-width);
-                    aspect-ratio: 1/1;
                     min-height: 300px;
-                    max-height: var(--max-width);
+                    height: fit-content;
                     background-color: white;
                     text-align: center;
-                    padding: 5px;
                     border: 8px solid ${borderColor};
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     border-radius: 10px;
+                    padding: 1em;
                 }
 
                 :host:before {
@@ -80,9 +79,9 @@ export class Popup extends Component {
         return ['color'];
     }
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "color") {
-            this.shadowRoot.getElementById("popup").style.borderColor = newValue;
-        };
+        if (name === 'color') {
+            this.shadowRoot.getElementById('popup').style.borderColor = newValue;
+        }
     }
 
     /**
@@ -93,6 +92,13 @@ export class Popup extends Component {
         else this.remove();
     }
 
+    /** Returns a promise that resolves when this popup is closed */
+    willClose() {
+        return new Promise((resolve, reject) => {
+            this.resolveWhenClosed = resolve;
+        });
+    }
+
     connectedCallback() {
         this.shadowRoot.getElementById('cross').addEventListener('click', () => {
             this.close();
@@ -100,19 +106,20 @@ export class Popup extends Component {
     }
 
     disconnectedCallback() {
-        this.shadowRoot.getElementById("cross").removeEventListener("click", () => {
+        this.shadowRoot.getElementById('cross').removeEventListener('click', () => {
             this.close();
         });
+        this.resolveWhenClosed?.();
     }
 
     /**
      * Creates a popup with the given message and appends it to the DOM.
-     * @param {string} message 
+     * @param {string} message
      * @param {string} color
-     * @param {number} timout_ms 
+     * @param {number} timout_ms
      * @returns {Promise<void>} a Promise that resolves when the popup is closed.
      */
-    static alert(message, color, timout_ms=null) {
+    static alert(message, color, timout_ms = null) {
         return new Promise((resolve, reject) => {
             const popup = document.createElement('pop-up');
             if (color) {
@@ -120,7 +127,8 @@ export class Popup extends Component {
             }
             popup.innerHTML = message;
             if (timout_ms) {
-                popup.shadowRoot.getElementById('popup').style.animation = "fadeInAndOut " + timout_ms + "ms";
+                popup.shadowRoot.getElementById('popup').style.animation =
+                    'fadeInAndOut ' + timout_ms + 'ms';
                 setTimeout(() => {
                     popup.close();
                     resolve();
@@ -146,25 +154,25 @@ export class Popup extends Component {
         return new Promise((resolve, reject) => {
             const popup = document.createElement('pop-up');
             const messageP = document.createElement('p');
-            messageP.textContent = message
+            messageP.textContent = message;
             const cancelBtn = document.createElement('button');
             cancelBtn.classList.add('button');
-            cancelBtn.textContent = "CANCEL";
+            cancelBtn.textContent = 'CANCEL';
             const confirmBtn = document.createElement('button');
             confirmBtn.classList.add('button');
-            confirmBtn.textContent = "CONFIRM";
+            confirmBtn.textContent = 'CONFIRM';
             const handleCancel = () => {
                 cancelBtn.removeEventListener('click', handleCancel);
                 confirmBtn.removeEventListener('click', handleConfirm);
                 popup.remove();
                 resolve(false);
-            }
+            };
             const handleConfirm = () => {
                 cancelBtn.removeEventListener('click', handleCancel);
                 confirmBtn.removeEventListener('click', handleConfirm);
                 popup.remove();
                 resolve(true);
-            }
+            };
             cancelBtn.addEventListener('click', handleCancel);
             confirmBtn.addEventListener('click', handleConfirm);
             popup.handleCancel = handleCancel;
@@ -175,36 +183,37 @@ export class Popup extends Component {
 
     /**
      * Creates a text input popup with the given message.
-     * 
+     *
      * @param {string} message the prompt message to display to the user.
      * @returns the text entered by the user or null if the user clicks 'CANCEL'.
      */
-    static prompt(message) {
+    static prompt(message, ...extraElements) {
         return new Promise((resolve, reject) => {
             const popup = document.createElement('pop-up');
+            popup.append(...extraElements);
             const messageP = document.createElement('p');
-            messageP.textContent = message
+            messageP.textContent = message;
             const input = document.createElement('input');
             input.classList.add('basic-input');
             const br = document.createElement('br');
             const cancelBtn = document.createElement('button');
             cancelBtn.classList.add('button');
-            cancelBtn.textContent = "CANCEL";
+            cancelBtn.textContent = 'CANCEL';
             const confirmBtn = document.createElement('button');
             confirmBtn.classList.add('button');
-            confirmBtn.textContent = "CONFIRM";
+            confirmBtn.textContent = 'CONFIRM';
             const handleCancel = () => {
                 cancelBtn.removeEventListener('click', handleCancel);
                 confirmBtn.removeEventListener('click', handleConfirm);
                 popup.remove();
                 resolve(null);
-            }
+            };
             const handleConfirm = () => {
                 cancelBtn.removeEventListener('click', handleCancel);
                 confirmBtn.removeEventListener('click', handleConfirm);
                 popup.remove();
                 resolve(input.value);
-            }
+            };
             cancelBtn.addEventListener('click', handleCancel);
             confirmBtn.addEventListener('click', handleConfirm);
             popup.handleCancel = handleCancel;
