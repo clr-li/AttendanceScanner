@@ -92,6 +92,13 @@ export class Popup extends Component {
         else this.remove();
     }
 
+    /** Returns a promise that resolves when this popup is closed */
+    willClose() {
+        return new Promise((resolve, reject) => {
+            this.resolveWhenClosed = resolve;
+        });
+    }
+
     connectedCallback() {
         this.shadowRoot.getElementById('cross').addEventListener('click', () => {
             this.close();
@@ -102,6 +109,7 @@ export class Popup extends Component {
         this.shadowRoot.getElementById('cross').removeEventListener('click', () => {
             this.close();
         });
+        this.resolveWhenClosed?.();
     }
 
     /**
@@ -179,9 +187,10 @@ export class Popup extends Component {
      * @param {string} message the prompt message to display to the user.
      * @returns the text entered by the user or null if the user clicks 'CANCEL'.
      */
-    static prompt(message) {
+    static prompt(message, ...extraElements) {
         return new Promise((resolve, reject) => {
             const popup = document.createElement('pop-up');
+            popup.append(...extraElements);
             const messageP = document.createElement('p');
             messageP.textContent = message;
             const input = document.createElement('input');

@@ -139,6 +139,19 @@ router.patch('/businesses/:businessId/joincode', async (request, response) => {
     response.sendStatus(changes === 1 ? 200 : 400);
 });
 
+router.get('/businesses/:businessId/members', async (request, response) => {
+    const uid = await handleAuth(request, response, request.params.businessId, { read: true });
+    if (!uid) return;
+
+    const businessId = request.params.businessId;
+
+    const rows = await db().all(
+        ...SQL`SELECT Users.id, Users.name, Users.email, Members.role, Members.custom_data
+        FROM Members INNER JOIN Users on Members.user_id = Users.id WHERE Members.business_id = ${businessId}`,
+    );
+    response.send(rows);
+});
+
 /**
  * Joins the specified business if the specified joincode is correct.
  * @pathParams businessId - id of the business to join
@@ -289,6 +302,28 @@ router.put('/businesses/:businessId/settings/requirejoin', async (request, respo
 });
 
 /**
+ * Sets the custom data for a user in the specified business.
+ * @pathParams businessId - id of the business to set custom data in
+ * @pathParams userId - id of the user to set custom data for
+ * @requiredPrivileges write access to the specified business
+ * @response 200 OK if successful
+ */
+router.patch('/businesses/:businessId/customdata/:userId', async (request, response) => {
+    const uid = await handleAuth(request, response, request.params.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.params.businessId;
+    const userId = request.params.userId;
+    const customData = request.body;
+
+    const { changes } = await db().run(
+        ...SQL`UPDATE Members SET custom_data = ${JSON.stringify(customData)}
+        WHERE business_id = ${businessId} AND user_id = ${userId}`,
+    );
+    response.sendStatus(changes === 1 ? 200 : 400);
+});
+
+/**
  * Imports custom columns into the specified business.
  * @pathParams businessId - id of the business to import custom columns into
  * @queryParams data - the data to import as a csv string
@@ -297,7 +332,7 @@ router.put('/businesses/:businessId/settings/requirejoin', async (request, respo
  * @requiredPrivileges write access to the specified business
  * @response 200 OK if successful
  */
-router.post('/businesses/:businessId/import/customdata', async (request, response) => {
+router.post('/businesses/:businessId/customdata', async (request, response) => {
     const uid = await handleAuth(request, response, request.params.businessId, { write: true });
     if (!uid) return;
 
@@ -307,7 +342,7 @@ router.post('/businesses/:businessId/import/customdata', async (request, respons
     const lines = data.split('\n');
     const overwrite = request.body.overwrite;
 
-    if (!['name', 'email', 'id'].includes(mergeCol)) {
+    if (!['name', 'email'].includes(mergeCol)) {
         response.sendStatus(400);
         return;
     }

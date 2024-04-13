@@ -11,237 +11,113 @@
         <!-- import the webpage's stylesheet -->
         <link rel="stylesheet" href="/style.css" />
 
-        <!--   Import QR generating capabilities   -->
+        <!-- Import QR generating capabilities -->
         <script src="lib/qrcode.min.js"></script>
 
         <!-- Custom Components -->
         <script type="module" src="./components/Navigation.js"></script>
         <script type="module" src="./components/TypeSelect.js"></script>
-        <script type="module" src="./components/Table.js"></script>
-        <script type="module" src="./components/Popup.js"></script>
 
         <style>
             /* smooth load */
             body {
                 opacity: 0;
             }
+
+            /* navigation */
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                background-color: var(--light-section);
+            }
+            nav button {
+                width: 12ch; 
+                padding: 8px; 
+                border: none; 
+                background-color: transparent; 
+                margin-left: 10px; 
+                margin-top: 14px; 
+                margin-bottom: 14px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            nav button:disabled {
+                background-color: var(--secondary);
+                color: white;
+            }
+            nav button:hover:not(:disabled) {
+                background-color: var(--secondary);
+                color: white;
+                opacity: 0.4;
+            }
+            @media (max-width: 855px) {
+                nav button span {
+                    display: none;
+                }
+                nav button {
+                    width: 4ch;
+                }
+            }
         </style>
     </head>
-    <body>
+    <body style="overflow-x: hidden;" class="medium-section">
         <navigation-manager>
-            <section>
-                <h1>Dashboard</h1>
-                <type-select id="businessId" name="businesses" label="Group:"></type-select>
-                <div style="position: relative;">
-                    <div id="qrcode" class="img"></div>
-                    <span style="position: absolute; left: calc(100% / 2 + 145px); top: 0;">
-                        <i role="button" onclick="this.nextElementSibling.show(); event.preventDefault()" class="fa-solid fa-circle-info smaller-text"></i>
-                        <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">Have people scan this QR code to join your group. This allows them to see events in their calendar, notify you of absenses, and lets your see their attendance for group events.</dialog>
-                    </span>
-                </div>
-                <button id="joinlink" class="button">Copy Join Link</button>
-                <button id="emailInvite" class="button">Invite by Email</button>
-                <button id="resetJoincode" class="button delete">Reset Joincode</button>
-                <br />
+            <nav>
+                <type-select id="businessId" name="businesses" label="Group: "></type-select>
+                <script type="module">
+                    import { useURL } from './util/StateManager.js';
+                    const tabmanager = useURL('tab');
+                    window.setTab = (tab) => {
+                        tabmanager.set(tab);
+                        document.querySelectorAll('section').forEach((section) => {
+                            section.style.display = 'none';
+                        });
+                        document.getElementById(tab).style.display = 'block';
+                        document.querySelectorAll('button').forEach((button) => {
+                            button.disabled = false;
+                        });
+                        document.getElementById('tab-' + tab).disabled = true;
+                        document.getElementById(tab).firstElementChild.update?.();
+                    }
+                    setTab(tabmanager.get() || 'events');
+                </script>
+
+                <button id="tab-events" onclick="setTab('events')"><i class="fa-solid fa-calendar-days"></i><span>&nbsp;Events</span></button>
+                <button id="tab-attendance" onclick="setTab('attendance')"><i class="fa-solid fa-clipboard-user"></i><span>&nbsp;Attendance</span></button>
+                <button id="tab-stats" onclick="setTab('stats')"><i class="fa-solid fa-chart-column"></i><span>&nbsp;Stats</span></button>
+                <button id="tab-members" onclick="setTab('members')"><i class="fa-solid fa-users"></i><span>&nbsp;Members</span></button>
+                <button id="tab-settings" onclick="setTab('settings')"><i class="fa-solid fa-gear"></i><span>&nbsp;Settings</span></button>
+            </nav>
+
+            <section id="events" style="display: block;">
+                <event-table></event-table>
             </section>
-            <section class="light-section">
-                <h1>Events</h1>
-                <type-select id="eventId" name="events" label="Selected Event:"></type-select>
-                <form id="eventdetails" class="form"></form>
+            <section id="attendance" style="display: none;">
+                <attendance-table></attendance-table>
             </section>
-            <section class="medium-section">
-                <h1>New Event</h1>
-                <form class="form" id="eventform">
-                    <label for="name">Name:</label><br />
-                    <input
-                        style="min-width: var(--max-width-medium)"
-                        type="text"
-                        id="name"
-                        name="name"
-                    /><br />
-                    <label for="description">Description:</label><br />
-                    <textarea
-                        style="resize: vertical"
-                        id="description"
-                        rows="2"
-                        name="description"
-                    ></textarea
-                    ><br />
-                    <div class="cols">
-                        <label for="startdate">Start:</label>
-                        <input type="date" id="startdate" name="startdate" />
-                    </div>
-                    <div class="cols" style="justify-content: right">
-                        <input type="time" id="starttime" name="starttime" />
-                    </div>
-                    <div class="cols">
-                        <label for="enddate" class="table-cell table-label">End:</label>
-                        <input type="date" id="enddate" name="enddate" />
-                    </div>
-                    <div class="cols" style="justify-content: right">
-                        <input type="time" id="endtime" name="endtime" />
-                    </div>
-                    <div style="display: flex; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; max-width: var(--max-width-medium); margin: auto;">
-                        <label>Add Event Tags: </label>
-                        <div id="all-tags">
-                            <button id="add-tag" class="plus-button" type="button">+</button>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: center; margin-bottom: 12px">
-                        <label style="font-size: 1.5rem; padding: 0.2rem">Repeat</label>
-                        <div class="checkbox-wrapper-6">
-                            <input
-                                id="repeat"
-                                class="tgl tgl-light"
-                                type="checkbox"
-                                onclick="document.getElementById('repeatform').style.display = document.getElementById('repeatform').style.display == 'block' ? 'none' : 'block'"
-                            />
-                            <label class="tgl-btn" style="font-size: 16px" for="repeat"></label>
-                        </div>
-                    </div>
-                    <div id="repeatform" style="display: none">
-                        <select id="frequency">
-                            <option>Daily</option>
-                            <option>Weekly</option>
-                            <option>Monthly</option>
-                        </select>
-                        <input type="number" id="interval" value="1" />
-                        <div id="daysoftheweek" class="weekDays-selector">
-                            <input
-                                type="checkbox"
-                                id="sunday"
-                                name="sunday"
-                                value="sunday"
-                                class="weekday"
-                            />
-                            <label for="sunday" style="padding: 0">S</label>
-                            <input
-                                type="checkbox"
-                                id="monday"
-                                name="monday"
-                                value="monday"
-                                class="weekday"
-                            />
-                            <label for="monday" style="padding: 0">M</label>
-                            <input
-                                type="checkbox"
-                                id="tuesday"
-                                name="tuesday"
-                                value="tuesday"
-                                class="weekday"
-                            />
-                            <label for="tuesday" style="padding: 0">T</label>
-                            <input
-                                type="checkbox"
-                                id="wednesday"
-                                name="wednesday"
-                                value="wednesday"
-                                class="weekday"
-                            />
-                            <label for="wednesday" style="padding: 0">W</label>
-                            <input
-                                type="checkbox"
-                                id="thursday"
-                                name="thursday"
-                                value="thursday"
-                                class="weekday"
-                            />
-                            <label for="thursday" style="padding: 0">T</label>
-                            <input
-                                type="checkbox"
-                                id="friday"
-                                name="friday"
-                                value="friday"
-                                class="weekday"
-                            />
-                            <label for="friday" style="padding: 0">F</label>
-                            <input
-                                type="checkbox"
-                                id="saturday"
-                                name="saturday"
-                                value="saturday"
-                                class="weekday"
-                            />
-                            <label for="saturday" style="padding: 0">S</label>
-                        </div>
-                        <br />
-                    </div>
-                    <div
-                        style="
-                            width: fit-content;
-                            margin: auto;
-                            left: 0;
-                            right: 0;
-                            position: relative;
-                        "
-                    >
-                        <dialog
-                            id="new-event-success"
-                            style="
-                                position: absolute;
-                                bottom: 90%;
-                                left: 0;
-                                right: 0;
-                                margin: auto;
-                                color: var(--success);
-                                background: none;
-                                border: none;
-                                animation: fadeInAndOut 3s;
-                                font-weight: bold;
-                            "
-                        >
-                            <p>success</p>
-                        </dialog>
-                        <button type="button" id="submitevent" class="button">Submit</button>
-                    </div>
-                </form>
+            <section id="stats" style="display: none;">
+                <stats-table></stats-table>
             </section>
-            <section class="purple-section">
-                <h1>Event Table</h1>
-                <attendance-table id="table"></attendance-table>
+            <section id="members" style="display: none;">
+                <members-table></members-table>
             </section>
-            <section class="dark-section">
-                <h1>Group Settings</h1>
-                <div class="form" style="padding-right: 1em;">
-                    <label style="display: flex; justify-content: space-evenly;">
-                        <span>
-                            Only take attendance for members
-                            <span style="position: relative;">
-                                <i role="button" onclick="this.nextElementSibling.show(); event.preventDefault()" class="fa-solid fa-circle-info smaller-text"></i>
-                                <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">When enabled, you won't be able to scan/take attendance for non-members. When disabled, non-members are automatically added to the group when you scan/take their attendance.</dialog>
-                            </span>
-                        </span>
-                        <div class="checkbox-wrapper-6">
-                            <input id="require-join" class="tgl tgl-light" type="checkbox" />
-                            <div class="tgl-btn" style="font-size: 16px"></div>
-                        </div>
-                    </label>
-                    <br><hr><br>
-                    <a class="button" href="/payment.html">Manage Subscription &nbsp; <i class="fa-regular fa-money-bill-1"></i></a>
-                    <a class="button" id="genericScannerLink" href="/scanner.html">Take Attendance &nbsp; <i class="icon-scanner"></i></a>
-                    <a class="button" href="/#contact">Contact Support &nbsp; <i class="fa-regular fa-envelope"></i></a>
-                    <button id="changeName" class="button">Change Name &nbsp; <i class="fa-regular fa-pen-to-square"></i></button>
-                    <a class="button delete" href="/payment.html">Delete Everything &nbsp; <i class="fa-solid fa-trash"></i></a>
-                    <br><br><hr><br>
-                    <label for="email-notification">
-                        Send email notification to group members
-                        <span style="position: relative;">
-                            <i role="button" onclick="this.nextElementSibling.show(); event.preventDefault()" class="fa-solid fa-circle-info smaller-text"></i>
-                            <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">Enter the email text below. It will be sent out to every current member with '[MEMBER_NAME]' replaced with their actual name. Note: these are subject to the rate limits on your Google account, so if you need to send more than ~300/day, you'll have to apply for an increased limit from Google.</dialog>
-                        </span>
-                    </label><br>
-                    <textarea
-                        id="email-notification"
-                        style="resize: vertical"
-                        rows="7"
-                        name="email-notification"
-                    ></textarea><br>
-                    <button id="sent-email" class="button">Send Email to Everyone</button>
-                </div>
+            <section id="settings" style="display: none;">
+                <group-settings></group-settings>
             </section>
         </navigation-manager>
 
         <script type="module" src="./admin.js"></script>
+
+        <script type="module">
+            // smooth load (keep previous page visible until content loaded)
+            // requires the body to start with opacity: 0, and this should be the last script run.
+            // don't forget the no-script fallback
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        </script>
         <noscript>
             Please enable JavaScript for full functionality.
             <!-- smooth load -->

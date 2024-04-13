@@ -22,9 +22,13 @@ async function autoCreateEvent() {
     const name = date.toDateString();
     const description = 'Auto generated event created on ' + date.toString();
 
-    const res = await POST(
-        `/businesses/${getBusinessId()}/events?name=${name}&description=${description}&starttimestamp=${starttimestamp}&endtimestamp=${endtimestamp}`,
-    );
+    const res = await POST(`/businesses/${getBusinessId()}/events`, {
+        starttimestamp,
+        endtimestamp,
+        name,
+        description,
+        tag: ',,',
+    });
     const id = await res.json();
     setEventId(id);
     useURL('status').set('PRESENT');

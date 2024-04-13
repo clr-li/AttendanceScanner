@@ -29,6 +29,7 @@ export class TypeSelect extends Component {
                     id="select" name="${name}" 
                     placeholder="${placeholder}"
                     value="${value}" pattern=""
+                    style="min-width: fit-content;"
                 >
             </div>
             <datalist id="options"></datalist>

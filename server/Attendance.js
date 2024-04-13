@@ -118,7 +118,7 @@ router.put(
 
         await db().run(
             ...SQL`INSERT INTO Records(status, business_id, event_id, user_id, timestamp) 
-            VALUES ('ABSENT(self-marked)', ${businessId}, ${eventId}, ${uid}, ${Date.now()})`,
+            VALUES ('ABSENT(self)', ${businessId}, ${eventId}, ${uid}, ${Date.now()})`,
         );
 
         response.sendStatus(200);
@@ -278,41 +278,29 @@ router.get('/businesses/:businessId/attendance', async function (request, respon
     if (!uid) return;
 
     const businessId = request.params.businessId;
-    const attendanceinfo = await db().all(
+    const attendanceRecords = await db().all(
         ...SQL`
         SELECT 
-            UserData.name, Records.*, UserData.role, UserData.email, UserData.custom_data
+            Records.user_id as id, Records.event_id, Records.status, Records.timestamp
         FROM
-            Records 
-            INNER JOIN (SELECT * FROM Users INNER JOIN Members ON Members.user_id = Users.id WHERE Members.business_id = ${businessId}) as UserData ON Records.user_id = UserData.id
+            Records
         WHERE 
-            Records.business_id = ${businessId}
-        GROUP BY 
-            UserData.id,
-            Records.event_id,
-            UserData.role
-        ORDER BY
-            UserData.role ASC,
-            Records.timestamp DESC`,
+            Records.business_id = ${businessId}`,
     );
-    response.send(
-        attendanceinfo.concat(
-            await db().all(
-                ...SQL`SELECT Users.name, Users.id, Users.email, role, Members.custom_data 
-                FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
-                WHERE business_id = ${businessId} ORDER BY Members.role`,
-            ),
-        ),
+    const userInfo = await db().all(
+        ...SQL`SELECT Users.id, Users.name, Members.role, Users.email, Members.custom_data 
+        FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
+        WHERE business_id = ${businessId} ORDER BY Members.role ASC, Users.name ASC`,
     );
+    response.send(userInfo.concat(attendanceRecords));
 });
 
 /**
  * Aggregates the status counts for all events and users within the specified business.
  * @pathParams businessId - id of the business to get attendance records for
  * @queryParams tag - tag to filter events by
- * @queryParams role - role to filter members by
- * @queryParams start - start time to filter events by
- * @queryParams end - end time to filter events by
+ * @queryParams starttimestamp - start time to filter events by
+ * @queryParams endtimestamp - end time to filter events by
  * @requiredPrivileges read for the business
  * @response json list of status counts for all users and events within the business.
  */
@@ -322,43 +310,57 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
 
     const businessId = request.params.businessId;
     const tag = request.query.tag ? '%,' + request.query.tag + ',%' : '';
-    const role = request.query.role;
-    const start = request.query.start;
-    const end = request.query.end;
-    const memberAttendance = await db().all(
+    const start = request.query.starttimestamp;
+    const end = request.query.endtimestamp;
+    const statusCounts = await db().all(
         ...SQL`
         SELECT
-            Users.name, Users.id as user_id, Records.status, Members.role, COUNT(*) AS total_count
+            Users.id, Records.status, COUNT(*) AS count
         FROM
             Users, Records, Members, Events
-        WHERE 
+        WHERE
             Users.id = Records.user_id
             AND Members.user_id = Users.id
             AND Records.business_id = ${businessId}
             AND Members.business_id = ${businessId}
             AND Events.business_id = ${businessId}
             AND Records.event_id = Events.id
-            AND (${role} = '' OR Members.role = ${role})
             AND (${tag} = '' OR Events.tag LIKE ${tag})
             AND (${start} = '' OR Events.starttimestamp >= ${start})
             AND (${end} = '' OR Events.endtimestamp <= ${end})
         GROUP BY
             Records.user_id, Records.status
-        ORDER BY
-            Users.name ASC
         `,
     );
-
-    response.send(
-        memberAttendance.concat(
-            await db().all(
-                ...SQL`SELECT Users.name, Users.id as user_id, Users.email, role, Members.custom_data 
-                FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
-                WHERE business_id = ${businessId} AND (${role} = '' OR Members.role = ${role}) 
-                ORDER BY Members.role`,
-            ),
-        ),
+    const numEvents = await db()
+        .get(
+            ...SQL`
+            SELECT COUNT(*) AS total_count
+            FROM Events
+            WHERE business_id = ${businessId}
+                AND (${start} = '' OR Events.starttimestamp >= ${start})
+                AND (${end} = '' OR Events.endtimestamp <= ${end})
+                AND (${tag} = '' OR tag LIKE ${tag})`,
+        )
+        .then(row => row.total_count);
+    const numPastEvents = await db()
+        .get(
+            ...SQL`
+            SELECT COUNT(*) AS past_count 
+            FROM Events WHERE business_id = ${businessId} 
+                AND endtimestamp <= ${Date.now()}
+                AND (${tag} = '' OR tag LIKE ${tag})
+                AND (${start} = '' OR starttimestamp >= ${start})`,
+        )
+        .then(row => row.past_count);
+    const userInfo = await db().all(
+        ...SQL`SELECT Users.id, Users.name, Users.email, role, Members.custom_data, ${numPastEvents} as past_count, ${numEvents} as total_count
+        FROM Members LEFT JOIN Users ON Members.user_id = Users.id 
+        WHERE business_id = ${businessId}
+        ORDER BY Members.role ASC, Users.name ASC`,
     );
+
+    response.send(userInfo.concat(statusCounts));
 });
 
 // ============================ ATTENDANCE EXPORTS ============================

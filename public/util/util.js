@@ -51,6 +51,13 @@ export function sanitizeText(text) {
     return p.textContent;
 }
 
+/**
+ * sanitizes the content of the given template string.
+ */
+export function html(template, ...args) {
+    return template.reduce((acc, part, i) => acc + sanitizeText(args[i - 1] || '') + part);
+}
+
 export function escapeQuotes(text) {
     return text.replace(/[`'"\\]/g, '\\$&');
 }
@@ -73,4 +80,51 @@ export function escapeRegExp(str) {
  */
 export function getPattern(values) {
     return values.map(s => escapeRegExp(s)).join('|');
+}
+
+/**
+ * Opens the print dialog with the given HTML content.
+ * @param {string} html the HTML content to print.
+ */
+export function print(html) {
+    const popup = window.open('blank', '_new');
+    popup.document.write(html);
+    popup.document.body.style = 'display: flex; flex-wrap: wrap; width: 8.5in;';
+    popup.focus(); //required for IE
+
+    // wait for any images to load before printing
+    const imgs = popup.document.getElementsByTagName('img');
+    let loaded = 0;
+    for (const img of imgs) {
+        img.onload = () => {
+            loaded++;
+            if (loaded === imgs.length) {
+                popup.print();
+                popup.close();
+            }
+        };
+    }
+    if (!imgs.length) {
+        popup.print();
+        popup.close();
+    }
+}
+
+/**
+ * Converts an arbitrary string to a hex color code.
+ * @param {string | null} str the string to convert to a color code.
+ * @returns the hex color code for the given string or 'transparent' if the string is null.
+ */
+export function stringToColor(str) {
+    if (str === null) return 'transparent';
+    let hash = 0;
+    str.split('').forEach(char => {
+        hash = char.charCodeAt(0) + ((hash << 3) - hash);
+    });
+    let color = '#';
+    for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xff;
+        color += value.toString(16).padStart(2, '0');
+    }
+    return color;
 }
