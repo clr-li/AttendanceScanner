@@ -629,40 +629,30 @@ describe('Server', () => {
                 .expect('Content-Type', /json/)
                 .expect([
                     {
-                        name: VALID_AUTH.name,
-                        event_id: 1,
-                        business_id: businessId,
-                        user_id: VALID_AUTH.user_id,
-                        timestamp: '0',
-                        status: 'teststatus',
-                        role: 'owner',
-                        email: VALID_AUTH.email,
-                        custom_data: '{}',
-                    },
-                    {
-                        name: 'testname',
-                        event_id: 1,
-                        business_id: businessId,
-                        user_id: 'testuid',
-                        timestamp: '0',
-                        status: 'teststatus',
-                        role: 'user',
-                        email: 'testemail',
-                        custom_data: '{}',
-                    },
-                    {
-                        name: VALID_AUTH.name,
                         id: VALID_AUTH.user_id,
+                        name: VALID_AUTH.name,
                         role: 'owner',
                         email: VALID_AUTH.email,
                         custom_data: '{}',
                     },
                     {
-                        name: 'testname',
                         id: 'testuid',
+                        name: 'testname',
                         role: 'user',
                         email: 'testemail',
                         custom_data: '{}',
+                    },
+                    {
+                        id: 'testuid',
+                        event_id: 1,
+                        status: 'teststatus',
+                        timestamp: '0',
+                    },
+                    {
+                        id: VALID_AUTH.user_id,
+                        event_id: 1,
+                        status: 'teststatus',
+                        timestamp: '0',
                     },
                 ]);
         });
