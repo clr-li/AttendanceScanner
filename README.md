@@ -7,7 +7,7 @@
 [![Coverage](./.badges/coverage.svg)](https://github.com/clr-li/AttendanceScanner)
 
 This project uses QR codes to take attendance and a SQLite database to store data of groups, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and run through Github Actions. Deployment is done via a docker container with the Node.js express app on Fly.io and static files via Firebase Hosting.
-URL: https://attendancescannerqr.web.app
+URL: https://attendqr.com
 
 # Development
 
