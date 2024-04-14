@@ -29,7 +29,7 @@
     background-color: rgba(220, 228, 235);
 }
 .table-wrapper th:hover {
-    color: var(--accent);
+    color: var(--primary);
 }
 .table-wrapper tr:first-child th:first-child {
     border-top-left-radius: 10px;
