@@ -50,7 +50,7 @@
         "build": "npm run build:format && npm run build:icons",
         "build:format": "(fixpack || true) && (eslint . --fix || true) && npx prettier --write .",
         "build:icons": "node ./scripts/icons.js",
-        "deploy": "fly deploy && npm run fire",
+        "deploy": "fly deploy && npm run deploy:fire",
         "deploy:fire": "node -r dotenv/config ./scripts/deploy.js",
         "dev": "ATT_CODE_DIR=.data/att_codes DB_FILE=./.data/ATT.db DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config ./server/server.js",
         "docker:build": "docker build --tag 'attendqr' .",
