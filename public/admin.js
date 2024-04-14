@@ -1,5 +1,4 @@
 import { Component } from './util/Component.js';
-import { DataTable } from './components/DataTable.js';
 import { Popup } from './components/Popup.js';
 
 // import HTTP methods and add error handling
@@ -9,6 +8,7 @@ import {
     PUT as PUT_,
     PATCH as PATCH_,
     POST as POST_,
+    sendGmail,
 } from './util/Client.js';
 async function CHECK(resPromise) {
     const res = await resPromise;
@@ -240,7 +240,7 @@ class MembersTable extends Component {
             const users = table.getSelection();
             await changeRoles(users, newRole);
             this.update();
-            changeRole = '';
+            changeRole.value = '';
         };
 
         // handle edits of custom data
@@ -395,7 +395,7 @@ class AttendanceTable extends Component {
         const showUserColumns = this.shadowRoot.getElementById('show-columns');
         table.update([
             ...(showUserColumns.checked
-                ? [...this.columns.filter(c => !this.events.find(e => e.id == c))]
+                ? [...this.columns.filter(c => !this.events.find(e => e.id == c))] // eslint-disable-line eqeqeq
                 : ['name']),
             ...this.filterInterval(this.filterTags(this.events)).map(e => e.id),
         ]);
@@ -474,7 +474,7 @@ class EventTable extends Component {
         // take eventId from url and move to the first row
         const eventId = useURL('eventId', '').get();
         if (eventId) {
-            const index = this.events.findIndex(e => e.id == eventId);
+            const index = this.events.findIndex(e => e.id == eventId); // eslint-disable-line eqeqeq
             if (index > 0) {
                 this.events.unshift(this.events.splice(index, 1)[0]);
                 repeatExpand.checked = true;

@@ -1,4 +1,4 @@
-import { GET, POST } from './util/Client.js';
+import { GET, POST, PATCH, PUT } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { Popup } from './components/Popup.js';
 import { QRCode } from './components/QRCode.js';

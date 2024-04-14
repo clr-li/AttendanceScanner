@@ -17,6 +17,7 @@
         <!-- Custom Components -->
         <script type="module" src="./components/Navigation.js"></script>
         <script type="module" src="./components/TypeSelect.js"></script>
+        <script type="module" src="./components/DataTable.js"></script>
 
         <style>
             /* smooth load */
@@ -33,12 +34,12 @@
                 background-color: var(--light-section);
             }
             nav button {
-                width: 12ch; 
-                padding: 8px; 
-                border: none; 
-                background-color: transparent; 
-                margin-left: 10px; 
-                margin-top: 14px; 
+                width: 12ch;
+                padding: 8px;
+                border: none;
+                background-color: transparent;
+                margin-left: 10px;
+                margin-top: 14px;
                 margin-bottom: 14px;
                 cursor: pointer;
                 white-space: nowrap;
@@ -62,48 +63,58 @@
             }
         </style>
     </head>
-    <body style="overflow-x: hidden;" class="medium-section">
+    <body style="overflow-x: hidden" class="medium-section">
         <navigation-manager>
             <nav>
                 <type-select id="businessId" name="businesses" label="Group: "></type-select>
                 <script type="module">
                     import { useURL } from './util/StateManager.js';
                     const tabmanager = useURL('tab');
-                    window.setTab = (tab) => {
+                    window.setTab = tab => {
                         tabmanager.set(tab);
-                        document.querySelectorAll('section').forEach((section) => {
+                        document.querySelectorAll('section').forEach(section => {
                             section.style.display = 'none';
                         });
                         document.getElementById(tab).style.display = 'block';
-                        document.querySelectorAll('button').forEach((button) => {
+                        document.querySelectorAll('button').forEach(button => {
                             button.disabled = false;
                         });
                         document.getElementById('tab-' + tab).disabled = true;
                         document.getElementById(tab).firstElementChild.update?.();
-                    }
+                    };
                     setTab(tabmanager.get() || 'events');
                 </script>
 
-                <button id="tab-events" onclick="setTab('events')"><i class="fa-solid fa-calendar-days"></i><span>&nbsp;Events</span></button>
-                <button id="tab-attendance" onclick="setTab('attendance')"><i class="fa-solid fa-clipboard-user"></i><span>&nbsp;Attendance</span></button>
-                <button id="tab-stats" onclick="setTab('stats')"><i class="fa-solid fa-chart-column"></i><span>&nbsp;Stats</span></button>
-                <button id="tab-members" onclick="setTab('members')"><i class="fa-solid fa-users"></i><span>&nbsp;Members</span></button>
-                <button id="tab-settings" onclick="setTab('settings')"><i class="fa-solid fa-gear"></i><span>&nbsp;Settings</span></button>
+                <button id="tab-events" onclick="setTab('events')">
+                    <i class="fa-solid fa-calendar-days"></i><span>&nbsp;Events</span>
+                </button>
+                <button id="tab-attendance" onclick="setTab('attendance')">
+                    <i class="fa-solid fa-clipboard-user"></i><span>&nbsp;Attendance</span>
+                </button>
+                <button id="tab-stats" onclick="setTab('stats')">
+                    <i class="fa-solid fa-chart-column"></i><span>&nbsp;Stats</span>
+                </button>
+                <button id="tab-members" onclick="setTab('members')">
+                    <i class="fa-solid fa-users"></i><span>&nbsp;Members</span>
+                </button>
+                <button id="tab-settings" onclick="setTab('settings')">
+                    <i class="fa-solid fa-gear"></i><span>&nbsp;Settings</span>
+                </button>
             </nav>
 
-            <section id="events" style="display: block;">
+            <section id="events" style="display: block">
                 <event-table></event-table>
             </section>
-            <section id="attendance" style="display: none;">
+            <section id="attendance" style="display: none">
                 <attendance-table></attendance-table>
             </section>
-            <section id="stats" style="display: none;">
+            <section id="stats" style="display: none">
                 <stats-table></stats-table>
             </section>
-            <section id="members" style="display: none;">
+            <section id="members" style="display: none">
                 <members-table></members-table>
             </section>
-            <section id="settings" style="display: none;">
+            <section id="settings" style="display: none">
                 <group-settings></group-settings>
             </section>
         </navigation-manager>

@@ -1,5 +1,0 @@
-{
-    "restart": {
-        "exclude": ["^public/", "^server/super_admin/"]
-    }
-}

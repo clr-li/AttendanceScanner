@@ -18,7 +18,6 @@ URL: https://attendancescannerqr.web.app
 
 ## Branches
 
--   `master` - production branch - clone of Glitch branch (Glitch is currently used for hosting the server)
 -   `main` - main development branch - latest stable version of the code, hosted on Github
 
 ## Local Development
@@ -26,38 +25,37 @@ URL: https://attendancescannerqr.web.app
 ### Setup
 
 1. `git clone https://github.com/clr-li/AttendanceScanner.git`
-2. `git remote add glitch [INSERT GLITCH API URL HERE AND REMOVE THESE BRACKETS]`
-3. Add the `.data` directory and `.env` file (can be found on Glitch)
-    - These are already `.gitignore`'d to avoid leaking API keys and secrets and user data
-4. `npm ci` to install the necessary dependencies from the package lock
-5. `npm run dev` (this will run the local server using the local .env file; `npm start` is only for Glitch)
-    - After running `npm run dev`, use a browser to go to the localhost port printed (this should automatically open on most systems)
+2. Add the `.data` directory and `.env` file
+    - These are `.gitignore`'d to avoid leaking API keys, secrets and user data
+3. `npm ci` to install the necessary dependencies from the package lock
+4. `npm run dev` (this will run the local server using the local .env file; `npm start` is only for production)
+5. Use a browser to go to the localhost port printed (this should automatically open on most systems)
 
-### Workflow
+### Common Commands
 
-0. Start with `git pull`, and make sure you are on the right branch, e.g. `git checkout main`
-
-&nbsp;&nbsp;For small changes:
-
-1. Make changes to the local `main` branch
-2. `git add` and `git commit` any changes locally
-3. `git push origin` to push to the Github `main` branch
-
-&nbsp;&nbsp;For larger changes:
-
-1. `git checkout -b [NAME OF NEW DEVELOPMENT BRANCH]` to create a separate branch
-2. Make changes and `git add` and `git commit` locally
-3. `git push origin` and create a pull request for others to review and merge into `main` after review
-
-&nbsp;&nbsp;Then to deploy Github `main` to Glitch and Firebase:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. `npm run deploy`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Or to only deploy to Glitch: `npm run glitch`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Or to only deploy static files to Firebase: `npm run fire`
+-   To run the server locally: `npm run dev`
+-   To run formatting and build fonts and other resources: `npm run build`
+-   To run tests and linting: `npm test`
+-   To deploy both server and static files: `npm run deploy`
+    -   To only deploy static files: `npm run deploy:fire`
+-   To run the server locally with production settings: `npm run docker:build && npm run docker:run`
 
 ### Update database
 
 -   To update the database schema, change the `schema.sql` file accordingly (note this file should only contain DDL statements). If you are running the `npm run dev` server, a new migration file will automatically be created in the `migration` folder and applied locally. Otherwise, you can run `sam make` to create it and `sam migrate` to apply it locally. Run `sam status` to verify your changes and optionally inspect the autocreated migration file. Once you are satisfied everything is in order, `npm run deploy` changes like normal and the production server will automatically apply the new migration file.
 -   To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
+
+### Manage Deployment
+
+-   Configure server: [fly.io](https://fly.io/apps/attendqr)
+    -   [Memory usage and requests dashboard](https://fly-metrics.net/d/fly-app/fly-app?orgId=726754)
+    -   [View logs](https://fly-metrics.net/d/fly-logs/fly-logs?orgId=726754&var-app=attendqr)
+-   Configure firebase: [firebase console](https://console.firebase.google.com/u/0/project/attendancescannerqr/overview)
+    -   [Configure auth](https://console.firebase.google.com/u/0/project/attendancescannerqr/authentication/users)
+    -   [Docs for static file hosting](https://firebase.google.com/docs/hosting)
+-   Configure Braintree: [sandbox](https://sandbox.braintreegateway.com/login)
+    -   [Docs for testing](https://developers.braintreepayments.com/start/hello-server/node)
+    -   [Docs for production](https://developer.paypal.com/braintree/docs/start/go-live/node)
 
 ## Automated Testing
 
@@ -90,7 +88,3 @@ We use [Selenium](https://www.npmjs.com/package/selenium-webdriver) for cross br
 #### Setup Tests of the OAuth Flow
 
 By default tests mock the Firebase Authentication layer (to run faster and not require storing Google account credentials). To test with a real Google account, run tests with an account email (`TEST_EMAIL=xxxx@xxxx.xxx`) and password (`TEST_PASSWORD=xxxx`) in the `.env` file. The tests will attempt to automatically login for these test, but they may still require manual input during the login phase if your account has MFA enabled or other security settings that interfere. Currently only supported for Google Chrome.
-
-## Glitch Development
-
-We should not edit directly on Glitch except to change .gitignored content like the production `.data` or `.env`. If the changes only apply to Glitch and not local development, just change directly. Otherwise, make sure leave a note somewhere.

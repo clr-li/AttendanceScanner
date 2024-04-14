@@ -93,7 +93,7 @@
     -webkit-appearance: none;
     appearance: none;
 }
-.table-paginator input[type=number] {
+.table-paginator input[type='number'] {
     margin: 5px;
     margin-top: 8px;
     min-width: 4ch;
@@ -110,8 +110,8 @@
 }
 .table-paginator input::-webkit-outer-spin-button,
 .table-paginator input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .table-wrapper input {

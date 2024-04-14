@@ -95,7 +95,11 @@
 .plus-button {
     align-items: center;
     appearance: none;
-    background-image: radial-gradient(100% 100% at 100% 0, var(--success-lighter) 0, var(--success) 100%);
+    background-image: radial-gradient(
+        100% 100% at 100% 0,
+        var(--success-lighter) 0,
+        var(--success) 100%
+    );
     border: 0;
     border-radius: 10px;
     box-shadow:

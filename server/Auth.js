@@ -1,7 +1,11 @@
 // firebase admin SDK to verify login tokens
 const admin = require('firebase-admin');
 admin.initializeApp({
-    credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
+    credential: admin.credential.cert(
+        process.env.FIREBASE_SERVICE_ACCOUNT
+            ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+            : process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    ),
 });
 // database access for user registration and roles
 const { db } = require('./Database');

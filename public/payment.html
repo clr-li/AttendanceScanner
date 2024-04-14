@@ -20,32 +20,30 @@
         <script type="module" src="/components/Navigation.js"></script>
         <script type="module" src="/components/CircleLoader.js"></script>
     </head>
-    <body style="background-color: var(--medium-section);">
+    <body style="background-color: var(--medium-section)">
         <navigation-manager>
             <section class="light-section">
                 <h1>Manage Subscriptions</h1>
-                <br>
+                <br />
                 <div id="subscriptions"></div>
             </section>
 
             <section class="medium-section">
                 <h2>Choose Subscription</h2>
-                <br>
+                <br />
                 <div id="free" class="subscription">
                     <h3 style="margin-bottom: 3px">Free Plan</h3>
-                    <hr>
+                    <hr />
                     <ul style="text-align: center; max-width: 80%; margin: auto">
                         <li>Price per Month: $0.00</li>
                         <li>Allow up to 50 members</li>
-                        <li>
-                            Includes admin, moderator, scanner, and user privileges
-                        </li>
+                        <li>Includes admin, moderator, scanner, and user privileges</li>
                         <li>FAQ and GitHub community support</li>
-                    </div>
+                    </ul>
                 </div>
                 <div id="standard" class="subscription">
                     <h3 style="margin-bottom: 3px">Standard Plan</h3>
-                    <hr>
+                    <hr />
                     <ul style="text-align: center; max-width: 80%; margin: auto">
                         <li>Price per Month: $7.00</li>
                         <li>Allow up to 100 members</li>
@@ -53,21 +51,35 @@
                             Includes custom roles, admin, moderator, scanner, and user privileges
                         </li>
                         <li>Email support (response within 3 days)</li>
-                    </div>
+                    </ul>
                 </div>
             </section>
 
             <section id="purchase-subscription" class="purple-section" style="display: none">
                 <h2>Purchase Subscription</h2>
-                <p>Currently free. Use the credit card number 4111 1111 1111 1111 and any expiration date, CVV, and postal code.</p>
-                <br>
+                <p>
+                    Currently free. Use the credit card number 4111 1111 1111 1111 and any
+                    expiration date, CVV, and postal code.
+                </p>
+                <br />
                 <form id="payment-form" style="max-width: var(--max-width); margin: auto">
                     <div id="dropin-container"></div>
                     <br />
-                    <div class="form" style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                    <div
+                        class="form"
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                            flex-wrap: wrap;
+                        "
+                    >
                         <label for="businessName">Group Name:</label>
                         <input type="text" id="businessName" name="BusinessName" />
-                        <button id="purchase-btn" style="width: 32ch" class="button" type="submit">Purchase</button>
+                        <button id="purchase-btn" style="width: 32ch" class="button" type="submit">
+                            Purchase
+                        </button>
                     </div>
                 </form>
             </section>

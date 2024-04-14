@@ -1,10 +1,22 @@
-.glitchdotcom.json
-.node-gyp
+# Third Party
 node_modules
-.data
-.DS_Store
-.env
+public/lib
+migrations
+server/super_admin
+
+# Minified Files
+**/*.min.js
+
+# Cache
 .firebase
+
+# Secrets
+.env
+.data
+
+# Test Logs
 test.*.log
 tap.info
-**/*.min.js
+
+# OS Files
+.DS_Store

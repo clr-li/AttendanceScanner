@@ -13,7 +13,7 @@ const uuid = require('uuid');
 // persistent storage for temporary attendance codes
 const storage = require('node-persist');
 storage.init({
-    dir: '.data/tempEventAttendanceCodesByBusiness',
+    dir: process.env.ATT_CODE_DIR,
     ttl: 300_000, // 5 minutes
 });
 

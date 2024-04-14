@@ -78,7 +78,8 @@ section > ::slotted(img) {
     display: inline;
 }
 
-.business-card > hr, .subscription > hr {
+.business-card > hr,
+.subscription > hr {
     border: 1px solid var(--accent);
     width: 30%;
     margin: auto;

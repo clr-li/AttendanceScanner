@@ -1,9 +1,18 @@
-.glitchdotcom.json
-.node-gyp
+# Third Party
 node_modules
-.data
-.DS_Store
-.env
+public/lib
+migrations
+
+# Cache
 .firebase
+
+# Secrets
+.env
+.data
+
+# Test Logs
 test.*.log
 tap.info
+
+# OS Files
+.DS_Store

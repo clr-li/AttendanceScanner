@@ -3,7 +3,7 @@ export const IS_DEVELOPMENT =
 export const IS_FIREBASE_DOMAIN =
     location.hostname === 'attendancescannerqr.web.app' ||
     location.hostname === 'attendancescannerqr.firebase.com';
-export const SERVER_URL = IS_DEVELOPMENT ? '' : 'https://scanner2022.glitch.me'; // use local server in development, otherwise use Glitch server in deployment
+export const SERVER_URL = IS_DEVELOPMENT ? '' : 'https://attendqr.fly.dev'; // use local server in development
 export const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 /** Requests a resource from the server. Should only retrieve data */
