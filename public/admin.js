@@ -1472,9 +1472,9 @@ async function createNewEvent() {
         <br />
         <select id="repeat" class="stylish" style="margin-bottom: 10px">
             <option value="">No Repeat</option>
-            <option value="1">Daily</option>
-            <option value="7">Weekly</option>
-            <option value="30">Monthly</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
         </select>
         <input
             type="number"
