@@ -79,7 +79,6 @@ async function getClientToken(uid) {
         .get(...SQL`SELECT customer_id FROM Users WHERE id = ${uid}`)
         .then(row => row?.customer_id);
     const tokenOptions = {};
-    console.log('CustomerId requested a client token: ' + customerId);
     if (customerId) {
         tokenOptions.customerId = customerId;
         tokenOptions.options = {
@@ -168,8 +167,6 @@ router.post('/checkout', async (request, response) => {
         const customerId = customer.id; // e.g 160923
         paymentToken = customer.paymentMethods[0].token; // e.g f28wm
 
-        console.log('Created customer with id: ' + customerId);
-
         // save customer id in database so we can find their information in the braintree vault later
         await db().run(...SQL`UPDATE Users SET customer_id = ${customerId} WHERE id = ${uid}`);
     }
@@ -187,7 +184,6 @@ router.post('/checkout', async (request, response) => {
             );
         return;
     }
-    console.log('Added subscription via paymentToken: ' + paymentToken);
     const businessId = await createBusiness(uid, businessName, subscriptionResult.subscription.id);
 
     response.status(200);

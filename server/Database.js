@@ -20,7 +20,7 @@ async function reinitializeIfNotExists(dbFile = ':memory:', schemaFile = './serv
     else console.log('Database file not found (creating a new one): ' + dbFile);
 
     if (db) await db.close();
-    db = await Database.connect(dbFile);
+    db = await Database.connect(dbFile, undefined, process.env.DEVELOPMENT === 'true');
     await db.run('PRAGMA foreign_keys = ON;');
 
     if (dbFile === ':memory:' || dbFile === '') {

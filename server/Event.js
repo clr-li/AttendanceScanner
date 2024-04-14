@@ -125,6 +125,7 @@ function createEventSequence(
         if (frequency === 'daily') current.setDate(current.getDate() + interval);
         else if (frequency === 'weekly') current.setDate(current.getDate() + 7 * interval);
         else if (frequency === 'monthly') current.setMonth(current.getMonth() + interval);
+        else throw new Error('Invalid frequency');
     }
 }
 

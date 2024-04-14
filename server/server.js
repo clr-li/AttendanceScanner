@@ -9,16 +9,22 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// cors - make server endpoints available on firebase domain
+// compression - compresses responses to reduce latency
+const compression = require('compression');
+app.use(compression());
+
+// cors - make server endpoints available on production domain
 const cors = require('cors');
 let corsOptions = {
-    origin: 'https://attendancescannerqr.web.app',
+    origin: 'https://attendqr.com',
 };
 app.use(cors(corsOptions));
 
 // ============================ PUBLIC (STATIC) FILES ============================
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+if (process.env.DEVELOPMENT === 'true') {
+    app.use(express.static('public'));
+}
 
 // ============================ DATABASE ============================
 const schemaFile = './server/schema.sql'; // filepath for the database schema

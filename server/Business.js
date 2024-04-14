@@ -24,7 +24,6 @@ async function createBusiness(uid, name, subscriptionId) {
     await db().run(
         ...SQL`INSERT INTO Members (business_id, user_id, role) VALUES (${businessId}, ${uid}, 'owner')`,
     );
-    console.log('Created new business with id: ' + businessId);
     return businessId;
 }
 
@@ -37,7 +36,6 @@ async function deleteBusiness(businessId) {
     await db().run(...SQL`DELETE FROM Events WHERE business_id = ${businessId}`);
     await db().run(...SQL`DELETE FROM Members WHERE business_id = ${businessId}`);
     await db().run(...SQL`DELETE FROM Businesses WHERE id = ${businessId}`);
-    console.log('Deleted the business with id: ' + businessId);
 }
 
 // ============================ BUSINESS ROUTES ============================

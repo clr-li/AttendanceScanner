@@ -6,7 +6,7 @@
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
 [![Coverage](./.badges/coverage.svg)](https://github.com/clr-li/AttendanceScanner)
 
-This project uses QR codes to take attendance and a SQLite database to store data of businesses, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users using Google as the identity provider and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and CI/CD run through Github Actions.
+This project uses QR codes to take attendance and a SQLite database to store data of groups, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and run through Github Actions. Deployment is done via a docker container with the Node.js express app on Fly.io and static files via Firebase Hosting.
 URL: https://attendancescannerqr.web.app
 
 # Development
@@ -40,22 +40,25 @@ URL: https://attendancescannerqr.web.app
     -   To only deploy static files: `npm run deploy:fire`
 -   To run the server locally with production settings: `npm run docker:build && npm run docker:run`
 
-### Update database
+### Update Database
 
 -   To update the database schema, change the `schema.sql` file accordingly (note this file should only contain DDL statements). If you are running the `npm run dev` server, a new migration file will automatically be created in the `migration` folder and applied locally. Otherwise, you can run `sam make` to create it and `sam migrate` to apply it locally. Run `sam status` to verify your changes and optionally inspect the autocreated migration file. Once you are satisfied everything is in order, `npm run deploy` changes like normal and the production server will automatically apply the new migration file.
 -   To purge the Braintree payment vault test data, login to the Braintree sandbox, click the gear icon and select "Purge Test Data"
 
-### Manage Deployment
+## Manage Deployment
 
 -   Configure server: [fly.io](https://fly.io/apps/attendqr)
     -   [Memory usage and requests dashboard](https://fly-metrics.net/d/fly-app/fly-app?orgId=726754)
     -   [View logs](https://fly-metrics.net/d/fly-logs/fly-logs?orgId=726754&var-app=attendqr)
+    -   [Invite team members](https://fly.io/dashboard/alexander-metzger/team)
 -   Configure firebase: [firebase console](https://console.firebase.google.com/u/0/project/attendancescannerqr/overview)
     -   [Configure auth](https://console.firebase.google.com/u/0/project/attendancescannerqr/authentication/users)
-    -   [Docs for static file hosting](https://firebase.google.com/docs/hosting)
+    -   [Configure hosting](https://console.firebase.google.com/u/0/project/attendancescannerqr/hosting/sites/attendancescannerqr)
 -   Configure Braintree: [sandbox](https://sandbox.braintreegateway.com/login)
     -   [Docs for testing](https://developers.braintreepayments.com/start/hello-server/node)
     -   [Docs for production](https://developer.paypal.com/braintree/docs/start/go-live/node)
+-   Configure Cloudflare: [domains](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/domains/attendqr.com)
+    -   [attendqr.com](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/attendqr.com)
 
 ## Automated Testing
 

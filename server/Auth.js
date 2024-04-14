@@ -140,7 +140,6 @@ async function handleAuth(request, response, businessId = false, requiredPrivile
 router.get('/isLoggedIn', async (request, response) => {
     const uid = await handleAuth(request, response);
     if (!uid) return;
-    console.log('logged in: ' + uid);
     response.send(uid);
 });
 
