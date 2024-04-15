@@ -309,11 +309,11 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
     if (!uid) return;
 
     const businessId = request.params.businessId;
-    const tag = request.query.tag ? '%,' + request.query.tag + ',%' : '';
+    const tags = request.query.tag.match(/[^,]+/g) || [];
     const start = request.query.starttimestamp;
     const end = request.query.endtimestamp;
-    const statusCounts = await db().all(
-        ...SQL`
+
+    let sql = SQL`
         SELECT
             Users.id, Records.status, COUNT(*) AS count
         FROM
@@ -325,33 +325,43 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
             AND Members.business_id = ${businessId}
             AND Events.business_id = ${businessId}
             AND Records.event_id = Events.id
-            AND (${tag} = '' OR Events.tag LIKE ${tag})
+    `;
+    for (const tag of tags) {
+        sql` AND Events.tag LIKE ${'%,' + tag + ',%'}`;
+    }
+    sql`
+        AND (${start} = '' OR Events.starttimestamp >= ${start})
+        AND (${end} = '' OR Events.endtimestamp <= ${end})
+    GROUP BY
+        Records.user_id, Records.status
+    `;
+    const statusCounts = await db().all(...sql);
+
+    sql = SQL`
+        SELECT COUNT(*) AS total_count
+        FROM Events
+        WHERE business_id = ${businessId}
             AND (${start} = '' OR Events.starttimestamp >= ${start})
             AND (${end} = '' OR Events.endtimestamp <= ${end})
-        GROUP BY
-            Records.user_id, Records.status
-        `,
-    );
+    `;
+    for (const tag of tags) {
+        sql` AND tag LIKE ${'%,' + tag + ',%'}`;
+    }
     const numEvents = await db()
-        .get(
-            ...SQL`
-            SELECT COUNT(*) AS total_count
-            FROM Events
-            WHERE business_id = ${businessId}
-                AND (${start} = '' OR Events.starttimestamp >= ${start})
-                AND (${end} = '' OR Events.endtimestamp <= ${end})
-                AND (${tag} = '' OR tag LIKE ${tag})`,
-        )
+        .get(...sql)
         .then(row => row.total_count);
+
+    sql = SQL`
+        SELECT COUNT(*) AS past_count 
+        FROM Events WHERE business_id = ${businessId} 
+            AND endtimestamp <= ${Date.now()}
+            AND (${start} = '' OR starttimestamp >= ${start})
+    `;
+    for (const tag of tags) {
+        sql` AND tag LIKE ${'%,' + tag + ',%'}`;
+    }
     const numPastEvents = await db()
-        .get(
-            ...SQL`
-            SELECT COUNT(*) AS past_count 
-            FROM Events WHERE business_id = ${businessId} 
-                AND endtimestamp <= ${Date.now()}
-                AND (${tag} = '' OR tag LIKE ${tag})
-                AND (${start} = '' OR starttimestamp >= ${start})`,
-        )
+        .get(...sql)
         .then(row => row.past_count);
     const userInfo = await db().all(
         ...SQL`SELECT Users.id, Users.name, Users.email, role, Members.custom_data, ${numPastEvents} as past_count, ${numEvents} as total_count

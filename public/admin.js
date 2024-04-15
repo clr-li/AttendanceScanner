@@ -732,7 +732,7 @@ class EventTable extends Component {
 window.customElements.define('event-table', EventTable);
 
 // ----------------------------------------------------------------
-/** Stats table: shows attendance counts */
+/** Table of stats: shows attendance counts */
 class StatsTable extends Component {
     initialHTML() {
         return /* html */ `
