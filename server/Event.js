@@ -93,6 +93,16 @@ router.post('/businesses/:businessId/events', async function (request, response)
     const endtimestamp = request.body.endtimestamp;
     const tag = request.body.tag;
 
+    if (!starttimestamp || !endtimestamp) {
+        response.status(400).send('Missing required fields');
+        return;
+    }
+
+    if (starttimestamp >= endtimestamp) {
+        response.status(400).send('Start time must be before end time');
+        return;
+    }
+
     const { lastID: eventId } = await db().run(
         ...SQL`INSERT INTO Events (business_id, name, description, starttimestamp, endtimestamp, tag) 
         VALUES (${businessId}, ${name}, ${description}, ${starttimestamp}, ${endtimestamp}, ${tag})`,
@@ -150,8 +160,16 @@ router.post('/businesses/:businessId/events/recurring', async function (request,
     const businessId = request.params.businessId;
     const name = request.body.name;
     const description = request.body.description;
+    if (!request.body.timezoneOffsetMS) {
+        response.status(400).send('Missing timezone offset');
+        return;
+    }
     const timezoneOffsetMS =
         parseInt(request.body.timezoneOffsetMS) - new Date().getTimezoneOffset() * 60_000; // actual offset includes server offset
+    if (!request.body.starttimestamp || !request.body.endtimestamp) {
+        response.status(400).send('Missing required fields');
+        return;
+    }
     const startDate = new Date(request.body.starttimestamp - timezoneOffsetMS);
     const endDate = new Date(request.body.endtimestamp - timezoneOffsetMS);
     const frequency = request.body.frequency;
@@ -159,6 +177,18 @@ router.post('/businesses/:businessId/events/recurring', async function (request,
     const daysoftheweek = request.body.daysoftheweek;
     const repeatId = uuid.v4();
     const tag = request.body.tag;
+
+    if (!frequency || !interval) {
+        response.status(400).send('Missing required fields');
+        return;
+    }
+    if (
+        startDate.getHours() * 60 + startDate.getMinutes() >=
+        endDate.getHours() * 60 + endDate.getMinutes()
+    ) {
+        response.status(400).send('Start time must be before end time');
+        return;
+    }
 
     if (frequency === 'weekly' && daysoftheweek.length > 0) {
         for (const day of daysoftheweek) {
