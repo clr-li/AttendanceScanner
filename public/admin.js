@@ -274,6 +274,14 @@ class AttendanceTable extends Component {
                     </select>
                 </span>
                 <div slot="top-actions">
+                    <select id="filter-role" class="stylish" style="vertical-align: bottom;">
+                        <option value="">Show All Roles</option>
+                        <option value="owner">Owner</option>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="scanner">Scanner</option>
+                        <option value="user">User</option>
+                    </select>
                     <select id="filter-tags" class="stylish" style="vertical-align: bottom;">
                         <option value="" disabled selected>Filter by Tags</option>
                         <hr />
@@ -304,12 +312,17 @@ class AttendanceTable extends Component {
         this.events = events;
         this.tags = tags;
         this.columns = columns;
+        this.users = users;
+
+        // role filter from url
+        const role = useURL('role', '').get();
+        this.shadowRoot.getElementById('filter-role').value = role;
 
         /** @type {DataTable} */
         const table = this.shadowRoot.getElementById('table');
         table.update(
             columns,
-            users,
+            users.filter(u => !role || u.role === role),
             events.map(e => e.id),
             [],
             formatHeader,
@@ -386,6 +399,16 @@ class AttendanceTable extends Component {
         tagFilter.onchange = () => {
             toggleTag(tagFilter.value);
             this.filterColumns();
+        };
+        // filter events by role:
+        const filterRole = this.shadowRoot.getElementById('filter-role');
+        filterRole.onchange = () => {
+            const role = filterRole.value;
+            useURL('role', '').set(role);
+            table.update(
+                undefined,
+                this.users.filter(u => !role || u.role === role),
+            );
         };
     }
 
