@@ -1,5 +1,6 @@
 import { Component } from './util/Component.js';
 import { Popup } from './components/Popup.js';
+import { DataTable } from './components/DataTable.js';
 
 // import HTTP methods and add error handling
 import {
@@ -202,7 +203,34 @@ class MembersTable extends Component {
 
         /** @type {DataTable} */
         const table = this.shadowRoot.getElementById('table');
-        table.update(columns, this.users, ['qr'], customColumns);
+        table.update(
+            columns,
+            this.users,
+            ['qr'],
+            customColumns,
+            undefined,
+            (col, row) => {
+                if (col != 'role') return row[col];
+                if (row.role === 'owner') return html`<span>owner</span>`;
+                return html` <label style="position: relative">
+                    <span style="border-bottom: 2px dashed black;">${row[col]}</span>
+                    <br />
+                    <select class="table-dropdown">
+                        <option value="admin" ${row[col] === 'admin' ? 'selected' : ''}>
+                            admin
+                        </option>
+                        <option value="moderator" ${row[col] === 'moderator' ? 'selected' : ''}>
+                            moderator
+                        </option>
+                        <option value="scanner" ${row[col] === 'scanner' ? 'selected' : ''}>
+                            scanner
+                        </option>
+                        <option value="user" ${row[col] === 'user' ? 'selected' : ''}>user</option>
+                    </select>
+                </label>`;
+            },
+            ['change'],
+        );
     }
 
     connectedCallback() {
@@ -239,15 +267,22 @@ class MembersTable extends Component {
             const newRole = changeRole.value;
             const users = table.getSelection();
             await changeRoles(users, newRole);
-            this.update();
             changeRole.value = '';
+            this.update();
         };
-
         // handle edits of custom data
         table.addEventListener('edit', async e => {
             const uid = e.detail.row.id;
             const costumData = { ...e.detail.row.custom_data, [e.detail.col]: e.detail.value };
             await PATCH(`/businesses/${getBusinessId()}/customdata/${uid}`, costumData);
+        });
+        // handle role change
+        table.addEventListener('table-change', async e => {
+            if (e.detail.col === 'role') {
+                await changeRoles([e.detail.row], e.detail.value);
+                e.detail.row[e.detail.col] = [e.detail.value];
+                table.update();
+            }
         });
     }
 }
@@ -1262,9 +1297,7 @@ async function loadAttendanceData() {
         return /* html */ `
             <label style="position: relative">
                 ${display}
-                <select
-                    style="opacity: 0; position: absolute; left: 0; top: 0; width: 100%; height: 100%; min-width: 0; min-height: 0; cursor: pointer"
-                >
+                <select class="table-dropdown">
                     <option value="${sanitizeText(status)}" selected disabled>${sanitizeText(
                         status,
                     )}</option>
