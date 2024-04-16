@@ -1,28 +1,13 @@
 import { Component } from './util/Component.js';
 import { Popup } from './components/Popup.js';
-import { DataTable } from './components/DataTable.js';
+
+/** @typedef {import('./components/DataTable.js').DataTable} DataTable */
 
 // import HTTP methods and add error handling
-import {
-    GET as GET_,
-    DELETE as DELETE_,
-    PUT as PUT_,
-    PATCH as PATCH_,
-    POST as POST_,
-    sendGmail,
-} from './util/Client.js';
-async function CHECK(resPromise) {
-    const res = await resPromise;
-    if (!res.ok) {
-        await Popup.alert(await res.text(), 'var(--error)');
-    }
-    return res;
-}
-const GET = (...args) => CHECK(GET_(...args));
-const POST = (...args) => CHECK(POST_(...args));
-const PUT = (...args) => CHECK(PUT_(...args));
-const DELETE = (...args) => CHECK(DELETE_(...args));
-const PATCH = (...args) => CHECK(PATCH_(...args));
+import { GET, DELETE, PUT, PATCH, POST, sendGmail, setErrorHandler } from './util/Client.js';
+setErrorHandler(async res => {
+    await Popup.alert(await res.text(), 'var(--error)');
+});
 
 import { sanitizeText, html, print, stringToColor } from './util/util.js';
 import { useURL } from './util/StateManager.js';
@@ -210,7 +195,7 @@ class MembersTable extends Component {
             customColumns,
             undefined,
             (col, row) => {
-                if (col != 'role') return row[col];
+                if (col !== 'role') return row[col];
                 if (row.role === 'owner') return html`<span>owner</span>`;
                 return html` <label style="position: relative">
                     <span style="border-bottom: 2px dashed black;">${row[col]}</span>
@@ -453,7 +438,7 @@ class AttendanceTable extends Component {
         const showUserColumns = this.shadowRoot.getElementById('show-columns');
         table.update([
             ...(showUserColumns.checked
-                ? [...this.columns.filter(c => !this.events.find(e => e.id == c))] // eslint-disable-line eqeqeq
+                ? [...this.columns.filter(c => !this.events.find(e => e.id === parseInt(c)))]
                 : ['name']),
             ...this.filterInterval(this.filterTags(this.events)).map(e => e.id),
         ]);
@@ -532,7 +517,7 @@ class EventTable extends Component {
         // take eventId from url and move to the first row
         const eventId = useURL('eventId', '').get();
         if (eventId) {
-            const index = this.events.findIndex(e => e.id == eventId); // eslint-disable-line eqeqeq
+            const index = this.events.findIndex(e => e.id === parseInt(eventId));
             if (index > 0) {
                 this.events.unshift(this.events.splice(index, 1)[0]);
                 repeatExpand.checked = true;

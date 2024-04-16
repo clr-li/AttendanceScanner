@@ -182,7 +182,7 @@ async function handleBusinessLoad(business) {
                             sanitizeText(new Date(+ev.starttimestamp).toDateString()) +
                             '</li>',
                     )
-                    .join('') || 'No upcoming events'
+                    .join('') || '<li>No upcoming events</li>'
             }
         </ul>
         <br>
@@ -204,7 +204,7 @@ userBusinesses.forEach(business => {
     let renameHTML = '';
     if (business.role === 'owner') {
         renameHTML = /* html */ `
-            <button id="${business.id}" type="button" style="background: none; border: none;"><i class="fa-regular fa-pen-to-square" style="font-size: 1rem;"></i></button>
+            <button id="${business.id}" type="button" style="background: none; border: none;" title="rename group"><i class="fa-regular fa-pen-to-square" style="font-size: 1rem;"></i></button>
         `;
         ownedBusinessIds.push(business.id);
     }

@@ -34,24 +34,33 @@ function parseJwt(token) {
     return JSON.parse(window.atob(token.split('.')[1]));
 }
 
+let user = null;
 /**
  * Gets the current user profile.
  * @returns an object representing the currently logged in user or null if no user has logged in.
  */
 export async function getCurrentUser() {
-    const token = auth.currentUser
-        ? auth.currentUser.accessToken
-        : sessionStorage.getItem('idtoken');
-    if (!token) return null;
-    const decoded = parseJwt(token);
-    const res = await GET('/username');
-    const name = await res.json();
-    return {
-        name: name.name,
-        picture: decoded.picture,
-        uid: decoded.user_id,
-        email: decoded.email_verified ? decoded.email : null,
-    };
+    if (user) return await user;
+    user = new Promise(resolve => {
+        const token = auth.currentUser
+            ? auth.currentUser.accessToken
+            : sessionStorage.getItem('idtoken');
+        if (!token) return resolve(null);
+        const decoded = parseJwt(token);
+        GET('/username').then(res => {
+            if (!res.ok) return resolve(null);
+            res.json().then(name => {
+                user = {
+                    name: name.name,
+                    picture: decoded.picture,
+                    uid: decoded.user_id,
+                    email: decoded.email_verified ? decoded.email : null,
+                };
+                resolve(user);
+            });
+        });
+    });
+    return await user;
 }
 
 /**
@@ -137,6 +146,7 @@ export async function logout() {
     try {
         const signout = auth.signOut();
         sessionStorage.removeItem('idtoken');
+        sessionStorage.removeItem('user');
         await signout;
         console.log('Signed out!');
     } catch (e) {

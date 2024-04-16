@@ -325,16 +325,13 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
             AND Members.business_id = ${businessId}
             AND Events.business_id = ${businessId}
             AND Records.event_id = Events.id
+            AND (${start} = '' OR Events.starttimestamp >= ${start})
+            AND (${end} = '' OR Events.endtimestamp <= ${end})
     `;
     for (const tag of tags) {
         sql` AND Events.tag LIKE ${'%,' + tag + ',%'}`;
     }
-    sql`
-        AND (${start} = '' OR Events.starttimestamp >= ${start})
-        AND (${end} = '' OR Events.endtimestamp <= ${end})
-    GROUP BY
-        Records.user_id, Records.status
-    `;
+    sql`GROUP BY Records.user_id, Records.status`;
     const statusCounts = await db().all(...sql);
 
     sql = SQL`
@@ -363,6 +360,7 @@ router.get('/businesses/:businessId/attendance/statuscounts', async function (re
     const numPastEvents = await db()
         .get(...sql)
         .then(row => row.past_count);
+
     const userInfo = await db().all(
         ...SQL`SELECT Users.id, Users.name, Users.email, role, Members.custom_data, ${numPastEvents} as past_count, ${numEvents} as total_count
         FROM Members LEFT JOIN Users ON Members.user_id = Users.id 

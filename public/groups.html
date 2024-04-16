@@ -12,13 +12,22 @@
         <link rel="stylesheet" href="/style.css" />
 
         <!-- Import QR scanning capabilities -->
-        <script src="lib/html5_qrcode.min.js"></script>
+        <script defer src="lib/html5_qrcode.min.js"></script>
 
         <!-- Charts -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- Custom Components -->
         <script type="module" src="components/Navigation.js"></script>
+
+        <!-- Prefetch -->
+        <link rel="prefetch" href="/assets/logo.png" />
+        <link rel="preconnect" href="https://attendancescannerqr.firebaseapp.com" />
+        <link rel="preconnect" href="https://attendqr.fly.dev" />
+        <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+        <link rel="preconnect" href="https://www.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
 
         <style>
             /* smooth load */

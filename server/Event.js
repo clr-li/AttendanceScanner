@@ -167,7 +167,7 @@ router.post('/businesses/:businessId/events/recurring', async function (request,
     const timezoneOffsetMS =
         parseInt(request.body.timezoneOffsetMS) - new Date().getTimezoneOffset() * 60_000; // actual offset includes server offset
     if (!request.body.starttimestamp || !request.body.endtimestamp) {
-        response.status(400).send('Missing required fields');
+        response.status(400).send('Missing required startime and endtime');
         return;
     }
     const startDate = new Date(request.body.starttimestamp - timezoneOffsetMS);
@@ -187,6 +187,14 @@ router.post('/businesses/:businessId/events/recurring', async function (request,
         endDate.getHours() * 60 + endDate.getMinutes()
     ) {
         response.status(400).send('Start time must be before end time');
+        return;
+    }
+    if (!['weekly', 'monthly', 'daily'].includes(frequency)) {
+        response.status(400).send('Invalid frequency');
+        return;
+    }
+    if (interval < 1) {
+        response.status(400).send('Interval must be at least 1');
         return;
     }
 

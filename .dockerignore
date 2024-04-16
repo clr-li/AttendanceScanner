@@ -1,6 +1,9 @@
 # Node Modules
 node_modules
 
+# Firebase static files
+public
+
 # Cache
 .firebase
 

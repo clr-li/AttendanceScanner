@@ -59,6 +59,7 @@ URL: https://attendqr.com
     -   [Docs for production](https://developer.paypal.com/braintree/docs/start/go-live/node)
 -   Configure Cloudflare: [domains](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/domains/attendqr.com)
     -   [attendqr.com](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/attendqr.com)
+-   Express Admin: [admin panel](https://attendqr.fly.dev/super_admin/index.html)
 
 ## Automated Testing
 

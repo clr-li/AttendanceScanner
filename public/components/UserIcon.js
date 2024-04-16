@@ -31,7 +31,9 @@ export class UserIcon extends Component {
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <div class="container">
-                <img src="${sanitizeText(user.picture)}" referrerpolicy="no-referrer">
+                <img src="${sanitizeText(
+                    user.picture,
+                )}" referrerpolicy="no-referrer" alt="profile picture">
                 <span id="profile" class="popup">
                     <p>Hi ${sanitizeText(user.name)}!</p>
                     <button class="button" id="change-name">Change Name</button>

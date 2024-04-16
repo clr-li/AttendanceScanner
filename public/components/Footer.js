@@ -7,7 +7,7 @@ class Footer extends Component {
             <footer>
                 <div class="row">
                     <div class="colbig">
-                        <img src="/assets/logo.png">
+                        <img src="/assets/logo.png" alt="attendance scanner logo depicting charts and a QR code">
                     </div>
                     <div class="colsmall">
                         <h2>Get started</h2>

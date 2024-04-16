@@ -6,16 +6,24 @@ export const IS_FIREBASE_DOMAIN =
 export const SERVER_URL = IS_DEVELOPMENT ? '' : 'https://attendqr.fly.dev'; // use local server in development
 export const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
+let errorHandler = null;
+/** Sets an error handler to be called on any non 2xx status code response */
+export function setErrorHandler(handler) {
+    errorHandler = handler;
+}
+
 /** Requests a resource from the server. Should only retrieve data */
 export async function GET(url) {
-    return await fetch(SERVER_URL + url, {
+    const res = await fetch(SERVER_URL + url, {
         headers: { Authorization: 'Bearer ' + sessionStorage.getItem('idtoken') },
     });
+    if (!res.ok && errorHandler) errorHandler(res);
+    return res;
 }
 
 /** Posts an entry to the specified server resource, often causing a change in state or side effects on the server */
 export async function POST(url, data) {
-    return await fetch(SERVER_URL + url, {
+    const res = await fetch(SERVER_URL + url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -24,11 +32,13 @@ export async function POST(url, data) {
         },
         body: JSON.stringify(data),
     });
+    if (!res.ok && errorHandler) errorHandler(res);
+    return res;
 }
 
 /** Modifies a server resource */
 export async function PATCH(url, data) {
-    return await fetch(SERVER_URL + url, {
+    const res = await fetch(SERVER_URL + url, {
         method: 'PATCH',
         headers: {
             Accept: 'application/json',
@@ -37,19 +47,23 @@ export async function PATCH(url, data) {
         },
         body: JSON.stringify(data),
     });
+    if (!res.ok && errorHandler) errorHandler(res);
+    return res;
 }
 
 /** Deletes a server resource */
 export async function DELETE(url) {
-    return await fetch(SERVER_URL + url, {
+    const res = await fetch(SERVER_URL + url, {
         method: 'DELETE',
         headers: { Authorization: 'Bearer ' + sessionStorage.getItem('idtoken') },
     });
+    if (!res.ok && errorHandler) errorHandler(res);
+    return res;
 }
 
 /** Replaces a server resource */
 export async function PUT(url, data) {
-    return await fetch(SERVER_URL + url, {
+    const res = await fetch(SERVER_URL + url, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -58,6 +72,8 @@ export async function PUT(url, data) {
         },
         body: JSON.stringify(data),
     });
+    if (!res.ok && errorHandler) errorHandler(res);
+    return res;
 }
 
 export async function sendGmail(to_email, subject, text, credential) {

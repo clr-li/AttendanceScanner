@@ -8,7 +8,7 @@ class Navbar extends Component {
         return /* html */ `
             <link rel="stylesheet" href="/styles/reset.css">
             <header>
-                <img style="height: 100%" src="/assets/logo.png">
+                <img style="height: 100%" src="/assets/logo.png" alt="attendance scanner logo depicting charts and a QR code">
                 <nav>
                     <a href="/" class="${location.pathname === '/' ? 'active' : ''}">${
                         window.innerWidth > SIZE_THRESHOLD ? 'Home' : '<i class="fa fa-home"></i>'
