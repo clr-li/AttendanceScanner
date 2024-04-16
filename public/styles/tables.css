@@ -103,6 +103,7 @@
     vertical-align: top;
     text-align: center;
     -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
 }
 .table-paginator input[type='number'] {
@@ -117,6 +118,7 @@
     box-shadow: 0 0 0 2px var(--secondary);
     text-align: center;
     -moz-appearance: textfield;
+    -webkit-appearance: textfield;
     appearance: textfield;
     vertical-align: top;
 }
