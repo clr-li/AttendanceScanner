@@ -110,28 +110,33 @@ async function handleBusinessLoad(business) {
         dayOfTheWeekCounts[status][start.getDay()]++;
     }
 
-    Chart.overrides['doughnut'].plugins.legend.display = false;
-    Chart.overrides['doughnut'].responsive = false;
-    new Chart(document.getElementById('status-' + business.id), {
-        type: 'doughnut',
-        data: {
-            labels: statuses,
-            datasets: [
-                {
-                    label: 'Events',
-                    data: statuses.map(status => statusCounts[status]),
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Attendance Status',
+    if (userdata.userEvents.length >= 1) {
+        console.log(statuses);
+        Chart.overrides['doughnut'].plugins.legend.display = false;
+        Chart.overrides['doughnut'].responsive = false;
+        new Chart(document.getElementById('status-' + business.id), {
+            type: 'doughnut',
+            data: {
+                labels: statuses,
+                datasets: [
+                    {
+                        label: 'Events',
+                        data: statuses.map(status => statusCounts[status]),
+                    },
+                ],
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Attendance Status',
+                    },
                 },
             },
-        },
-    });
+        });
+    } else {
+        document.getElementById('status-' + business.id).parentElement.remove();
+    }
 
     new Chart(document.getElementById('attendance-' + business.id), {
         type: 'bar',

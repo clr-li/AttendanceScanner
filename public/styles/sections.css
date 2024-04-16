@@ -104,18 +104,18 @@ section > ::slotted(img) {
     display: inline-block;
     margin-bottom: 5px;
     background-color: aliceblue;
-    cursor: pointer;
 }
-
-.subscription:hover {
-    opacity: 0.8;
-}
-
 .subscription li {
     text-align: left;
     margin-bottom: 3px;
 }
 
+section:not(.not-logged-in) .subscription {
+    cursor: pointer;
+}
+section:not(.not-logged-in) .subscription:hover {
+    opacity: 0.8;
+}
 .subscription.active-subscription {
     border: 3px solid var(--accent);
 }

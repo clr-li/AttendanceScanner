@@ -32,13 +32,13 @@
         "node": "^18.17"
     },
     "keywords": [
-        "attendance",
         "QR",
-        "sqlite3",
+        "attendance",
+        "braintree",
         "express",
         "firebase",
-        "braintree",
-        "selenium"
+        "selenium",
+        "sqlite3"
     ],
     "license": "MIT",
     "main": "./server/server.js",

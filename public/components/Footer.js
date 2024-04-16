@@ -12,7 +12,7 @@ class Footer extends Component {
                     <div class="colsmall">
                         <h2>Get started</h2>
                         <ul>
-                            <li><a href="/">Home</a></li>
+                            <li><a href="/#pricing">Pricing</a></li>
                             <li><a href="/login.html?redirect=/">Sign Up</a></li>
                             <li><a href="/payment.html">Start a Group</a></li>
                         </ul>
@@ -28,8 +28,8 @@ class Footer extends Component {
                     <div class="colsmall">
                         <h2>About Us</h2>
                         <ul>
+                            <li><a href="/">Home</a></li>
                             <li><a href="/about.html">About Us</a></li>
-                            <li><a href="/">FAQ</a></li>
                             <li><a href="/#contact">Contact</a></li>
                         </ul>
                     </div>

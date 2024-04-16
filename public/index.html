@@ -48,7 +48,11 @@
                     "
                 >
                     <div>
-                        <img src="/assets/phoneqr.jpg" style="max-width: 350px" />
+                        <img
+                            src="./assets/phoneqr.jpg"
+                            style="max-width: 350px"
+                            alt="someone scanning a QR code with their phone"
+                        />
                     </div>
                     <div style="margin-left: 2em; max-width: 400px; text-align: left">
                         <h2>
@@ -66,60 +70,55 @@
                 </div>
             </section>
             <section class="not-logged-in light-section">
-                <h1>Features</h1>
+                <h1>Highlights</h1>
                 <div class="rows">
                     <div class="cols">
-                        <h2>Unique QR Codes</h2>
-                        <img src="/assets/myqr.jpg" style="max-width: 197px; margin-top: 0.5em" />
-                        <p>
+                        <h2 style="margin: 0.5em">Unique QR Codes</h2>
+                        <img src="./assets/myqr.png" style="max-width: 300px; margin: 0.5em" />
+                        <p style="margin: 0.5em">
                             Each group gets a unique QR code that members can scan to join. Everyone
                             also gets a unique QR code linked to their Google Account which can be
-                            scanned to take attendance.
+                            scanned to take attendance. Unify your attendance under one login!
                         </p>
                     </div>
                     <div class="cols">
-                        <h2>Multiple Admins</h2>
-                        <img src="/assets/admin.jpg" style="max-width: 300px; margin-top: 0.5em" />
-                        <p>
-                            Delegate roles as desired. Admins have access to a QR code scanner, an
-                            event manager, and a table and calendar view of their group members'
-                            attendance.
+                        <h2 style="margin: 0.5em">Multiple Admins</h2>
+                        <img src="./assets/admin.png" style="max-width: 300px; margin: 0.5em" />
+                        <p style="margin: 0.5em">
+                            You can delegate roles and privileges to other members as desired.
+                            Admins have access to a QR code scanner, event creation, and can
+                            view/update member attendance in both table form and as quick
+                            statistics.
                         </p>
                     </div>
                     <div class="cols">
-                        <h2>Calendar View</h2>
-                        <img
-                            src="/assets/calendar.png"
-                            style="max-width: 300px; margin-top: 0.5em"
-                        />
-                        <p>
+                        <h2 style="margin: 0.5em">Calendar View</h2>
+                        <img src="./assets/calendar.png" style="max-width: 300px; margin: 0.5em" />
+                        <p style="margin: 0.5em">
                             Easily browse past and upcoming events from your groups. Create and view
-                            reocurring events. Edit previous attendance records as needed.
+                            recurring events. Edit previous attendance records as needed.
                         </p>
                     </div>
                     <div class="cols">
-                        <h2>Participate in many groups</h2>
-                        <img src="/assets/groups.png" style="max-width: 310px; margin-top: 0.5em" />
-                        <p>
-                            Quickly view your past attendance and upcoming events for your groups,
-                            manage which groups you participate in, and notify group admins if you
-                            know you'll be late/absent.
+                        <h2 style="margin: 0.5em">Participate in many groups</h2>
+                        <img src="./assets/groups.png" style="max-width: 300px; margin: 0.5em" />
+                        <p style="margin: 0.5em">
+                            View your past attendance and upcoming events, manage which groups you
+                            participate in, and notify group admins if you know you'll be
+                            late/absent.
                         </p>
                     </div>
                 </div>
             </section>
             <section class="only-logged-in light-section">
                 <h1>Actions</h1>
-                <p>
-                    One account, many ways to take attendance. Click below to shortcut straight to
-                    the relevant features!
-                </p>
+                <p style="margin-bottom: 0.5em">One account, many ways to take attendance.</p>
                 <div class="rows">
                     <action-icon
                         name="Quick Attendance"
                         icon="fa-solid fa-person-running"
                         link="scanner.html#new"
-                        description="Automatically creates an event and start taking attendance immediately."
+                        description="Automatically create an event and start taking attendance immediately."
                     ></action-icon>
                     <action-icon
                         name="Take Attendance"
@@ -155,50 +154,65 @@
                     ></action-icon>
                 </div>
             </section>
-            <section class="not-logged-in medium-section">
-                <h1>Our Customers</h1>
+            <section class="not-logged-in medium-section" style="padding: 2em; padding-top: 1em" id="pricing">
+                <h1 style="margin-bottom: 0.5em">Pricing</h1>
+                <div id="free" class="subscription">
+                    <h3 style="margin-bottom: 3px">Free Plan</h3>
+                    <hr />
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Fixed Monthly Price: $0.00</li>
+                        <li>Up to 50 members</li>
+                        <li>Unlimited role and user privilege management</li>
+                        <li>
+                            <a href="https://github.com/clr-li/AttendanceScanner/issues"
+                                >Community support</a
+                            >
+                        </li>
+                        <li>Export/import custom data via CSV</li>
+                        <li>Gmail invites and notifications</li>
+                    </ul>
+                </div>
+                <div id="standard" class="subscription">
+                    <h3 style="margin-bottom: 3px">Standard Plan</h3>
+                    <hr />
+                    <ul style="text-align: center; max-width: 80%; margin: auto">
+                        <li>Fixed Monthly Price: $7.00</li>
+                        <li>Up to 100 members</li>
+                        <li>Unlimited role and user privilege management</li>
+                        <li>Email+Community support</li>
+                        <li>API+Google Sheets integration</li>
+                        <li>Gmail+Email invites and notifications</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="not-logged-in dark-section">
+                <h1>Example Customers</h1>
                 <br />
                 <a href="https://syso.org" target="_blank"
                     ><img
-                        src="/assets/syso.png"
+                        src="./assets/syso.png"
                         style="
                             max-width: 350px;
-                            background-color: black;
+                            background-color: var(--dark-background);
                             padding: 15px;
-                            height: 205px;
+                            height: 150px;
+                            margin-bottom: 1em;
                         "
+                        alt="Seattle Youth Symphony Orchestras logo"
                 /></a>
                 <a href="https://bothellfbla.weebly.com/" target="_blank"
                     ><img
-                        src="/assets/bhsFLBA.jpg"
+                        src="./assets/bhsFLBA.jpg"
                         style="
                             max-width: 350px;
-                            background-color: black;
+                            background-color: var(--dark-background);
                             padding: 15px;
-                            height: 205px;
+                            height: 150px;
+                            margin-bottom: 1em;
                         "
+                        alt="Bothell High School Future Business Leaders of America logo"
                 /></a>
             </section>
-            <!-- <section class="medium-section">
-                <h1>
-                    How To Use
-                </h1>
-                <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; max-width: 100vw;">
-                  <iframe width="560" height="315" src="https://www.youtube.com/embed/lkIFF4maKMU?si=a-TD6tWnTk0eSl0s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
-                <div style="max-width: 60em; margin: auto;">
-                    <button class="button" onclick="document.getElementById('translation').style.display = document.getElementById('translation').style.display == 'block' ? 'none' : 'block'">Transcript</button>
-                    <p id="translation" class="transcript">
-                        This is a tool to take attendance in the easiest way possible. I’m going to show you how to use it in this short tutorial. 
-
-                        <br><br>To get started, click on the sign in button which will prompt you to sign in with Google. Once you’re in, a unique QR code will be generated for you to scan to get your attendance taken at any event. It’s that easy.
-
-                        <br><br>To create your own group, navigate to the admin dashboard, which will redirect you to the start-a-group page. Now when you click on the admin page, you will see your unique QR code for people to scan to join your group. On this page you can create events, update events, delete events, view events, and open the qr code scanner to take attendance.
-
-                        <br><br>The groups page allows you to view your attendance data and the calendar allows you to view your attendance status and edit events.
-                    </p>
-                </div>
-            </section> -->
             <section class="purple-section" id="contact">
                 <contact-form></contact-form>
             </section>
