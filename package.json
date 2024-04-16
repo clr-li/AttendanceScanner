@@ -54,7 +54,7 @@
         "deploy:fire": "node -r dotenv/config ./scripts/deploy.js",
         "dev": "ATT_CODE_DIR=.data/att_codes DB_FILE=./.data/ATT.db DEVELOPMENT=true PORT=3000 nodemon --inspect -r dotenv/config ./server/server.js",
         "docker:build": "docker build --tag 'attendqr' .",
-        "docker:run": "docker run -p 3000:3000 --env-file .env 'attendqr'",
+        "docker:run": "docker run -t -i -p 3000:3000 --env-file .env 'attendqr'",
         "predeploy": "git checkout main && git diff-index --quiet HEAD -- || (echo 'Please commit your changes before deploying' && exit 1)",
         "predev": "open http://localhost:3000 || start chrome \"http://localhost:3000\" || google-chrome 'http://localhost:3000' || echo 'Could not open browser automatically. Please open http://localhost:3000 manually'",
         "start": "node ./server/server.js",

@@ -1,11 +1,22 @@
 # Node Modules
 node_modules
 
-# Firebase static files
+# Non server files
 public
-
-# Cache
 .firebase
+firebase.json
+.firebaserc
+.editorconfig
+.eslintrc.yml
+.eslintignore
+.prettierignore
+.prettierrc
+LICENSE.md
+nodemon.json
+README.md
+.github
+.badges
+.vscode
 
 # Secrets
 .env

@@ -2,7 +2,7 @@
 
 [![LOC](./.badges/lines-of-code.svg)](https://github.com/clr-li/AttendanceScanner)
 [![FileCount](./.badges/file-count.svg)](https://github.com/clr-li/AttendanceScanner)
-[![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F)](https://attendancescannerqr.web.app)
+[![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F)](https://attendqr.com)
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
 [![Coverage](./.badges/coverage.svg)](https://github.com/clr-li/AttendanceScanner)
 
