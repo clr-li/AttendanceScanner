@@ -61,6 +61,7 @@ URL: https://attendqr.com
     -   [attendqr.com](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/attendqr.com)
 -   Express Admin: [admin panel](https://attendqr.fly.dev/super_admin/index.html)
 -   Google Cloud Platform Console: [GCP console](https://console.cloud.google.com/apis/dashboard?project=attendancescannerqr)
+-   Google Search Console: [search console](https://search.google.com/search-console?resource_id=sc-domain%3Aattendqr.com)
 
 ## Automated Testing
 
