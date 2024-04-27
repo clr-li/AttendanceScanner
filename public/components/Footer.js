@@ -46,7 +46,7 @@ class Footer extends Component {
                     <div style="clear: both"></div>
                 </div>
                 <div class="copyright">
-                    <p>© 2023. All rights reserved. Images, logos, and content cannot be used without permission.</p>
+                    <p>© 2023. All rights reserved. Images, logos, and content cannot be used without permission. <a href="/legal/terms-of-service.html">Terms</a>. <a href="/legal/privacy-policy.html">Privacy</a></p>
                 </div>
             </footer>
             <style>

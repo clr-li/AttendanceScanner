@@ -41,7 +41,7 @@ function parseJwt(token) {
 /**
  * Exported token verification logic for testing purposes.
  * @param {string} idToken Bearer token to verify
- * @returns [ uid, name ] if the token is valid, otherwise throws an error.
+ * @returns [ uid, name, email ] if the token is valid, otherwise throws an error.
  */
 module.exports.verifyIdToken = async function verifyIdToken(idToken) {
     if (TOKEN_VERIFICATION) {

@@ -2,11 +2,11 @@
 
 [![LOC](./.badges/lines-of-code.svg)](https://github.com/clr-li/AttendanceScanner)
 [![FileCount](./.badges/file-count.svg)](https://github.com/clr-li/AttendanceScanner)
-[![WebsiteStatus](https://img.shields.io/website?url=https%3A%2F%2Fattendancescannerqr.web.app%2F)](https://attendqr.com)
+[![WebsiteStatus](https://img.shields.io/website?url=https://attendqr.com)](https://attendqr.com)
 ![Tests](https://github.com/clr-li/AttendanceScanner/actions/workflows/tests.yml/badge.svg)
 [![Coverage](./.badges/coverage.svg)](https://github.com/clr-li/AttendanceScanner)
 
-This project uses QR codes to take attendance and a SQLite database to store data of groups, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and run through Github Actions. Deployment is done via a docker container with the Node.js express app on Fly.io and static files via Firebase Hosting.
+This project uses QR codes to take attendance and a SQLite database to store data of groups, attendees, and events. It uses oauth2 through Firebase Auth to authenticate users and has custom authorization logic. Braintree is used as the payment gateway for the electronic payment/subscription system. Automated tests are written using Node Test Runner and Selenium and run through Github Actions. Deployment is done via a docker container running the Node.js express app on Fly.io and static files via Firebase Hosting.
 URL: https://attendqr.com
 
 # Development
@@ -60,6 +60,7 @@ URL: https://attendqr.com
 -   Configure Cloudflare: [domains](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/domains/attendqr.com)
     -   [attendqr.com](https://dash.cloudflare.com/ff1b48a9d7c023abb7950e2e6f3a7f7e/attendqr.com)
 -   Express Admin: [admin panel](https://attendqr.fly.dev/super_admin/index.html)
+-   Google Cloud Platform Console: [search console](https://console.cloud.google.com/apis/dashboard?project=attendancescannerqr)
 
 ## Automated Testing
 
@@ -67,7 +68,7 @@ URL: https://attendqr.com
 
 2. Then run `npm test` and check the output in the console for the status of the tests. Console logs during test execution will pipe to `test.log` instead of standard out so you wont see logs in the terminal.
 
-3. Linting and automatic formatting can be run with `npm run lint` and `npm run format`.
+3. Linting and automatic formatting can be run with `npm run test:lint` and `npm run build:format`.
 
 4. Tests live in the `/test` directory and use the builtin [Node Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html) framework. New tests are always welcome!
 

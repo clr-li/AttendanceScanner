@@ -1,11 +1,13 @@
 # Node Modules
 node_modules
 
-# Non server files
+# Static files
 public
 .firebase
 firebase.json
 .firebaserc
+
+# Editor Config files
 .editorconfig
 .eslintrc.yml
 .eslintignore
@@ -15,14 +17,19 @@ LICENSE.md
 nodemon.json
 README.md
 .github
-.badges
 .vscode
+
+# Build files
+.badges
+source-icons
+scripts
 
 # Secrets
 .env
 .data
 
-# Test Logs
+# Tests
+test
 test.*.log
 tap.info
 
