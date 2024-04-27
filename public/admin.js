@@ -1567,7 +1567,7 @@ async function createNewEvent() {
     const weekdays = weekdaySelector.querySelectorAll('input');
     unit.onchange = e => {
         interval.disabled = e.target.value === '';
-        weekdays.forEach(d => (d.disabled = e.target.value !== '7'));
+        weekdays.forEach(d => (d.disabled = e.target.value !== 'weekly'));
     };
     let event = null;
     submit.onclick = () => {

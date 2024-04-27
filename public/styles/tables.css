@@ -28,7 +28,10 @@
 .table-wrapper tr:hover {
     background-color: rgba(220, 228, 235);
 }
-.table-wrapper th:hover {
+.table-wrapper .sort-group:hover {
+    color: var(--primary);
+}
+.table-wrapper .search:hover {
     color: var(--primary);
 }
 .table-wrapper tr:first-child th:first-child {
