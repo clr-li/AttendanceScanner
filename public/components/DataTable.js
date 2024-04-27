@@ -20,6 +20,7 @@ export class DataTable extends Component {
             <link rel="stylesheet" href="/styles/reset.css">
             <link rel="stylesheet" href="/styles/button.css">
             <link rel="stylesheet" href="/styles/tables.css">
+            <link rel="stylesheet" href="/styles/inputs.css">
             <div id="table-wrapper" class="table-wrapper">
                 <div class="table-action-bar">
                     <h1 id="name" class="name">${this.name}</h1>
@@ -64,9 +65,11 @@ export class DataTable extends Component {
         formatHeader = undefined,
         formatCell = undefined,
         inputEvents = undefined,
+        searchableColumns = undefined,
     ) {
         this.rows = rows ?? this.rows ?? [];
         this.columns = columns ?? this.columns ?? [];
+        this.searchableColumns = searchableColumns ?? this.searchableColumns ?? [];
         this.nonSortableColumns = nonSortableColumns ?? this.nonSortableColumns ?? [];
         this.editableColumns = editableColumns ?? this.editableColumns ?? [];
         this.formatHeader = formatHeader ?? this.formatHeader ?? (col => col.toUpperCase());
@@ -78,36 +81,50 @@ export class DataTable extends Component {
         table.id = 'table';
 
         const header = document.createElement('tr');
-        header.innerHTML = '<th><input type="checkbox"></th>';
+        let html = '<th><input type="checkbox"></th>';
         for (const [i, col] of Object.entries(this.columns)) {
             if (this.nonSortableColumns.includes(col)) {
-                header.innerHTML += `<th>${this.formatHeader(col)}</th>`;
+                html += `<th>${this.formatHeader(col)}`;
             } else {
-                header.innerHTML += `<th data-colIx="${i}">
-                ${this.formatHeader(col)}&nbsp;<i class="fa-solid fa-sort"></i>
-            </th>`;
+                html += `<th data-colIx="${i}">
+                ${this.formatHeader(col)}&nbsp;<i class="fa-solid fa-sort"></i>`;
+            }
+            if (this.searchableColumns.includes(col)) {
+                html += '&nbsp;<i class="fa-solid fa-magnifying-glass"></i></th>';
+            } else {
+                html += '</th>';
             }
         }
+        header.innerHTML = html;
         // handle column sorting
         header.onclick = e => {
             const th = e.target.closest('th');
-            const icon = th.querySelector('i');
-            if (!icon) return;
-            icon.classList.remove('fa-sort');
-            if (icon.classList.contains('fa-sort-up')) {
-                icon.classList.replace('fa-sort-up', 'fa-sort-down');
-                this.sort(this.columns[th.dataset.colix], false);
-            } else {
-                icon.classList.add('fa-sort-up');
-                icon.classList.remove('fa-sort-down');
-                this.sort(this.columns[th.dataset.colix], true);
-            }
+            if (
+                !e.target.closest('i') ||
+                e.target.closest('i').classList.contains('fa-sort') ||
+                e.target.closest('i').classList.contains('fa-sort-up') ||
+                e.target.closest('i').classList.contains('fa-sort-down')
+            ) {
+                const icon = th.querySelector('i');
+                if (!icon) return;
+                icon.classList.remove('fa-sort');
+                if (icon.classList.contains('fa-sort-up')) {
+                    icon.classList.replace('fa-sort-up', 'fa-sort-down');
+                    this.sort(this.columns[th.dataset.colix], false);
+                } else {
+                    icon.classList.add('fa-sort-up');
+                    icon.classList.remove('fa-sort-down');
+                    this.sort(this.columns[th.dataset.colix], true);
+                }
 
-            const icons = table.querySelectorAll('i');
-            for (const otherIcon of icons) {
-                if (otherIcon === icon) continue;
-                otherIcon.classList.replace('fa-sort-up', 'fa-sort');
-                otherIcon.classList.replace('fa-sort-down', 'fa-sort');
+                const icons = table.querySelectorAll('i');
+                for (const otherIcon of icons) {
+                    if (otherIcon === icon) continue;
+                    otherIcon.classList.replace('fa-sort-up', 'fa-sort');
+                    otherIcon.classList.replace('fa-sort-down', 'fa-sort');
+                }
+            } else {
+                this.search(this.columns[th.dataset.colix]);
             }
         };
         // handle selecting all rows
@@ -278,6 +295,27 @@ export class DataTable extends Component {
             return 0;
         });
         this.showPage(this.shadowRoot.getElementById('page').value);
+    }
+
+    search(header) {
+        const col = this.columns.indexOf(header);
+        const th = this.shadowRoot.getElementById('table').querySelector(`th[data-colIx="${col}"]`);
+        const search = document.createElement('input');
+        search.className = 'basic-input-smaller';
+        search.style.margin = '0';
+        search.type = 'search';
+        search.placeholder = 'Search NAME';
+        th.replaceChildren(search);
+        let initialRows = this.rows.filter(row =>
+            row[header].toLowerCase().includes(search.value.toLowerCase()),
+        );
+        search.oninput = () => {
+            const searchValue = search.value;
+            this.rows = initialRows.filter(row =>
+                row[header].toLowerCase().includes(searchValue.toLowerCase()),
+            );
+            this.showPage(1);
+        };
     }
 
     /**

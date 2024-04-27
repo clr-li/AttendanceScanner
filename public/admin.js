@@ -215,6 +215,7 @@ class MembersTable extends Component {
                 </label>`;
             },
             ['change'],
+            ['name'],
         );
     }
 
@@ -348,6 +349,7 @@ class AttendanceTable extends Component {
             formatHeader,
             formatCell,
             ['change'],
+            ['name'],
         );
 
         // remove any selected tags that are not in the current attendance data
@@ -535,6 +537,7 @@ class EventTable extends Component {
             this.formatHeader,
             this.formatCell,
             ['click'],
+            ['name'],
         );
     }
 
@@ -867,8 +870,16 @@ class StatsTable extends Component {
 
         /** @type {DataTable} */
         const table = this.shadowRoot.getElementById('table');
-        table.update(['name', ...this.countColumns], this.users);
-
+        table.update(
+            ['name', ...this.countColumns],
+            this.users,
+            undefined,
+            [],
+            undefined,
+            undefined,
+            [],
+            ['name'],
+        );
         this.filterRole();
     }
 

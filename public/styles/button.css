@@ -34,6 +34,11 @@
     font-size: 0.8rem;
 }
 
+.basic-button {
+    background: none;
+    border: none;
+}
+
 .buttonize button:disabled,
 .button:disabled {
     opacity: 0.5;
