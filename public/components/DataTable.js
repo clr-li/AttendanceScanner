@@ -1,4 +1,5 @@
 import { Component } from '../util/Component.js';
+import { calcSimilarity } from '../util/util.js';
 
 /**
  * A table component with pagination, sorting and selection.
@@ -87,10 +88,12 @@ export class DataTable extends Component {
                 html += `<th>${this.formatHeader(col)}`;
             } else {
                 html += `<th data-colIx="${i}">
-                ${this.formatHeader(col)}&nbsp;<i class="fa-solid fa-sort"></i>`;
+                <p style="display: inline;" class="sort-group">${this.formatHeader(
+                    col,
+                )}&nbsp;<i class="fa-solid fa-sort"></i></p>`;
             }
             if (this.searchableColumns.includes(col)) {
-                html += '&nbsp;<i class="fa-solid fa-magnifying-glass"></i></th>';
+                html += '&nbsp;&nbsp;<i class="search fa-solid fa-magnifying-glass"></i></th>';
             } else {
                 html += '</th>';
             }
@@ -306,16 +309,60 @@ export class DataTable extends Component {
         search.type = 'search';
         search.placeholder = 'Search NAME';
         th.replaceChildren(search);
-        let initialRows = this.rows.filter(row =>
-            row[header].toLowerCase().includes(search.value.toLowerCase()),
-        );
-        search.oninput = () => {
-            const searchValue = search.value;
-            this.rows = initialRows.filter(row =>
-                row[header].toLowerCase().includes(searchValue.toLowerCase()),
-            );
-            this.showPage(1);
+        search.oninput = e => {
+            let switching = true;
+            while (switching) {
+                let i;
+                switching = false;
+                let shouldSwitch = false;
+                let rows = this.shadowRoot.getElementById('table').querySelectorAll('tr');
+                /* Loop through all table rows (except the
+                first, which contains table headers): */
+                for (i = 1; i < rows.length - 1; i++) {
+                    /* Start by saying there should be no switching: */
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare,
+                    one from current row and one from the next: */
+                    let x = rows[i].querySelectorAll('td')[1];
+                    let y = rows[i + 1].querySelectorAll('td')[1];
+                    /* Check if the two rows should switch place,
+                    based on the direction, asc or desc: */
+                    if (e.target.value) {
+                        if (
+                            calcSimilarity(x.textContent, e.target.value) <
+                            calcSimilarity(y.textContent, e.target.value)
+                        ) {
+                            /* If so, mark as a switch and break the loop: */
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (x.textContent.toLowerCase() > y.textContent.toLowerCase()) {
+                            /* If so, mark as a switch and break the loop: */
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch
+                    and mark the switch as done: */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
         };
+
+        // let initialRows = this.rows.filter(row =>
+        //     row[header].toLowerCase().includes(search.value.toLowerCase()),
+        // );
+        // search.oninput = () => {
+        //     const searchValue = search.value;
+        //     this.rows = initialRows.filter(row =>
+        //         row[header].toLowerCase().includes(searchValue.toLowerCase()),
+        //     );
+        //     this.showPage(1);
+        // };
     }
 
     /**
