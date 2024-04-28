@@ -32,10 +32,10 @@ router.post('/email', async (req, res) => {
             ],
             subject: message.subject,
             text: message.text,
-            html: message.text,
+            html: message.text.replace(/\n/g, '<br>'),
         }),
     });
-    res.status(response.status).send(await response.json());
+    res.status(response.status).send(await response.text());
 });
 
 // ===================== Router =====================
