@@ -87,6 +87,16 @@ export async function sendGmail(to_email, subject, text, credential) {
     return await POST('/gmail', { message: message, accessToken: credential.accessToken });
 }
 
+export async function sendEmail(to_email, subject, text) {
+    const message = {
+        to_email: to_email,
+        subject: subject,
+        text: text,
+    };
+
+    return await POST('/email', { message: message });
+}
+
 // polyfills
 if (!Object.groupBy) {
     Object.groupBy = (values, keyFinder) => {

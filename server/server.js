@@ -67,6 +67,10 @@ app.use('/', eventRouter);
 const { googleRouter } = require('./Google');
 app.use('/', googleRouter);
 
+// ============================ ThirdParty APIs ============================
+const { thirdPartyRouter } = require('./ThirdParty');
+app.use('/', thirdPartyRouter);
+
 // ============================ SERVER ============================
 // listen for requests :)
 module.exports.app = app;

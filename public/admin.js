@@ -4,7 +4,7 @@ import { Popup } from './components/Popup.js';
 /** @typedef {import('./components/DataTable.js').DataTable} DataTable */
 
 // import HTTP methods and add error handling
-import { GET, DELETE, PUT, PATCH, POST, sendGmail, setErrorHandler } from './util/Client.js';
+import { GET, DELETE, PUT, PATCH, POST, sendEmail, setErrorHandler } from './util/Client.js';
 setErrorHandler(async res => {
     await Popup.alert(await res.text(), 'var(--error)');
 });
@@ -116,16 +116,12 @@ class GroupSettings extends Component {
         // send email notification
         const emailNotification = this.shadowRoot.getElementById('email-notification');
         this.shadowRoot.getElementById('sent-email').onclick = async () => {
-            const credential = await requestGoogleCredential([
-                'https://www.googleapis.com/auth/gmail.send',
-            ]);
             let success = true;
             for (const member of this.members) {
-                const res = await sendGmail(
+                const res = await sendEmail(
                     member.email,
                     'Attendance Scanner Notification',
                     emailNotification.textContent.replace('[MEMBER_NAME]', member.name),
-                    credential,
                 );
                 if (!res.ok) {
                     success = false;
@@ -1056,12 +1052,9 @@ async function showInviteModal() {
         p,
     );
     if (!emails) return;
-    const credential = await requestGoogleCredential([
-        'https://www.googleapis.com/auth/gmail.send',
-    ]);
     let success = true;
     for (const email of emails.split(',')) {
-        const res = await sendGmail(
+        const res = await sendEmail(
             email.trim(),
             'Attendance Scanner Invitation',
             `
@@ -1072,14 +1065,13 @@ async function showInviteModal() {
             Please click this link to join: ${joinlink}.
 
             Best,
-            ${sanitizeText(credential.name)}
+            ${sanitizeText(user.name)}
             (automatically sent via Attendance Scanner QR)
             `
                 .trim()
                 .split('\n')
                 .map(l => l.trim())
                 .join('\n'),
-            credential,
         );
         if (!res.ok) {
             success = false;
