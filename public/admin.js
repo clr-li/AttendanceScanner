@@ -62,7 +62,7 @@ class GroupSettings extends Component {
                     Send email notification to group members
                     <span style="position: relative;">
                         <i role="button" onclick="this.nextElementSibling.show(); event.preventDefault()" class="fa-solid fa-circle-info smaller-text"></i>
-                        <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">Enter the email text below. It will be sent out to every current member with '[MEMBER_NAME]' replaced with their actual name. Note: these are subject to the rate limits on your Google account, so if you need to send more than ~300/day, you'll have to apply for an increased limit from Google.</dialog>
+                        <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">Enter the email text below. It will be sent out to every current member with '[MEMBER_NAME]' replaced with their actual name.</dialog>
                     </span>
                 </label><br>
                 <textarea

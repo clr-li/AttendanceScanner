@@ -37,7 +37,7 @@ class Footer extends Component {
                         <div class="social-networks">
                             <a href="https://github.com/clr-li/AttendanceScanner"><i class="fa-brands fa-github"></i></a>
                             <a href="sms:+1724383-6080"><i class="fa fa-phone"></i></a>
-                            <a href="mailto:info.attendqr@gmail.com"><i class="fa fa-envelope"></i></a>
+                            <a href="mailto:info@attendqr.com"><i class="fa fa-envelope"></i></a>
                         </div>
                         <h3>Attendance Scanner</h3>
                         <p>Seattle, WA 98195</p>
