@@ -12,7 +12,7 @@ setErrorHandler(async res => {
 import { sanitizeText, html, print, stringToColor } from './util/util.js';
 import { useURL } from './util/StateManager.js';
 
-import { requireLogin, getCurrentUser, requestGoogleCredential } from './util/Auth.js';
+import { requireLogin, getCurrentUser } from './util/Auth.js';
 await requireLogin();
 const user = await getCurrentUser();
 
