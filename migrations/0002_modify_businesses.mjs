@@ -1,4 +1,4 @@
-// Automatically created by 'sqlite auto migrator (SAM)' on 2024-04-28T18:51:38.159Z
+// Automatically created by 'sqlite auto migrator (SAM)' on 2024-04-28T21:24:47.850Z
 
 import { Database } from 'sqlite-auto-migrator';
 
@@ -12,7 +12,7 @@ export const PRAGMAS = {"analysis_limit":0,"application_id":0,"auto_vacuum":0,"a
  * @param {Database} db database instance to run SQL commands on
  */
 export async function up(db) {
-    await db.run("ALTER TABLE \"businesses\" ADD COLUMN \"absentemail\" INTEGER  DEFAULT 1");
+    await db.run("ALTER TABLE \"businesses\" ADD COLUMN \"absentemail\" INTEGER NOT NULL DEFAULT 1");
 }
 
 /**

@@ -1,7 +1,7 @@
 /**
  * Creates a template element from an html string.
  * @param {string} html string representing any number of sibling elements
- * @returns a template element with html is its innerHTML.
+ * @returns a template element with html as its innerHTML.
  */
 function htmlToTemplate(html) {
     const template = document.createElement('template');
@@ -20,7 +20,7 @@ export function htmlToElements(html) {
 
 /**
  * Utility class to make Web Component creation simpler.
- * @Important Each component must be defined in its own file. Safari does not support multiple components registered in the same file.
+ * @Important Each component must be defined in its own file.
  * @link Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#high-level_view
  * @link Web Component Lifecycle: https://bignerdranch.com/blog/learn-the-lifecycle-of-a-web-component-by-building-a-custom-element/
  * @abstract
@@ -40,7 +40,7 @@ export class Component extends HTMLElement {
 
     /**
      * Creates a basic web component.
-     * @params sharedTemplate true if all instances should share the same HTML template (default), false otherwise)
+     * @params sharedTemplate true if all instances should share the same HTML template (default), false otherwise
      */
     constructor(sharedTemplate = true) {
         super(); // initialize component (should always be called first)
