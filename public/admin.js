@@ -51,6 +51,19 @@ class GroupSettings extends Component {
                         <div class="tgl-btn" style="font-size: 16px; width: 4em; height: 2em"></div>
                     </div>
                 </label>
+                <label style="display: flex; justify-content: space-evenly;">
+                    <span>
+                        Send email if members mark themselves absent
+                        <span style="position: relative;">
+                            <i role="button" onclick="this.nextElementSibling.show(); event.preventDefault()" class="fa-solid fa-circle-info smaller-text"></i>
+                            <dialog onblur="this.close()" class="tooltip-info" style="font-size: medium;">When enabled, members can send an email letting owners, admins, and moderators of a business know they'll be absent ahead of time.</dialog>
+                        </span>
+                    </span>
+                    <div class="checkbox-wrapper-6">
+                        <input id="absent-email" class="tgl tgl-light" type="checkbox" />
+                        <div class="tgl-btn" style="font-size: 16px; width: 4em; height: 2em"></div>
+                    </div>
+                </label>
                 <br><hr><br>
                 <a class="button" href="/payment.html">Manage Subscription &nbsp; <i class="fa-regular fa-money-bill-1"></i></a>
                 <a class="button" id="genericScannerLink" href="/scanner.html">Take Attendance &nbsp; <i class="icon-scanner"></i></a>
@@ -81,7 +94,11 @@ class GroupSettings extends Component {
         const requireJoin = await GET(`/businesses/${getBusinessId()}/settings/requirejoin`).then(
             res => res.json(),
         );
+        const absentEmail = await GET(`/businesses/${getBusinessId()}/settings/absentemail`).then(
+            res => res.json(),
+        );
         this.shadowRoot.getElementById('require-join').checked = requireJoin.requireJoin === 1;
+        this.shadowRoot.getElementById('absent-email').checked = absentEmail.absentEmail === 1;
 
         // initialize email notification
         this.shadowRoot.getElementById('email-notification').textContent = `
@@ -110,6 +127,14 @@ class GroupSettings extends Component {
             await PUT(
                 `/businesses/${getBusinessId()}/settings/requirejoin?new=${
                     requireJoin.checked ? 1 : 0
+                }`,
+            );
+        };
+        const absentEmail = this.shadowRoot.getElementById('absent-email');
+        absentEmail.onchange = async () => {
+            await PUT(
+                `/businesses/${getBusinessId()}/settings/absentemail?new=${
+                    absentEmail.checked ? 1 : 0
                 }`,
             );
         };

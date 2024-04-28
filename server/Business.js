@@ -300,6 +300,43 @@ router.put('/businesses/:businessId/settings/requirejoin', async (request, respo
 });
 
 /**
+ * Gets the absentEmail setting for the specified business.
+ * @pathParams businessId - id of the business to get the role in
+ * @requiredPrivileges read access to the specified business
+ * @response json object with the absentEmail setting of the specified business
+ */
+router.get('/businesses/:businessId/settings/absentemail', async (request, response) => {
+    const uid = await handleAuth(request, response, request.params.businessId, { read: true });
+    if (!uid) return;
+
+    const businessId = request.params.businessId;
+
+    const absentEmail = await db().get(
+        ...SQL`SELECT absentEmail FROM Businesses WHERE id = ${businessId}`,
+    );
+    response.send(absentEmail);
+});
+
+/**
+ * Updates the absentEmail setting for the specified business.
+ * @pathParams businessId - id of the business to update the role in
+ * @queryParams new - new absentEmail setting for the business
+ * @requiredPrivileges write access to the specified business
+ */
+router.put('/businesses/:businessId/settings/absentemail', async (request, response) => {
+    const uid = await handleAuth(request, response, request.params.businessId, { write: true });
+    if (!uid) return;
+
+    const businessId = request.params.businessId;
+    const newAbsentEmail = request.query.new;
+
+    const { changes } = await db().run(
+        ...SQL`UPDATE Businesses SET absentEmail = ${newAbsentEmail} WHERE id = ${businessId}`,
+    );
+    response.sendStatus(changes === 1 ? 200 : 400);
+});
+
+/**
  * Sets the custom data for a user in the specified business.
  * @pathParams businessId - id of the business to set custom data in
  * @pathParams userId - id of the user to set custom data for
@@ -407,7 +444,7 @@ router.get('/businesses/:businessId/writemembers', async (request, response) => 
         SELECT Users.name, Users.email
         FROM Members INNER JOIN Users on Members.user_id = Users.id 
         WHERE Members.business_id = ${businessId}
-        AND Members.role = 'owner' OR Members.role = 'admin' OR Members.role = 'moderator'`,
+        AND (Members.role = 'owner' OR Members.role = 'admin' OR Members.role = 'moderator')`,
     );
     response.send(rows);
 });

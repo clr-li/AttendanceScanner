@@ -1,5 +1,5 @@
-import { GET, PUT, sendGmail } from './util/Client.js';
-import { requireLogin, getCurrentUser, requestGoogleCredential } from './util/Auth.js';
+import { GET, PUT, sendEmail } from './util/Client.js';
+import { requireLogin, getCurrentUser } from './util/Auth.js';
 import { sanitizeText } from './util/util.js';
 import { Popup } from './components/Popup.js';
 const $ = window.$;
@@ -147,43 +147,43 @@ window.markAbsent = async (businessId, eventId) => {
         await Popup.alert(await res.text(), 'var(--error)');
         return;
     }
-    await Popup.alert(
-        'You have been marked absent! Close this popup and click on your email account to send notifications to the event host(s).',
-        'var(--success)',
+    await Popup.alert('You have been marked absent!', 'var(--success)');
+
+    // Send email notification to business owner and admins if setting is enabled
+    const absentEmail = await GET(`/businesses/${businessId}/settings/absentemail`).then(res =>
+        res.json(),
     );
+    if (absentEmail.absentEmail === 1) {
+        let success = true;
+        const res1 = await GET(`/businesses/${businessId}/writemembers`);
+        const writeMembers = await res1.json();
 
-    // Send email notification to business owner and admins
-    const credential = await requestGoogleCredential([
-        'https://www.googleapis.com/auth/gmail.send',
-    ]);
-    let success = true;
-    const res1 = await GET(`/businesses/${businessId}/writemembers`);
-    const writeMembers = await res1.json();
-    console.log(writeMembers);
-
-    for (const member of writeMembers) {
-        const res = await sendGmail(
-            member.email,
-            'Attendance Scanner Notification of Absence',
-            'Hi ' +
-                member.name +
-                ',\n\n' +
-                user.name +
-                ' has marked themselves absent from the event.\n\n(automatically sent via Attendance Scanner QR)',
-            credential,
-        );
-        if (!res.ok) {
-            success = false;
-            const obj = await res.json();
-            const message = obj.error.message;
+        for (const member of writeMembers) {
+            const res = await sendEmail(
+                member.email,
+                'Attendance Scanner Notification of Absence',
+                'Hi ' +
+                    member.name +
+                    ',\n\n' +
+                    user.name +
+                    ' has marked themselves absent from the event.\n\n(automatically sent via Attendance Scanner QR)',
+            );
+            if (!res.ok) {
+                success = false;
+                const obj = await res.json();
+                const message = obj.error.message;
+                Popup.alert(
+                    `Email to ${sanitizeText(member[1])} failed to send. ` + message,
+                    'var(--error)',
+                );
+            }
+        }
+        if (success) {
             Popup.alert(
-                `Email to ${sanitizeText(member[1])} failed to send. ` + message,
-                'var(--error)',
+                'An email has been sent, notifying event host(s) of your absence',
+                'var(--success)',
             );
         }
-    }
-    if (success) {
-        Popup.alert('Emails sent successfully!', 'var(--success)');
     }
 
     // manually change html since evo-calendar is broken when adding/removing or updating events

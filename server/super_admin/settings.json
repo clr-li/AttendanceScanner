@@ -418,6 +418,38 @@
         "editview": {
           "show": true
         }
+      },
+      {
+        "name": "absentemail",
+        "verbose": "absentemail",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": true,
+        "defaultValue": "1",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
+      },
+      {
+        "name": "absentEmail",
+        "verbose": "absentEmail",
+        "control": {
+          "text": true
+        },
+        "type": "INTEGER",
+        "allowNull": false,
+        "defaultValue": "1",
+        "listview": {
+          "show": true
+        },
+        "editview": {
+          "show": true
+        }
       }
     ],
     "mainview": {

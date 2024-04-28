@@ -352,17 +352,6 @@ export class DataTable extends Component {
                 }
             }
         };
-
-        // let initialRows = this.rows.filter(row =>
-        //     row[header].toLowerCase().includes(search.value.toLowerCase()),
-        // );
-        // search.oninput = () => {
-        //     const searchValue = search.value;
-        //     this.rows = initialRows.filter(row =>
-        //         row[header].toLowerCase().includes(searchValue.toLowerCase()),
-        //     );
-        //     this.showPage(1);
-        // };
     }
 
     /**
