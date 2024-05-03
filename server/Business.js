@@ -426,29 +426,6 @@ router.post('/businesses/:businessId/customdata', async (request, response) => {
     response.sendStatus(200);
 });
 
-/**
- * Gets the name and email of members with owner, admin, or moderator roles.
- *
- * @pathParams businessId - id of the business to get members from
- * @requiredPrivileges member of the business
- * @response json object with the name and email of members with owner, admin, or moderator roles
- */
-router.get('/businesses/:businessId/writemembers', async (request, response) => {
-    const uid = await handleAuth(request, response, request.params.businessId);
-    if (!uid) return;
-
-    const businessId = request.params.businessId;
-
-    const rows = await db().all(
-        ...SQL`
-        SELECT Users.name, Users.email
-        FROM Members INNER JOIN Users on Members.user_id = Users.id 
-        WHERE Members.business_id = ${businessId}
-        AND (Members.role = 'owner' OR Members.role = 'admin' OR Members.role = 'moderator')`,
-    );
-    response.send(rows);
-});
-
 // ============================ USER ROUTES ============================
 /**
  * Gets the name of the user

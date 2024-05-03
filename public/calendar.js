@@ -142,49 +142,17 @@ window.toggleBusinessEvents = businessIX => {
 };
 
 window.markAbsent = async (businessId, eventId) => {
-    const res = await PUT(`/businesses/${businessId}/events/${eventId}/attendance/markabsent`);
+    const absentEmail = await GET(`/businesses/${businessId}/settings/absentemail`).then(res =>
+        res.json(),
+    );
+    const res = await PUT(
+        `/businesses/${businessId}/events/${eventId}/absentemail/${absentEmail.absentemail}/attendance/markabsent`,
+    );
     if (!res.ok) {
         await Popup.alert(await res.text(), 'var(--error)');
         return;
     }
     await Popup.alert('You have been marked absent!', 'var(--success)');
-
-    // Send email notification to business owner and admins if setting is enabled
-    const absentEmail = await GET(`/businesses/${businessId}/settings/absentemail`).then(res =>
-        res.json(),
-    );
-    if (absentEmail.absentEmail === 1) {
-        let success = true;
-        const res1 = await GET(`/businesses/${businessId}/writemembers`);
-        const writeMembers = await res1.json();
-
-        for (const member of writeMembers) {
-            const res = await sendEmail(
-                member.email,
-                'Attendance Scanner Notification of Absence',
-                'Hi ' +
-                    member.name +
-                    ',\n\n' +
-                    user.name +
-                    ' has marked themselves absent from the event.\n\n(automatically sent via Attendance Scanner QR)',
-            );
-            if (!res.ok) {
-                success = false;
-                const obj = await res.json();
-                const message = obj.error.message;
-                Popup.alert(
-                    `Email to ${sanitizeText(member[1])} failed to send. ` + message,
-                    'var(--error)',
-                );
-            }
-        }
-        if (success) {
-            Popup.alert(
-                'An email has been sent, notifying event host(s) of your absence',
-                'var(--success)',
-            );
-        }
-    }
 
     // manually change html since evo-calendar is broken when adding/removing or updating events
     const badge = document.createElement('span');

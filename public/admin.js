@@ -98,7 +98,7 @@ class GroupSettings extends Component {
             res => res.json(),
         );
         this.shadowRoot.getElementById('require-join').checked = requireJoin.requireJoin === 1;
-        this.shadowRoot.getElementById('absent-email').checked = absentEmail.absentEmail === 1;
+        this.shadowRoot.getElementById('absent-email').checked = absentEmail.absentemail === 1;
 
         // initialize email notification
         this.shadowRoot.getElementById('email-notification').textContent = `

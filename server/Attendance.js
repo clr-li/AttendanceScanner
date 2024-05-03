@@ -16,6 +16,7 @@ storage.init({
     dir: process.env.ATT_CODE_DIR,
     ttl: 300_000, // 5 minutes
 });
+const { email } = require('./ThirdParty');
 
 // ============================ SCAN ATTENDANCE ============================
 /**
@@ -94,13 +95,14 @@ router.patch('/businesses/:businessId/events/:eventId/attendance', async (reques
  * @response 200 OK if successful
  */
 router.put(
-    '/businesses/:businessId/events/:eventId/attendance/markabsent',
+    '/businesses/:businessId/events/:eventId/absentemail/:absentEmail/attendance/markabsent',
     async (request, response) => {
         const uid = await handleAuth(request, response, request.params.businessId, {});
         if (!uid) return;
 
         const businessId = request.params.businessId;
         const eventId = request.params.eventId;
+        const absentEmail = request.params.absentEmail;
 
         const existingRecord = await db().get(
             ...SQL`SELECT R.status, E.endtimestamp 
@@ -121,6 +123,32 @@ router.put(
             VALUES ('ABSENT(self)', ${businessId}, ${eventId}, ${uid}, ${Date.now()})`,
         );
 
+        // Send email notification to business owner and admins if setting is enabled
+        if (absentEmail === '1') {
+            const user = await db().get(...SQL`SELECT name FROM Users WHERE id = ${uid}`);
+
+            const writeMembers = await db().all(
+                ...SQL`
+                SELECT Users.name, Users.email
+                FROM Members INNER JOIN Users on Members.user_id = Users.id 
+                WHERE Members.business_id = ${businessId}
+                AND (Members.role = 'owner' OR Members.role = 'admin' OR Members.role = 'moderator')`,
+            );
+
+            for (const member of writeMembers) {
+                const message = {
+                    to_email: member.email,
+                    subject: 'Notification of Absence',
+                    text: `Hi ${member.name}, \n\n${user.name} has marked themselves absent from the event.\n\n(automatically sent via Attendance Scanner QR)`,
+                };
+
+                const res = await email(message.to_email, message.subject, message.text);
+                if (res.status !== 202) {
+                    response.status(502).send('Email failed to send');
+                    return;
+                }
+            }
+        }
         response.sendStatus(200);
     },
 );

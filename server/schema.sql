@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS "Records" (
         "status"        TEXT NOT NULL,
         PRIMARY KEY("event_id", "user_id") ON CONFLICT REPLACE,
         FOREIGN KEY("business_id") REFERENCES "Businesses"("id"),
-        FOREIGN KEY("event_id") REFERENCES "Events"("id"),
+        FOREIGN KEY("event_id") REFERENCES "Events"("id")
+        ON DELETE CASCADE,
         FOREIGN KEY("user_id") REFERENCES "Users"("id")
 );

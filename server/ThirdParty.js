@@ -4,16 +4,7 @@ const fetch = require('node-fetch');
 const { handleAuth } = require('./Auth');
 
 // ===================== Email API =====================
-/**
- * Sends an email using the MailerSend API (https://app.mailersend.com/).
- * @param {Object} message the email message to send
- * @requiredPrivileges the user to be logged in
- * @returns the response from the Gmail API
- */
-router.post('/email', async (req, res) => {
-    await handleAuth(req, res);
-
-    const message = req.body.message;
+async function email(to_email, subject, text) {
     const response = await fetch('https://api.mailersend.com/v1/email', {
         method: 'POST',
         headers: {
@@ -27,16 +18,34 @@ router.post('/email', async (req, res) => {
             },
             to: [
                 {
-                    email: message.to_email,
+                    email: to_email,
                 },
             ],
-            subject: message.subject,
-            text: message.text,
-            html: message.text.replace(/\n/g, '<br>'),
+            subject: subject,
+            text: text,
+            html: text.replace(/\n/g, '<br>'),
         }),
     });
-    res.status(response.status).send(await response.text());
+    return { status: response.status, text: await response.text() };
+}
+/**
+ * Sends an email using the MailerSend API (https://app.mailersend.com/).
+ * @param {Object} message the email message to send
+ * @requiredPrivileges the user to be logged in
+ * @returns the response from the Gmail API
+ */
+router.post('/email', async (req, res) => {
+    await handleAuth(req, res);
+
+    const message = req.body.message;
+    console.log(message);
+    const response = email(message.to_email, message.subject, message.text);
+    let resJSON = res.json(response);
+    res.status(resJSON.status).send(resJSON.text);
 });
 
 // ===================== Router =====================
 exports.thirdPartyRouter = router;
+
+// ===================== THIRDPARTY EXPORTS =====================
+exports.email = email;
