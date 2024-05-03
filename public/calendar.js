@@ -1,9 +1,8 @@
-import { GET, PUT, sendEmail } from './util/Client.js';
-import { requireLogin, getCurrentUser } from './util/Auth.js';
+import { GET, PUT } from './util/Client.js';
+import { requireLogin } from './util/Auth.js';
 import { sanitizeText } from './util/util.js';
 import { Popup } from './components/Popup.js';
 const $ = window.$;
-const user = await getCurrentUser();
 await requireLogin();
 
 $('#calendar').evoCalendar();
