@@ -1,4 +1,4 @@
-import { GET, PUT } from './util/Client.js';
+import { GET, PUT, POST } from './util/Client.js';
 import { requireLogin } from './util/Auth.js';
 import { sanitizeText } from './util/util.js';
 import { Popup } from './components/Popup.js';
@@ -144,14 +144,37 @@ window.markAbsent = async (businessId, eventId) => {
     const absentEmail = await GET(`/businesses/${businessId}/settings/absentemail`).then(res =>
         res.json(),
     );
-    const res = await PUT(
-        `/businesses/${businessId}/events/${eventId}/absentemail/${absentEmail.absentemail}/attendance/markabsent`,
-    );
-    if (!res.ok) {
-        await Popup.alert(await res.text(), 'var(--error)');
-        return;
+    if (absentEmail.absentemail === 1) {
+        const popup = new Popup();
+        popup.innerHTML = /* html */ `
+            <h2>Reason for Absence</h2>
+            <textarea type="text" id="reason" class="stylish" style="min-height: 5lh; width: 100%; margin-left: auto; margin-right: auto;" placeholder="Reason for absence"></textarea><br>
+            <button id="reason-submit" class="button">Submit</button>
+        `;
+        document.body.appendChild(popup);
+        document.getElementById('reason-submit').onclick = async () => {
+            const reason = document.getElementById('reason').value;
+            popup.close();
+            const res = await POST(
+                `/businesses/${businessId}/events/${eventId}/absentemail/${1}/attendance/markabsent`,
+                { reason: reason },
+            );
+            if (!res.ok) {
+                await Popup.alert(await res.text(), 'var(--error)');
+                return;
+            }
+            await Popup.alert('You have been marked absent!', 'var(--success)');
+        };
+    } else {
+        const res = await PUT(
+            `/businesses/${businessId}/events/${eventId}/absentemail/${0}/attendance/markabsent`,
+        );
+        if (!res.ok) {
+            await Popup.alert(await res.text(), 'var(--error)');
+            return;
+        }
+        await Popup.alert('You have been marked absent!', 'var(--success)');
     }
-    await Popup.alert('You have been marked absent!', 'var(--success)');
 
     // manually change html since evo-calendar is broken when adding/removing or updating events
     const badge = document.createElement('span');

@@ -94,7 +94,7 @@ router.patch('/businesses/:businessId/events/:eventId/attendance', async (reques
  * @requiredPrivileges member of the business
  * @response 200 OK if successful
  */
-router.put(
+router.post(
     '/businesses/:businessId/events/:eventId/absentemail/:absentEmail/attendance/markabsent',
     async (request, response) => {
         const uid = await handleAuth(request, response, request.params.businessId, {});
@@ -102,7 +102,9 @@ router.put(
 
         const businessId = request.params.businessId;
         const eventId = request.params.eventId;
-        const absentEmail = request.params.absentEmail;
+        const absentEmail = await db().get(
+            ...SQL`SELECT absentEmail FROM Businesses WHERE id = ${businessId}`,
+        );
 
         const existingRecord = await db().get(
             ...SQL`SELECT R.status, E.endtimestamp 
@@ -124,8 +126,12 @@ router.put(
         );
 
         // Send email notification to business owner and admins if setting is enabled
-        if (absentEmail === '1') {
+        if (absentEmail.absentemail === 1) {
             const user = await db().get(...SQL`SELECT name FROM Users WHERE id = ${uid}`);
+            const reason = request.body.reason || '(No reason provided)';
+            const eventInfo = await db().get(
+                ...SQL`SELECT * FROM Events WHERE business_id = ${businessId} AND id = ${eventId}`,
+            );
 
             const writeMembers = await db().all(
                 ...SQL`
@@ -139,7 +145,13 @@ router.put(
                 const message = {
                     to_email: member.email,
                     subject: 'Notification of Absence',
-                    text: `Hi ${member.name}, \n\n${user.name} has marked themselves absent from the event.\n\n(automatically sent via Attendance Scanner QR)`,
+                    text: `Hi ${member.name}, \n\n<b>${
+                        user.name
+                    }</b> has marked themselves absent from the event named <b>${
+                        eventInfo.name
+                    }</b> starting on <b>${new Date(
+                        +eventInfo.starttimestamp,
+                    ).toLocaleDateString()}</b>. Reason for absence: ${reason}\n\n(automatically sent via Attendance Scanner QR)`,
                 };
 
                 const res = await email(message.to_email, message.subject, message.text);
